@@ -13,7 +13,7 @@ function createConferenceTemplates() {
     const prior=props.getProperty('KIT_'+key);if(prior){resources[key]=prior;return DriveApp.getFolderById(prior);}
     const f=(parent||DriveApp.getRootFolder()).createFolder(name);props.setProperty('KIT_'+key,f.getId());resources[key]=f.getId();return f;
   }
-  const root=folder('rootId','ACADIA '+year+' Conference Toolkit');
+  const root=folder('rootId','ACMS '+year+' Conference Management');
   folder('submissionRootId','Submissions',root);
   const tracks=[['hostFolderId','Host'],['papersFolderId','Full Papers'],['projectsFolderId','Projects'],['fieldNotesFolderId','Field Notes'],['phdFolderId','PhD Workshop'],['publicationPdfFolderId','Approved Publication PDFs']];
   tracks.forEach(pair=>folder(pair[0],pair[1],root));
@@ -52,11 +52,12 @@ function createConferenceTemplates() {
     body.appendParagraph(spec.title).setHeading(DocumentApp.ParagraphHeading.HEADING2);
     body.appendParagraph(config.theme+' · '+config.location);
     spec.tokens.forEach(token=>body.appendParagraph('{{'+token+'}}'));
+    body.appendParagraph('Software: Acadia Conference Management System (ACMS) — Developed by Teng Teng');
     doc.saveAndClose();DriveApp.getFileById(resources[key]).moveTo(templateFolder);
   });
   config.resources=Object.assign({},config.resources,resources);
   const json=JSON.stringify(config,null,2),savedId=props.getProperty('KIT_CONFIG_FILE');
-  let output=savedId?DriveApp.getFileById(savedId):root.createFile('acadia-'+year+'-configuration.json',json,MimeType.PLAIN_TEXT);
+  let output=savedId?DriveApp.getFileById(savedId):root.createFile('acms-'+year+'-configuration.json',json,MimeType.PLAIN_TEXT);
   if(savedId)output.setContent(json);else props.setProperty('KIT_CONFIG_FILE',output.getId());
   console.log('Template kit ready. All assets are private; no messages, calendar events or triggers were created.\n'+links.join('\n')+'\nDownload this configuration and import it in configure.html:\n'+output.getUrl());
 }

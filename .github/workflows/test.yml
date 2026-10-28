@@ -1,4 +1,4 @@
-name: Validate toolkit
+name: Validate ACMS
 on: [push, pull_request]
 permissions:
   contents: read
@@ -10,6 +10,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - run: npm test
       - run: npm run build
-      - run: git diff --exit-code -- configure.html sources.json
+      - run: npm test
+      - run: git diff --exit-code -- configure.html sources.json modules

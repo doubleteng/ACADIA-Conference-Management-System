@@ -1,4 +1,7 @@
-ACADIA Conference Toolkit
+Acadia Conference Management System (ACMS)
+
+Original developer: Teng Teng (https://github.com/doubleteng).
+Default ACMS deployments display this developer credit automatically.
 
 The toolkit derives from five ACADIA 2026 Google Apps Script projects supplied
 for open-source migration by Teng Teng. Original source snapshots are retained

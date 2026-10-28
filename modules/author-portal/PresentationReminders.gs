@@ -125,7 +125,7 @@ function presentationReminderMessage_(job, now) {
     'The reminder is based on the latest confirmed session schedule. Check the Author Portal for any last-minute changes.',
     'Author Portal: '+PRES_CAL_.PORTAL,'',
     'This session reminder is sent to the recorded presenting author, whether or not you saved a calendar invitation.',
-    "__ACADIA_TEXT_t0087__"].filter(function(v){return v!==null;}).join('\n');
+    "__ACADIA_TEXT_t0087__",'',acmsDeveloperCredit_()].filter(function(v){return v!==null;}).join('\n');
   const esc=presentationCalendarEscape_;
   return {to:job.email,name:"__ACADIA_TEXT_t0088__",
     subject:("__ACADIA_TEXT_t0089__"+clock+' ('+session['Session ID']+')').replace(/[\r\n]/g,' ').slice(0,220),

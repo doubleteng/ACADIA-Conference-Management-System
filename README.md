@@ -1,10 +1,12 @@
-# ACADIA Conference Toolkit
+# Acadia Conference Management System (ACMS)
+
+**Original developer: [Teng Teng](https://github.com/doubleteng).**
 
 A reusable home for five ACADIA conference management systems, from accepted submissions through post-conference recognition. Each committee operates its own Google Apps Script projects, Sheets, Drive files and Calendar. An offline setup interface generates the edition-specific code and website embeds.
 
 **Start here:** download this repository using **Code → Download ZIP**, extract it, and open **`configure.html`** in your browser. No Node.js, server or command line is needed to configure an installation. GitHub's file preview does not run the interface; open the downloaded file.
 
-[中文快速开始](README.zh-CN.md) · [Deployment guide](docs/DEPLOYMENT.md) · [Google templates](templates/README.md) · [Website integration](docs/WEBSITE-INTEGRATION.md) · [Annual handoff](docs/HANDOFF.md)
+[Deployment guide](docs/DEPLOYMENT.md) · [Google templates](templates/README.md) · [Website integration](docs/WEBSITE-INTEGRATION.md) · [Annual handoff](docs/HANDOFF.md) · [Validation record](docs/VALIDATION.md)
 
 ## Included systems
 
@@ -30,9 +32,9 @@ The interface works offline and makes no network requests. It includes plain-lan
 
 ## What this release establishes
 
-Version **0.1.0** is a configurable source migration from the five 2026 editor projects, with source-derived schemas and local compatibility tests. Existing online projects and data were not modified. Embedded participant data, live file/deployment identifiers and cached edition assets are excluded from the public copy.
+Version **0.2.0** is a configurable source migration from the five 2026 editor projects, with source-derived schemas and local compatibility tests. Existing online projects and data were not modified. Embedded participant data, live file/deployment identifiers and cached edition assets are excluded from the public copy.
 
-Local tests cover generated source syntax, configuration escaping, template-reader contracts and shared schedule parsing. A fresh Google-account deployment has **not** been verified end to end. Run the [acceptance rehearsal](docs/ACCEPTANCE.md) before opening your edition. Mail quotas, account permissions and PDF/certificate rendering need verification in your Google environment. [Migration details](docs/MIGRATION.md) distinguish retained behavior from portability changes.
+The 20-test suite covers generated source syntax, configuration escaping, template-reader contracts, shared schedule parsing, safe setup/reruns and reminder delivery state handling. Each generated project includes a read-only `RUN_CHECK_INSTALLATION` diagnostic. A fresh Google-account deployment has **not** been verified end to end. Run the [acceptance rehearsal](docs/ACCEPTANCE.md) before opening your edition. Mail quotas, account permissions and PDF/certificate rendering need verification in your Google environment. [Migration details](docs/MIGRATION.md) distinguish retained behavior from portability changes.
 
 ## Repository map
 
@@ -50,7 +52,7 @@ Local tests cover generated source syntax, configuration escaping, template-read
 
 Do not paste the raw files under `modules/` directly into Apps Script: their configuration tokens must first be compiled by the interface.
 
-## Maintain the toolkit
+## Maintain ACMS
 
 With Node.js 22 or later:
 
@@ -59,8 +61,12 @@ npm test
 npm run build
 ```
 
-No npm dependencies are needed. After source/schema/interface edits, rebuild `configure.html` and `sources.json`, run the tests, and commit those generated files together. Changes in `shared/Edition.gs` must also be copied into each module's `Edition.gs`. CI checks tests and reproducible generated artifacts. Keep committee data in private Google files, and contribute reusable improvements through pull requests.
+No npm dependencies are needed. After source/schema/interface edits, rebuild `configure.html` and `sources.json`, run the tests, and commit those generated files together. The build synchronizes shared installation code into all five modules. CI checks tests and reproducible generated artifacts. Keep committee data in private Google files, and contribute reusable improvements through pull requests.
+
+## Developer attribution
+
+ACMS was developed by **Teng Teng**. Generated portals and website embeds display “Developed by Teng Teng”; reminders, calendar descriptions and the generated document templates carry the same credit. This attribution is built into the application source and is not an edition-setting field. See [ATTRIBUTION.md](ATTRIBUTION.md).
 
 ## License
 
-Toolkit code is released under the [MIT License](LICENSE). The embedded Roboto font retains its SIL Open Font License; see [NOTICE](NOTICE). The license does not grant rights to conference marks, participant content, signatures, publication PDFs or artwork. This repository is a community-maintained toolkit; operational ownership and annual acceptance remain with the organizing committee.
+ACMS code is released under the [MIT License](LICENSE). The embedded Roboto font retains its SIL Open Font License; see [NOTICE](NOTICE). The license does not grant rights to conference marks, participant content, signatures, publication PDFs or artwork. This repository is a community-maintained system; operational ownership and annual acceptance remain with the organizing committee.

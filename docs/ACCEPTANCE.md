@@ -20,6 +20,8 @@ Do not enable both standalone reminders and the Author Portal's embedded session
 
 ## What has already been checked locally
 
-The automated test suite parses all generated server files and embedded JavaScript, checks string/HTML escaping, validates date handling and configuration, compares template headers against source constants, exercises representative schedule/roster readers and checks ZIP structure. Offline DOM smoke tests exercised all six configuration steps and generated template, deployment and website archives without network access.
+The 19-test suite parses all generated server files and embedded JavaScript, checks string/HTML escaping, validates dates and configuration, compares template headers against source readers, exercises template creation/reruns and installation guards with in-memory Google-service doubles, and checks reminder deduplication, ambiguous deliveries and ZIP structure. Offline DOM smoke tests exercised all six configuration steps and generated template, deployment and website archives without network access.
 
 These checks do not execute Google services. Google authorization, account policies, trigger timing/quotas, email delivery, PDF/certificate rendering, browser iframe behavior and a complete fresh-account deployment remain acceptance work for the installing committee.
+
+See `VALIDATION.md` for the distinction between local simulations and Google-side acceptance.

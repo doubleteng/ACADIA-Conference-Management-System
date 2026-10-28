@@ -180,7 +180,7 @@ function presentationCalendarSpec_(paperId, ctx) {
     s.Chair ? 'Session chair: ' + e(s.Chair) : '',
     'Accept this invitation in Google Calendar or Microsoft Outlook to keep the event linked to organizer updates.',
     'Changes to the confirmed conference schedule will update this same event. Your calendar may ask you to accept an update.',
-    'Author Portal: ' + PRES_CAL_.PORTAL
+    'Author Portal: ' + PRES_CAL_.PORTAL,acmsDeveloperCredit_()
   ].filter(Boolean).join('\n');
   const room = String(s.Room || '').trim();
   const event = {
@@ -305,7 +305,7 @@ function presentationReminderMessage_(job, now) {
     'The reminder is based on the latest confirmed session schedule. Check the Author Portal for any last-minute changes.',
     'Author Portal: '+PRES_CAL_.PORTAL,'',
     'If you have any questions about your presentation, please contact your session chair.',
-    "__ACADIA_TEXT_t0087__"].filter(function(v){return v!==null;}).join('\n');
+    "__ACADIA_TEXT_t0087__",'',acmsDeveloperCredit_()].filter(function(v){return v!==null;}).join('\n');
   const esc=presentationCalendarEscape_;
   return {to:job.email,name:MAIL_SENDER_.NAME,replyTo:MAIL_SENDER_.SENDER,
     subject:("__ACADIA_TEXT_t0089__"+clock+' ('+session['Session ID']+')').replace(/[\r\n]/g,' ').slice(0,220),

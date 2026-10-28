@@ -50,7 +50,7 @@ function RUN_CONFIGURE_NEW_INSTALLATION() {
       CHAIR_SOURCE_SPREADSHEET_ID:r.chairCoordinationId||''};
     ['WORKSHOP','INSTRUCTOR','PRESENTER','CHAIR','VOLUNTEER','AWARD'].forEach(k=>{settings[k+'_OUTPUT_FOLDER_ID']=r.certificateOutputId||'';});
     ['WORKSHOP','INSTRUCTOR','PRESENTER','CHAIR','VOLUNTEER','AWARDS'].forEach(k=>{settings[k+'_ENABLED']='FALSE';});
-    Object.keys(settings).forEach(k=>updateSetting_(k,settings[k],'Configured by ACADIA Conference Toolkit'));
+    Object.keys(settings).forEach(k=>updateSetting_(k,settings[k],'Configured by Acadia Conference Management System (ACMS)'));
   }
   console.log('Configuration installed. No email sent, no calendar created, no triggers installed. Follow the module guide.');
 }

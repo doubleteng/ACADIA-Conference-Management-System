@@ -220,7 +220,7 @@ body.guide-standalone dialog.guide::backdrop{background:transparent}
 </dialog>
 
 <button id="guide-launch" class="guide-launch" type="button" aria-haspopup="dialog" aria-controls="guide" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 4h16v12H9l-5 4V4Z"/><path d="M8 8h8M8 12h5"/></svg>Talk to ACADIA Bot</button>
-<dialog id="guide" class="guide" aria-labelledby="guide-title"><header class="guide-header"><h2 id="guide-title">ACADIA Bot</h2><button id="guide-clear" type="button" aria-label="Clear conversation">Clear</button><button id="guide-close" type="button" aria-label="Close ACADIA Bot">×</button></header><p id="guide-context" class="guide-context" hidden></p><div id="guide-log" class="guide-log" role="log" aria-label="ACADIA Bot conversation" aria-live="polite" aria-relevant="additions" aria-atomic="false"></div><div id="guide-suggestions" class="guide-suggestions" aria-label="Suggested questions"></div><form id="guide-form" class="guide-form"><label class="guide-label" for="guide-input">Ask an ACADIA conference question</label><textarea id="guide-input" rows="2" maxlength="1000" placeholder="Ask about the conference…" enterkeyhint="send"></textarea><button id="guide-send" type="submit">Send</button></form><p id="guide-status" class="guide-status" role="status"></p><p class="guide-privacy">Please do not enter private information.</p></dialog>
+<dialog id="guide" class="guide" aria-labelledby="guide-title"><header class="guide-header"><h2 id="guide-title">ACADIA Bot</h2><button id="guide-clear" type="button" aria-label="Clear conversation">Clear</button><button id="guide-close" type="button" aria-label="Close ACADIA Bot">×</button></header><p id="guide-context" class="guide-context" hidden></p><div id="guide-log" class="guide-log" role="log" aria-label="ACADIA Bot conversation" aria-live="polite" aria-relevant="additions" aria-atomic="false"></div><div id="guide-suggestions" class="guide-suggestions" aria-label="Suggested questions"></div><form id="guide-form" class="guide-form"><label class="guide-label" for="guide-input">Ask an ACADIA conference question</label><textarea id="guide-input" rows="2" maxlength="1000" placeholder="Ask about the conference…" enterkeyhint="send"></textarea><button id="guide-send" type="submit">Send</button></form><p id="guide-status" class="guide-status" role="status"></p><p class="guide-privacy">Please do not enter private information.</p><p class="acms-guide-credit" style="flex:none;padding:0 12px 10px;font-size:12px;line-height:1.4">ACMS · Developed by <a href="https://github.com/doubleteng" target="_blank" rel="noopener noreferrer">Teng Teng</a></p></dialog>
 <div class="toast" id="toast" role="status" hidden></div>
 <script id="program-data" type="application/json">{"schemaVersion":1,"timezone":"__ACADIA_VALUE_timezone__","sourceLabel":"Live conference data","events":[],"items":[],"issues":[],"bookAliases":[]}</script>
 <script>
@@ -682,4 +682,11 @@ function refresh(){if(guideStandalone||!live||pending||document.hidden)return;pe
  if(typeof ResizeObserver!=='undefined')new ResizeObserver(resize).observe(document.body);
  window.addEventListener('resize',()=>queueReaderResize(true));
 })();
-</script></body></html>
+</script><!-- ACMS_CREDIT_START -->
+<footer class="acms-developer-credit" aria-label="ACMS developer attribution" style="display:block;clear:both;position:relative;box-sizing:border-box;margin:24px 16px 12px;padding:14px 16px;border-top:1px solid #d8dfe3;background:#f5f7f8;color:#37474f;font:12px/1.6 system-ui,sans-serif;text-align:center">
+  <span>Acadia Conference Management System (ACMS)</span><br>
+  <span>Developed by <a href="https://github.com/doubleteng" target="_blank" rel="noopener noreferrer" style="color:#163848;text-decoration:underline;font-weight:600">Teng Teng</a></span>
+  <span aria-hidden="true"> · </span><a href="https://github.com/doubleteng/acadia-conference-management-system" target="_blank" rel="noopener noreferrer" style="color:#163848;text-decoration:underline">Source code</a>
+</footer>
+<!-- ACMS_CREDIT_END -->
+</body></html>

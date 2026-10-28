@@ -8,3 +8,6 @@ configuration.private.json
 .env
 .env.*
 !*.example.json
+acms-*-configuration.json
+acadia-*-configuration.json
+acms-*-deployment.zip

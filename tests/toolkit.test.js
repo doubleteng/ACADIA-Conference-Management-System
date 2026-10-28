@@ -33,7 +33,7 @@ test('the same schedule template feeds Program, presentation synchronization and
  const pres=context('author-portal');pres.rows=schedule.Conference;
  const parsed=call(pres,'presentationScheduleParse_(rows,{sessions:[],assignments:[]})');assert.equal(parsed.sessions.length,4);assert.equal(parsed.assignments.length,4);assert.equal(parsed.sessions[0]['Time Zone'],fixture.timezone);
  const calendar=context('calendar-sync');calendar.rows=schedule;
- const events=call(calendar,'acadiaBuild_(rows.Conference,rows.Workshops)');assert(events.length>=4);assert(events.every(e=>e.date==='2028-05-11'));assert.equal(new Set(events.map(e=>e.key)).size,events.length);
+ const events=call(calendar,'acadiaBuild_(rows.Conference,rows.Workshops)');assert(events.length>=4);assert(events.every(e=>e.date==='2028-05-11'));assert.equal(new Set(events.map(e=>e.key)).size,events.length);assert(events.every(e=>e.description.includes('Developed by Teng Teng')));
 });
 test('roster and master templates match the actual reader contracts',()=>{
  const author=context('author-portal'),heads=JSON.parse(call(author,'JSON.stringify(SHEET_HEADERS)'));
@@ -76,4 +76,22 @@ test('every manifest supports the editor-only initialization guard and shared so
   assert.equal(files['Edition.gs'],read('shared/Edition.gs'),module);
   const manifest=JSON.parse(compiled[module+'/appsscript.json']);assert(manifest.oauthScopes.includes('https://www.googleapis.com/auth/userinfo.email'),module);
  }
+});
+
+test('generated editions keep original developer credit independently of organizer branding',()=>{
+ const custom={...fixture,developerName:'Different organizer',theme:'A future committee edition'};
+ const output=E.compile(sources,custom,catalog);
+ const plain=s=>s.replace(/<[^>]+>/g,' ').replace(/\s+/g,' ');
+ for(const m of Object.keys(sources)){
+  assert.equal(sources[m]['Attribution.gs'],read('shared/Attribution.gs'));
+  assert.match(output[m+'/Attribution.gs'],/Developed by Teng Teng/);
+ }
+ for(const m of ['author-portal','conference-program','recognition-portal']){
+  const page=output[m+'/Index.html'];
+  assert.match(plain(page.match(/<!-- ACMS_CREDIT_START -->([\s\S]*?)<!-- ACMS_CREDIT_END -->/)[1]),/Developed by Teng Teng/);
+ }
+ assert.match(plain(output['conference-program/Index.html'].match(/<p class="acms-guide-credit"[^>]*>([\s\S]*?)<\/p>/)[1]),/Developed by Teng Teng/);
+ const embed=E.embed({...custom,programUrl:'https://script.google.com/macros/s/EXAMPLE_PROGRAM/exec'},'programUrl','Conference Program');
+ assert.match(plain(embed),/Developed by Teng Teng/);
+ assert.match(plain(read('shared/Attribution.html')),/Developed by Teng Teng/);
 });

@@ -25,7 +25,7 @@ For each module:
 3. Add each `.html` file under its exact name without changing include names.
 4. In Project Settings, show `appsscript.json`; replace the new project's manifest with the generated one. The configured time zone is included. Add/authorize the advanced services listed in the manifest: Calendar for Author Portal, Sheets for Conference Program.
 5. Run `RUN_CONFIGURE_NEW_INSTALLATION` from the editor. It refuses a project with unrelated existing Script Properties. It installs configuration only; it sends no email, creates no calendar and installs no trigger. The Recognition module also initializes its own Settings rows and logs.
-6. Follow the module-specific steps below. Google account policies may restrict anonymous web-app deployment. Verify the actual audience with an incognito browser before publishing links.
+6. Run `RUN_CHECK_INSTALLATION`. It reads connected Sheet headers and reports missing tabs, incorrect column order and inaccessible files, without changing data, sending messages or installing triggers. Empty data tables are expected before import; an OK result checks structure and access, not complete conference content. Fix any reported problems, then follow the module-specific steps below. Google account policies may restrict anonymous web-app deployment. Verify the actual audience with an incognito browser before publishing links.
 
 The generated ZIP contains `configuration.private.json`. Keep that file and your populated spreadsheets private. Commit generic toolkit source, not edition data or credentials.
 

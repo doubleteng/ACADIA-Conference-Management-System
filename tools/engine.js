@@ -69,7 +69,7 @@ function compile(sources,input,catalog,selected){
 function embed(input,key,title){
  const c=normalize(input),url=c[key];if(!url)return '<!-- Deploy '+title+' and enter its /exec URL first. -->';
  if(!/^https:\/\/script\.google\.com\/macros\/s\/[A-Za-z0-9_-]+\/exec(?:\?|$)/.test(url))throw Error('Use an Apps Script /exec URL.');
- return '<section aria-label="'+html(title)+'">\n  <p><a href="'+html(url)+'" target="_blank" rel="noopener">Open '+html(title)+' in a new tab</a></p>\n  <iframe src="'+html(url)+'" title="'+html(title)+'"\n    style="display:block;width:100%;height:85vh;min-height:760px;border:0"\n    loading="lazy" allow="fullscreen"></iframe>\n</section>';
+ return '<section aria-label="'+html(title)+'">\n  <p><a href="'+html(url)+'" target="_blank" rel="noopener">Open '+html(title)+' in a new tab</a></p>\n  <iframe src="'+html(url)+'" title="'+html(title)+'"\n    style="display:block;width:100%;height:85vh;min-height:760px;border:0"\n    loading="lazy" allow="fullscreen"></iframe>\n  <p style="font:12px/1.6 system-ui,sans-serif">ACMS · Developed by <a href="https://github.com/doubleteng" target="_blank" rel="noopener noreferrer">Teng Teng</a></p>\n</section>';
 }
 // ZIP store mode: portable downloads with no third-party JavaScript or network requests.
 function zip(files){
@@ -86,5 +86,5 @@ function zip(files){
  const result=new Uint8Array(offset+centralSize+22);let p=0;for(const b of [...local,...central,end]){result.set(b,p);p+=b.length;}return result;
 }
 const api={normalize,validate,renderText,compileSource,compile,embed,zip,html,safeJSON};
-if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.AcadiaToolkit=api;
+if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.ACMS=api;
 })(typeof globalThis!=='undefined'?globalThis:this);

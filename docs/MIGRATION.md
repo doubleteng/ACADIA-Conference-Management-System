@@ -21,3 +21,9 @@ Application workflow, author lookup/session behavior, certificate eligibility lo
 Review all 195 editable text entries. Some policy text is intentionally available as an advanced override rather than interpreted as a universal conference rule. The optional AI guide needs committee-provided approved public sources, a current model and a private API key. Standard website iframes are supplied; the specialized external floating-guide parent bridge is outside this release.
 
 No modification, deployment, trigger execution, message sending or data deletion was performed against the original projects during this migration. Tests run against local generated copies and fictional records only. See `ACCEPTANCE.md` for what remains to verify in an independent Google installation.
+
+## Version 0.2.0
+
+Renamed the project to Acadia Conference Management System (ACMS), removed the Chinese onboarding, added read-only installation diagnostics, and extended tests for template reruns, installation isolation, recognition setup and reminder delivery states. The build now synchronizes shared files across modules. The existing `ACADIA_TOOLKIT_INSTALLATION` Script Property key is retained for compatibility with 0.1.0 copies; it is an internal marker, not the product name.
+
+ACMS 0.2.0 also includes fixed developer attribution to Teng Teng in generated portals, website embeds, reminder messages, calendar descriptions and newly generated document templates. This credit is independent of edition configuration.

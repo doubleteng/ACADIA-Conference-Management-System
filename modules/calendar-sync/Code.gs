@@ -34,7 +34,7 @@ function setupACADIA2026() {
         cal = CalendarApp.createCalendar(ACADIA.calendarName, {
           timeZone: ACADIA.timezone,
           description: "__ACADIA_TEXT_t0189__" +
-            "__ACADIA_TEXT_t0190__"
+            "__ACADIA_TEXT_t0190__" + '\n\n' + acmsDeveloperCredit_()
         });
       }
       p.setProperty(ACADIA.prefix + 'calendarId', cal.getId());
@@ -42,7 +42,7 @@ function setupACADIA2026() {
     if (!cal.isOwnedByMe() || cal.isMyPrimaryCalendar())
       throw new Error('Setup requires the dedicated owned calendar, never the primary calendar.');
     cal.setTimeZone(ACADIA.timezone);
-    cal.setDescription("__ACADIA_TEXT_t0191__");
+    cal.setDescription("__ACADIA_TEXT_t0191__" + '\n\n' + acmsDeveloperCredit_());
     ScriptApp.getProjectTriggers().forEach(t => {
       if (ACADIA.handlers.indexOf(t.getHandlerFunction()) >= 0) ScriptApp.deleteTrigger(t);
     });
@@ -243,6 +243,7 @@ function acadiaBuild_(conference, workshops) {
     if (keys[e.key]) throw new Error('Duplicate source key: ' + e.key);
     if (!(e.end > e.start) || !e.title || !e.date) throw new Error('Incomplete event: ' + e.key);
     keys[e.key] = true;
+    e.description += '\n\n' + acmsDeveloperCredit_();
   });
   if (!events.length) throw new Error('No events parsed. Calendar unchanged.');
   return events;

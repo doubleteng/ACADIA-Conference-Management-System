@@ -68,7 +68,7 @@ function presentationCalendarSpec_(paperId, ctx) {
     s.Chair ? 'Session chair: ' + e(s.Chair) : '',
     'Accept this invitation in Google Calendar or Microsoft Outlook to keep the event linked to organizer updates.',
     'Changes to the confirmed conference schedule will update this same event. Your calendar may ask you to accept an update.',
-    'Author Portal: ' + PRES_CAL_.PORTAL
+    'Author Portal: ' + PRES_CAL_.PORTAL,acmsDeveloperCredit_()
   ].filter(Boolean).join('\n');
   const room = String(s.Room || '').trim();
   const event = {
