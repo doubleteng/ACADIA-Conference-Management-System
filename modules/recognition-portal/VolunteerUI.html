@@ -1,0 +1,79 @@
+<style>
+  .volunteer-details{margin:22px 0;padding:24px;border:1px solid var(--line);border-radius:14px;overflow-wrap:anywhere}.volunteer-details h3{margin:0 0 8px;font-size:24px}.volunteer-details p{margin:8px 0;color:var(--muted)}.volunteer-dialog{width:min(560px,calc(100% - 40px));border:0;border-radius:18px;padding:34px;box-shadow:0 24px 80px #0004;color:var(--ink);background:var(--paper)}.volunteer-dialog::backdrop{background:#1119}.volunteer-dialog h2{margin-top:10px}.volunteer-dialog p{line-height:1.65;overflow-wrap:anywhere}#volunteerChannel .reviewer-welcome p+p{margin-top:18px}@media(max-width:600px){.volunteer-dialog{padding:24px}}
+</style>
+<div id="volunteerScreens">
+  <section id="volunteerChannel" class="hidden" aria-labelledby="volunteerHeading">
+    <nav class="channel-nav"><button class="btn btn-link" type="button" id="volunteerBack">← All certificate channels</button></nav>
+    <div class="reviewer-grid">
+      <article class="card reviewer-welcome">
+        <div class="eyebrow">Volunteer Certificate</div>
+        <h1 id="volunteerHeading">Thank you for making it happen.</h1>
+        <p>%%ACADIA_HTML_t0161%%</p>
+        <p>Enter your full name to download your official Volunteer Certificate, including your name and affiliation.</p>
+      </article>
+      <aside class="card login">
+        <div class="eyebrow">Volunteer access</div><h2>Find your certificate</h2>
+        <form id="volunteerLoginForm">
+          <div class="field"><label for="volunteerName">Full name</label><input id="volunteerName" name="volunteerName" autocomplete="name" maxlength="200" required><span class="hint">Use your full name as listed on the ACADIA volunteer roster. No email is required.</span></div>
+          <button class="btn btn-primary" id="volunteerLoginButton" type="submit">View my volunteer certificate</button>
+          <div class="error" id="volunteerLoginError" role="alert"></div>
+        </form>
+        <p class="hint">Need help with your name or affiliation? Contact <a href="%%ACADIA_HTML_t0036%%">%%ACADIA_HTML_t0037%%</a>.</p>
+      </aside>
+    </div>
+  </section>
+  <section id="volunteerPortal" class="card dashboard hidden" aria-live="polite">
+    <nav class="channel-nav"><button class="btn btn-link" type="button" id="volunteerDashboardBack">← All certificate channels</button></nav>
+    <div class="eyebrow">Volunteer Certificate</div><h2 id="volunteerDisplayName"></h2>
+    <div class="volunteer-details"><h3>%%ACADIA_HTML_t0002%%</h3><p id="volunteerAffiliation"></p><p>Recognizing your volunteer service in conference preparation and operations, before and during the conference.</p><button class="btn btn-primary" id="volunteerCertificateButton" type="button">Get volunteer certificate</button></div>
+    <div class="error" id="volunteerCertificateError" role="alert"></div>
+    <div class="actions"><button class="btn btn-secondary" id="volunteerSignOut" type="button">Sign out</button></div>
+  </section>
+</div>
+<dialog id="volunteerDownloadDialog" class="volunteer-dialog" aria-labelledby="volunteerThanksHeading" aria-describedby="volunteerThanksText">
+  <div class="eyebrow">With gratitude from ACADIA</div><h2 id="volunteerThanksHeading">Thank you for volunteering!</h2>
+  <p id="volunteerThanksText">%%ACADIA_HTML_t0162%%</p>
+  <p class="meta" id="volunteerDownloadName"></p>
+  <div class="actions"><button class="btn btn-primary" id="volunteerDownloadButton" type="button">Download PDF</button><button class="btn btn-secondary" id="volunteerDialogClose" type="button">Close</button></div>
+</dialog>
+<script>
+  const volunteerState={token:'',volunteer:null,download:null,busy:false};
+  document.addEventListener('DOMContentLoaded',()=>{
+    const wrapper=$('volunteerScreens'),footer=document.querySelector('main.shell > footer');
+    while(wrapper.firstElementChild)footer.before(wrapper.firstElementChild);wrapper.remove();
+    $('volunteerLoginForm').addEventListener('submit',loginVolunteerFromForm);
+    $('volunteerBack').addEventListener('click',returnToChannels);$('volunteerDashboardBack').addEventListener('click',returnToChannels);
+    $('volunteerCertificateButton').addEventListener('click',generateVolunteer);
+    $('volunteerSignOut').addEventListener('click',async()=>{setLoading(true);await endVolunteerSession();setLoading(false);openVolunteerChannel()});
+    $('volunteerDialogClose').addEventListener('click',()=>$('volunteerDownloadDialog').close());
+    $('volunteerDownloadDialog').addEventListener('close',()=>{volunteerState.download=null});
+    $('volunteerDownloadButton').addEventListener('click',()=>{const data=volunteerState.download;if(data)downloadBase64File(data.pdfBase64,data.mimeType||'application/pdf',data.fileName)});
+  });
+  function hideVolunteerMessages(){['volunteerLoginError','volunteerCertificateError'].forEach(id=>{$(id).style.display='none';$(id).textContent=''})}
+  function openVolunteerChannel(){
+    ['home','portal','reviewerChannel','workshopChannel','workshopPortal','instructorChannel','instructorPortal','presenterChannel','presenterPortal','chairChannel','chairPortal','volunteerPortal'].forEach(id=>$(id).classList.add('hidden'));
+    $('volunteerChannel').classList.remove('hidden');hideVolunteerMessages();$('volunteerLoginButton').disabled=!!(state.config&&state.config.enabled===false);
+    window.scrollTo({top:$('volunteerChannel').offsetTop-25,behavior:'smooth'});$('volunteerName').focus({preventScroll:true});
+  }
+  async function loginVolunteerFromForm(event){
+    event.preventDefault();if(volunteerState.busy)return;volunteerState.busy=true;hideVolunteerMessages();setLoading(true);
+    try{const result=await gas('loginVolunteer',$('volunteerName').value);
+      volunteerState.token=result.token;volunteerState.volunteer=result.volunteer;
+      $('volunteerDisplayName').textContent=`Thank you, ${result.volunteer.name}.`;
+      $('volunteerAffiliation').textContent=result.volunteer.affiliation;
+      $('volunteerChannel').classList.add('hidden');$('volunteerPortal').classList.remove('hidden');window.scrollTo({top:$('volunteerPortal').offsetTop-25,behavior:'smooth'});
+    }catch(error){showBox('volunteerLoginError',friendlyError(error))}finally{volunteerState.busy=false;setLoading(false)}
+  }
+  async function generateVolunteer(){
+    if(volunteerState.busy)return;volunteerState.busy=true;hideVolunteerMessages();setLoading(true);
+    try{const result=await gas('generateVolunteerCertificate',volunteerState.token);
+      if(!result.pdfBase64)throw new Error('Your certificate could not be downloaded. Please try again.');
+      volunteerState.download=result;$('volunteerDownloadName').textContent=volunteerState.volunteer.name+' · '+volunteerState.volunteer.affiliation;$('volunteerDownloadDialog').showModal();
+    }catch(error){const message=friendlyError(error);if(/session has expired/i.test(message)){await endVolunteerSession();openVolunteerChannel();showBox('volunteerLoginError',message)}else showBox('volunteerCertificateError',message)}finally{volunteerState.busy=false;setLoading(false)}
+  }
+  async function endVolunteerSession(){
+    const token=volunteerState.token;volunteerState.token='';volunteerState.volunteer=null;volunteerState.download=null;
+    $('volunteerDownloadDialog').close();$('volunteerLoginForm').reset();$('volunteerDisplayName').textContent='';$('volunteerAffiliation').textContent='';$('volunteerDownloadName').textContent='';hideVolunteerMessages();
+    if(token){try{await gas('logoutVolunteer',token)}catch(ignored){}}
+  }
+</script>

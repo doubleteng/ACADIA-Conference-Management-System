@@ -1,0 +1,80 @@
+<style>
+ .chair-session-list{display:grid;gap:16px;margin-top:24px}.chair-session{padding:24px;border:1px solid var(--line);border-radius:14px;background:#fff}.chair-session h3{font-size:23px;margin:4px 0 12px}.chair-track{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--accent-dark);font-weight:900}.chair-session p{margin:5px 0;color:var(--muted)}.chair-summary{padding:16px 20px;background:#fff2ef;border-radius:12px;color:#604039}.chair-dialog{width:min(560px,calc(100% - 40px));border:0;border-radius:18px;padding:34px;box-shadow:0 24px 80px #0004;color:var(--ink);background:var(--paper)}.chair-dialog::backdrop{background:#1119}.chair-dialog p{line-height:1.65}#chairChannel .reviewer-welcome p+p{margin-top:18px}@media(max-width:600px){.chair-session,.chair-dialog{padding:22px}}
+</style>
+<div id="chairScreens">
+ <section id="chairChannel" class="hidden" aria-labelledby="chairHeading">
+  <nav class="channel-nav"><button class="btn btn-link" type="button" id="chairBack">← All certificate channels</button></nav>
+  <div class="reviewer-grid">
+   <article class="card reviewer-welcome">
+    <div class="eyebrow">Session Chair Certificate</div><h1 id="chairHeading">Thank you for guiding the conversation.</h1>
+    <p>%%ACADIA_HTML_t0153%%</p>
+    <p>Sign in with your chair name and email to download a certificate listing the track, full title, date, and time of every session you chaired, with the number of presentations in each session and the total you moderated.</p>
+   </article>
+   <aside class="card login">
+    <div class="eyebrow">Session chair access</div><h2>Session chair sign in</h2>
+    <form id="chairLoginForm">
+     <div class="field"><label for="chairName">Chair name</label><input id="chairName" name="chairName" autocomplete="name" maxlength="200" required></div>
+     <div class="field"><label for="chairEmail">Chair email</label><input id="chairEmail" name="chairEmail" type="email" autocomplete="email" maxlength="254" required><span class="hint">Use the name and email in the ACADIA Session Chair Coordination sheet.</span></div>
+     <button class="btn btn-primary" id="chairLoginButton" type="submit">View my session chair certificate</button>
+     <div class="error" id="chairLoginError" role="alert"></div>
+    </form>
+    <p class="hint">Need help with your chair record? Contact <a href="%%ACADIA_HTML_t0036%%">%%ACADIA_HTML_t0037%%</a>.</p>
+   </aside>
+  </div>
+ </section>
+ <section id="chairPortal" class="card dashboard hidden" aria-live="polite">
+  <nav class="channel-nav"><button class="btn btn-link" type="button" id="chairDashboardBack">← All certificate channels</button></nav>
+  <div class="eyebrow">Session Chair Certificate</div><h2 id="chairDisplayName"></h2>
+  <p>One certificate brings together all your session chair contributions, including the track, session title, date, time, and presentation count.</p>
+  <p class="chair-summary" id="chairSummary"></p>
+  <div id="chairSessionList" class="chair-session-list"></div>
+  <div class="actions"><button class="btn btn-primary" id="chairCertificateButton" type="button">Get session chair certificate</button><button class="btn btn-secondary" id="chairSignOut" type="button">Sign out</button></div>
+  <div class="error" id="chairCertificateError" role="alert"></div>
+ </section>
+</div>
+<dialog id="chairDownloadDialog" class="chair-dialog" aria-labelledby="chairThanksHeading" aria-describedby="chairThanksText">
+ <div class="eyebrow">With gratitude from ACADIA</div><h2 id="chairThanksHeading">%%ACADIA_HTML_t0154%%</h2>
+ <p id="chairThanksText">We appreciate the care and expertise you brought to your sessions, the presenters you supported, and the conversations you guided. Your session chair certificate is ready to download.</p>
+ <div class="actions"><button class="btn btn-primary" id="chairDownloadButton" type="button">Download PDF</button><button class="btn btn-secondary" id="chairDialogClose" type="button">Close</button></div>
+</dialog>
+<script>
+ const chairState={token:'',chair:null,download:null,busy:false};
+ document.addEventListener('DOMContentLoaded',()=>{
+  const wrapper=$('chairScreens'),footer=document.querySelector('main.shell > footer');
+  while(wrapper.firstElementChild)footer.before(wrapper.firstElementChild);wrapper.remove();
+  $('chairLoginForm').addEventListener('submit',loginChair);
+  $('chairBack').addEventListener('click',returnToChannels);$('chairDashboardBack').addEventListener('click',returnToChannels);
+  $('chairSignOut').addEventListener('click',async()=>{setLoading(true);await endChairSession();setLoading(false);openChairChannel()});
+  $('chairCertificateButton').addEventListener('click',generateChair);
+  $('chairDialogClose').addEventListener('click',()=>$('chairDownloadDialog').close());
+  $('chairDownloadDialog').addEventListener('close',()=>{chairState.download=null});
+  $('chairDownloadButton').addEventListener('click',()=>{const d=chairState.download;if(d)downloadBase64File(d.pdfBase64,d.mimeType||'application/pdf',d.fileName)});
+ });
+ function hideChairMessages(){['chairLoginError','chairCertificateError'].forEach(id=>{$(id).style.display='none';$(id).textContent=''})}
+ function openChairChannel(){
+  ['home','portal','reviewerChannel','workshopChannel','workshopPortal','instructorChannel','instructorPortal','presenterChannel','presenterPortal','chairPortal'].forEach(id=>$(id).classList.add('hidden'));
+  $('chairChannel').classList.remove('hidden');hideChairMessages();$('chairLoginButton').disabled=!!(state.config&&state.config.enabled===false);
+  window.scrollTo({top:$('chairChannel').offsetTop-25,behavior:'smooth'});$('chairName').focus({preventScroll:true});
+ }
+ async function loginChair(event){
+  event.preventDefault();if(chairState.busy)return;chairState.busy=true;hideChairMessages();setLoading(true);
+  try{
+   const r=await gas('loginSessionChair',$('chairName').value,$('chairEmail').value),c=r.chair;chairState.token=r.token;chairState.chair=c;
+   $('chairDisplayName').textContent=`Thank you, ${c.name}.`;
+   $('chairSummary').textContent=`${c.sessions.length} session${c.sessions.length===1?'':'s'} chaired · ${c.totalPresentations} presentation${c.totalPresentations===1?'':'s'} moderated`;
+   $('chairSessionList').innerHTML=c.sessions.map(s=>`<article class="chair-session"><div class="chair-track">${escapeHtml(s.trackLabel)} track</div><h3>${escapeHtml(s.title)}</h3><p>on ${escapeHtml(s.dateLabel)}, from ${escapeHtml(s.start)} to ${escapeHtml(s.end)}${"__ACADIA_TEXT_t0152__"}${s.presentationCount} presentation${s.presentationCount===1?'':'s'} moderated</strong></p></article>`).join('');
+   $('chairChannel').classList.add('hidden');$('chairPortal').classList.remove('hidden');window.scrollTo({top:$('chairPortal').offsetTop-25,behavior:'smooth'});
+  }catch(e){showBox('chairLoginError',friendlyError(e))}finally{chairState.busy=false;setLoading(false)}
+ }
+ async function generateChair(){
+  if(chairState.busy)return;chairState.busy=true;hideChairMessages();setLoading(true);
+  try{const r=await gas('generateSessionChairCertificate',chairState.token);if(!r.pdfBase64)throw new Error('Your certificate could not be downloaded. Please try again.');chairState.download=r;$('chairDownloadDialog').showModal()}
+  catch(e){const message=friendlyError(e);if(/session has expired/i.test(message)){await endChairSession();openChairChannel();showBox('chairLoginError',message)}else showBox('chairCertificateError',message)}
+  finally{chairState.busy=false;setLoading(false)}
+ }
+ async function endChairSession(){
+  const token=chairState.token;chairState.token='';chairState.chair=null;chairState.download=null;
+  $('chairDownloadDialog').close();$('chairLoginForm').reset();$('chairDisplayName').textContent='';$('chairSummary').textContent='';$('chairSessionList').innerHTML='';hideChairMessages();
+  if(token){try{await gas('logoutSessionChair',token)}catch(ignored){}}
+ }
+</script>

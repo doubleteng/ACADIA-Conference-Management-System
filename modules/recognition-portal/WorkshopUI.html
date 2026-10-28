@@ -1,0 +1,88 @@
+<style>
+  .workshop-shell{max-width:1180px;margin:0 auto;padding:0 28px 36px}.workshop-list{display:grid;gap:16px;margin-top:24px}.workshop-item{border:1px solid var(--line,#dedad3);border-radius:14px;padding:24px}.workshop-item h3{margin:0 0 12px;line-height:1.4}.workshop-item p{margin:5px 0 20px}.workshop-dialog{width:min(560px,calc(100% - 40px));border:0;border-radius:18px;padding:34px;box-shadow:0 24px 80px #0004;color:#252525;background:#fffdf9}.workshop-dialog::backdrop{background:#1119}.workshop-dialog h2{margin-top:10px}.workshop-dialog p{line-height:1.65}.workshop-dialog .actions{display:flex;gap:12px;flex-wrap:wrap}.workshop-dialog .meta{margin-bottom:24px;overflow-wrap:anywhere}.workshop-shell .login{max-width:none}.workshop-shell .error{overflow-wrap:anywhere}@media(max-width:600px){.workshop-shell{padding:0 16px 24px}.workshop-dialog{padding:24px}}
+</style>
+<main class="workshop-shell">
+  <section id="workshopChannel" class="hidden" aria-labelledby="workshopHeading">
+    <nav class="channel-nav"><button class="btn btn-link" type="button" id="workshopBack">← All certificate channels</button></nav>
+    <div class="reviewer-grid">
+      <article class="card reviewer-welcome">
+        <div class="eyebrow">Workshop Participation Certificate</div>
+        <h1 id="workshopHeading">Thank you for creating with us.</h1>
+        <p>%%ACADIA_HTML_t0118%%</p>
+        <p>Sign in with the attendee name and email used for your workshop registration to download your official certificate.</p>
+      </article>
+      <aside class="card login">
+        <div class="eyebrow">Registered attendee access</div><h2>Workshop attendee sign in</h2>
+        <form id="workshopLoginForm">
+          <div class="field"><label for="workshopName">Registered attendee name</label><input id="workshopName" autocomplete="name" maxlength="200" required></div>
+          <div class="field"><label for="workshopEmail">Registration email</label><input id="workshopEmail" type="email" autocomplete="email" maxlength="254" required><span class="hint">Use the attendee details on your registration, including your full name.</span></div>
+          <button class="btn btn-primary" id="workshopLoginButton" type="submit">View my workshop certificates</button>
+          <div class="error" id="workshopLoginError" role="alert"></div>
+        </form>
+        <p class="hint">Need help with your registration details? Contact <a href="%%ACADIA_HTML_t0036%%">%%ACADIA_HTML_t0037%%</a>.</p>
+      </aside>
+    </div>
+  </section>
+  <section id="workshopPortal" class="card dashboard hidden" aria-live="polite">
+    <nav class="channel-nav"><button class="btn btn-link" type="button" id="workshopDashboardBack">← All certificate channels</button></nav>
+    <div class="eyebrow">Workshop Participation Certificate</div><h2 id="workshopAttendeeName"></h2>
+    <p>Your certificates use your registered name and the details of each workshop below.</p>
+    <div id="workshopList" class="workshop-list"></div>
+    <div class="error" id="workshopCertificateError" role="alert"></div>
+    <div class="actions"><button class="btn btn-secondary" id="workshopSignOut" type="button">Sign out</button></div>
+  </section>
+</main>
+<dialog id="workshopDownloadDialog" class="workshop-dialog" aria-labelledby="workshopThanksHeading" aria-describedby="workshopThanksText">
+  <div class="eyebrow">With gratitude from ACADIA</div>
+  <h2 id="workshopThanksHeading">Thank you for participating!</h2>
+  <p id="workshopThanksText">%%ACADIA_HTML_t0119%%</p>
+  <p class="meta" id="workshopDownloadTitle"></p>
+  <div class="actions"><button class="btn btn-primary" id="workshopDownloadButton" type="button">Download PDF</button><button class="btn btn-secondary" id="workshopDialogClose" type="button">Close</button></div>
+</dialog>
+<script>
+  const workshopState={token:'',attendee:null,workshops:[],download:null,busy:false};
+  document.addEventListener('DOMContentLoaded',()=>{
+    // Keep the workshop screens inside the existing shell, above the shared footer.
+    const wrapper=document.querySelector('.workshop-shell');
+    const footer=document.querySelector('main.shell > footer');
+    while(wrapper.firstElementChild)footer.before(wrapper.firstElementChild);
+    wrapper.remove();
+    $('workshopLoginForm').addEventListener('submit',loginWorkshop);
+    $('workshopBack').addEventListener('click',returnToChannels);
+    $('workshopDashboardBack').addEventListener('click',returnToChannels);
+    $('workshopSignOut').addEventListener('click',async()=>{await endWorkshopSession();openWorkshopChannel()});
+    $('workshopDialogClose').addEventListener('click',()=>$('workshopDownloadDialog').close());
+    $('workshopDownloadDialog').addEventListener('close',()=>{workshopState.download=null});
+    $('workshopDownloadButton').addEventListener('click',()=>{const data=workshopState.download;if(data)downloadBase64File(data.pdfBase64,data.mimeType||'application/pdf',data.fileName)});
+  });
+  function hideWorkshopMessages(){['workshopLoginError','workshopCertificateError'].forEach(id=>{$(id).style.display='none';$(id).textContent=''})}
+  function openWorkshopChannel(){
+    ['home','portal','reviewerChannel','workshopPortal'].forEach(id=>$(id).classList.add('hidden'));
+    $('workshopChannel').classList.remove('hidden');hideWorkshopMessages();
+    $('workshopLoginButton').disabled=!!(state.config&&state.config.enabled===false);
+    window.scrollTo({top:$('workshopChannel').offsetTop-25,behavior:'smooth'});$('workshopName').focus({preventScroll:true});
+  }
+  async function loginWorkshop(event){
+    event.preventDefault();if(workshopState.busy)return;workshopState.busy=true;hideWorkshopMessages();setLoading(true);
+    try{const result=await gas('loginWorkshopAttendee',$('workshopName').value,$('workshopEmail').value);
+      workshopState.token=result.token;workshopState.attendee=result.attendee;workshopState.workshops=result.workshops;
+      $('workshopAttendeeName').textContent=`Thank you, ${result.attendee.name}.`;
+      $('workshopList').innerHTML=result.workshops.map(item=>`<article class="workshop-item"><h3>${escapeHtml(item.title)}</h3><p>${escapeHtml(item.dates)} · ${escapeHtml(item.location)}</p><button type="button" class="btn btn-primary" data-workshop-registration="${escapeAttr(item.registrationId)}">Get participation certificate</button></article>`).join('');
+      document.querySelectorAll('[data-workshop-registration]').forEach(button=>button.addEventListener('click',()=>generateWorkshop(button.dataset.workshopRegistration)));
+      $('workshopChannel').classList.add('hidden');$('workshopPortal').classList.remove('hidden');window.scrollTo({top:$('workshopPortal').offsetTop-25,behavior:'smooth'});
+    }catch(error){showBox('workshopLoginError',friendlyError(error))}finally{workshopState.busy=false;setLoading(false)}
+  }
+  async function generateWorkshop(registrationId){
+    if(workshopState.busy)return;workshopState.busy=true;hideWorkshopMessages();setLoading(true);
+    try{const result=await gas('generateWorkshopCertificate',workshopState.token,registrationId);
+      if(!result.pdfBase64)throw new Error('Your certificate could not be downloaded. Please try again.');
+      workshopState.download=result;const item=workshopState.workshops.find(item=>item.registrationId===registrationId);
+      $('workshopDownloadTitle').textContent=item?item.title:'';$('workshopDownloadDialog').showModal();
+    }catch(error){const message=friendlyError(error);if(/session has expired/i.test(message)){await endWorkshopSession();openWorkshopChannel();showBox('workshopLoginError',message)}else showBox('workshopCertificateError',message)}finally{workshopState.busy=false;setLoading(false)}
+  }
+  async function endWorkshopSession(){
+    const token=workshopState.token;workshopState.token='';workshopState.attendee=null;workshopState.workshops=[];workshopState.download=null;
+    $('workshopDownloadDialog').close();$('workshopLoginForm').reset();$('workshopAttendeeName').textContent='';$('workshopList').innerHTML='';hideWorkshopMessages();
+    if(token){try{await gas('logoutWorkshopAttendee',token)}catch(ignored){}}
+  }
+</script>

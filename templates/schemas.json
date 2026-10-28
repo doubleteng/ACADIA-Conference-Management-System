@@ -1,0 +1,1275 @@
+{
+  "books": [
+    {
+      "key": "acceptedId",
+      "title": "Accepted submissions",
+      "tabs": [
+        {
+          "name": "Full Papers",
+          "headers": [
+            "ID",
+            "Title",
+            "Authors",
+            "All Reviewer Comments"
+          ],
+          "role": "input",
+          "examples": [
+            [
+              "1001",
+              "Example Full Papers contribution",
+              "Example Author",
+              "Example feedback; replace before import."
+            ]
+          ],
+          "notes": "ID must be unique across tracks. Keep the original accepted title for title-based author login."
+        },
+        {
+          "name": "Projects",
+          "headers": [
+            "ID",
+            "Title",
+            "Authors",
+            "All Reviewer Comments"
+          ],
+          "role": "input",
+          "examples": [
+            [
+              "1002",
+              "Example Projects contribution",
+              "Example Author",
+              "Example feedback; replace before import."
+            ]
+          ],
+          "notes": "ID must be unique across tracks. Keep the original accepted title for title-based author login."
+        },
+        {
+          "name": "Field Notes",
+          "headers": [
+            "ID",
+            "Title",
+            "Authors",
+            "All Reviewer Comments"
+          ],
+          "role": "input",
+          "examples": [
+            [
+              "1003",
+              "Example Field Notes contribution",
+              "Example Author",
+              "Example feedback; replace before import."
+            ]
+          ],
+          "notes": "ID must be unique across tracks. Keep the original accepted title for title-based author login."
+        },
+        {
+          "name": "PhD Workshop",
+          "headers": [
+            "ID",
+            "Title",
+            "Authors",
+            "All Reviewer Comments"
+          ],
+          "role": "input",
+          "examples": [
+            [
+              "1004",
+              "Example PhD Workshop contribution",
+              "Example Author",
+              "Example feedback; replace before import."
+            ]
+          ],
+          "notes": "ID must be unique across tracks. Keep the original accepted title for title-based author login."
+        },
+        {
+          "name": "Book Forum",
+          "headers": [
+            "ID",
+            "Title",
+            "Authors",
+            "All Reviewer Comments"
+          ],
+          "role": "input",
+          "examples": [
+            [
+              "1005",
+              "Example Book Forum contribution",
+              "Example Author",
+              "Example feedback; replace before import."
+            ]
+          ],
+          "notes": "ID must be unique across tracks. Keep the original accepted title for title-based author login."
+        }
+      ]
+    },
+    {
+      "key": "authorMasterId",
+      "title": "Author Hub Master",
+      "tabs": [
+        {
+          "name": "Settings",
+          "headers": [
+            "Key",
+            "Value",
+            "Notes"
+          ],
+          "role": "system",
+          "examples": [],
+          "notes": "Created/maintained by Author Hub. Do not populate logs manually."
+        },
+        {
+          "name": "Submissions",
+          "headers": [
+            "Paper ID",
+            "Original Title",
+            "Normalized Original Title",
+            "Final Title",
+            "Track",
+            "Volume",
+            "Corresponding Author",
+            "Corresponding Email",
+            "Presenting Author",
+            "Presenting Email",
+            "Submission Folder ID",
+            "Portal Enabled",
+            "Overall Status",
+            "Proof Version",
+            "Proof Due Label",
+            "Last Updated"
+          ],
+          "role": "system",
+          "examples": [],
+          "notes": "Created/maintained by Author Hub. Do not populate logs manually."
+        },
+        {
+          "name": "Task_Status",
+          "headers": [
+            "Paper ID",
+            "Task ID",
+            "Task Name",
+            "Status",
+            "Submitted At",
+            "Approved At",
+            "Action Required Note",
+            "Last Updated"
+          ],
+          "role": "system",
+          "examples": [],
+          "notes": "Created/maintained by Author Hub. Do not populate logs manually."
+        },
+        {
+          "name": "Task_Data",
+          "headers": [
+            "Paper ID",
+            "Task ID",
+            "Data JSON",
+            "Last Updated"
+          ],
+          "role": "system",
+          "examples": [],
+          "notes": "Created/maintained by Author Hub. Do not populate logs manually."
+        },
+        {
+          "name": "Reviewer_Feedback",
+          "headers": [
+            "Paper ID",
+            "Review Label",
+            "Reviewer Comment",
+            "Source",
+            "Imported At"
+          ],
+          "role": "system",
+          "examples": [],
+          "notes": "Created/maintained by Author Hub. Do not populate logs manually."
+        },
+        {
+          "name": "Authors",
+          "headers": [
+            "Paper ID",
+            "Position",
+            "Full Name",
+            "Email",
+            "Affiliation",
+            "ORCID",
+            "Corresponding",
+            "Presenting",
+            "Last Updated"
+          ],
+          "role": "system",
+          "examples": [],
+          "notes": "Created/maintained by Author Hub. Do not populate logs manually."
+        },
+        {
+          "name": "Website_Materials",
+          "headers": [
+            "Paper ID",
+            "Final Title",
+            "Category",
+            "Abstract",
+            "Keywords",
+            "Corresponding Email",
+            "Last Updated"
+          ],
+          "role": "system",
+          "examples": [],
+          "notes": "Created/maintained by Author Hub. Do not populate logs manually."
+        },
+        {
+          "name": "Website_Images",
+          "headers": [
+            "Paper ID",
+            "Image Slot",
+            "Drive File ID",
+            "File Name",
+            "Caption",
+            "Credit",
+            "Alt Text",
+            "Active",
+            "Last Updated"
+          ],
+          "role": "system",
+          "examples": [],
+          "notes": "Created/maintained by Author Hub. Do not populate logs manually."
+        },
+        {
+          "name": "File_Registry",
+          "headers": [
+            "Paper ID",
+            "Task ID",
+            "Role",
+            "Version",
+            "Drive File ID",
+            "File Name",
+            "Original File Name",
+            "MIME Type",
+            "Size Bytes",
+            "Parent Folder ID",
+            "Active",
+            "Uploaded At"
+          ],
+          "role": "system",
+          "examples": [],
+          "notes": "Created/maintained by Author Hub. Do not populate logs manually."
+        },
+        {
+          "name": "Folder_Registry",
+          "headers": [
+            "Paper ID",
+            "Folder Role",
+            "Folder ID",
+            "Folder Name",
+            "Last Updated"
+          ],
+          "role": "system",
+          "examples": [],
+          "notes": "Created/maintained by Author Hub. Do not populate logs manually."
+        },
+        {
+          "name": "Attendance",
+          "headers": [
+            "Paper ID",
+            "Attendance Confirmed",
+            "Presenter Name",
+            "Presenter Email",
+            "Confirmed At",
+            "Last Updated"
+          ],
+          "role": "system",
+          "examples": [],
+          "notes": "Created/maintained by Author Hub. Do not populate logs manually."
+        },
+        {
+          "name": "Registration",
+          "headers": [
+            "Paper ID",
+            "Registered Author",
+            "Registered Email",
+            "Confirmation Number",
+            "Receipt File ID",
+            "Unique Author Check",
+            "Last Updated"
+          ],
+          "role": "system",
+          "examples": [],
+          "notes": "Created/maintained by Author Hub. Do not populate logs manually."
+        },
+        {
+          "name": "Indexing_Status",
+          "headers": [
+            "Paper ID",
+            "Opened At",
+            "Confirmed",
+            "Confirmation Note",
+            "Confirmed At",
+            "Last Updated"
+          ],
+          "role": "system",
+          "examples": [],
+          "notes": "Created/maintained by Author Hub. Do not populate logs manually."
+        },
+        {
+          "name": "Proof_Comments",
+          "headers": [
+            "Timestamp",
+            "Paper ID",
+            "Paper Title",
+            "Proof Version",
+            "Page Number",
+            "Category",
+            "Location",
+            "Author Comment",
+            "Author Name",
+            "Resolution Status",
+            "Copyeditor Response",
+            "Resolved At",
+            "Form Response ID"
+          ],
+          "role": "system",
+          "examples": [],
+          "notes": "Created/maintained by Author Hub. Do not populate logs manually."
+        },
+        {
+          "name": "Activity_Log",
+          "headers": [
+            "Timestamp",
+            "Paper ID",
+            "Event",
+            "Task ID",
+            "Detail"
+          ],
+          "role": "system",
+          "examples": [],
+          "notes": "Created/maintained by Author Hub. Do not populate logs manually."
+        },
+        {
+          "name": "Visa_Letter_Log",
+          "headers": [
+            "Request ID",
+            "Generated At",
+            "Paper ID",
+            "Paper Title",
+            "Track",
+            "Author Name",
+            "Author Email",
+            "PDF File ID",
+            "PDF File Name",
+            "PDF URL",
+            "Archive Folder ID",
+            "Template File ID",
+            "Template File Name"
+          ],
+          "role": "system",
+          "examples": [],
+          "notes": "Created/maintained by Author Hub. Do not populate logs manually."
+        },
+        {
+          "name": "Admin_Dashboard",
+          "headers": [
+            "Paper ID",
+            "Title",
+            "Track",
+            "Reviewer Feedback",
+            "Metadata + Website",
+            "Camera-ready ZIP",
+            "Consent",
+            "Attendance",
+            "Indexing",
+            "Registration",
+            "Author Proof",
+            "Overall Status",
+            "Last Activity"
+          ],
+          "role": "system",
+          "examples": [],
+          "notes": "Created/maintained by Author Hub. Do not populate logs manually."
+        }
+      ]
+    },
+    {
+      "key": "presentationId",
+      "title": "Presentation Administration",
+      "tabs": [
+        {
+          "name": "Sessions",
+          "headers": [
+            "Session ID",
+            "Track",
+            "Subtheme",
+            "Session Title",
+            "Date",
+            "Start Time",
+            "End Time",
+            "Time Zone",
+            "Venue",
+            "Room",
+            "Chair",
+            "Folder ID",
+            "Chair Override"
+          ],
+          "role": "input",
+          "examples": [],
+          "notes": "Sessions and Assignments are synchronized from the schedule when schedule sync is enabled."
+        },
+        {
+          "name": "Assignments",
+          "headers": [
+            "Paper ID",
+            "Session ID",
+            "Order",
+            "Presentation Start",
+            "Presentation End",
+            "Title",
+            "Authors",
+            "Presenter Name",
+            "Presenter Last Name",
+            "Schedule Source ID"
+          ],
+          "role": "input",
+          "examples": [],
+          "notes": "Sessions and Assignments are synchronized from the schedule when schedule sync is enabled."
+        },
+        {
+          "name": "Uploads",
+          "headers": [
+            "Upload ID",
+            "Paper ID",
+            "Session ID",
+            "Presenter Name",
+            "Presenter Last Name",
+            "Title",
+            "File ID",
+            "File Name",
+            "Bytes",
+            "Version",
+            "Active",
+            "Uploaded At",
+            "Late",
+            "Folder ID",
+            "Original File Name"
+          ],
+          "role": "system",
+          "examples": [],
+          "notes": "Sessions and Assignments are synchronized from the schedule when schedule sync is enabled."
+        },
+        {
+          "name": "Settings",
+          "headers": [
+            "Key",
+            "Value",
+            "Notes"
+          ],
+          "role": "input",
+          "examples": [],
+          "notes": "Sessions and Assignments are synchronized from the schedule when schedule sync is enabled."
+        },
+        {
+          "name": "SessionContacts",
+          "headers": [
+            "Session ID",
+            "Session Title",
+            "Chair Name",
+            "Chair Email"
+          ],
+          "role": "input",
+          "examples": [],
+          "notes": "Use the same Session ID as Sessions. Reminder recipients come from author records and this table."
+        },
+        {
+          "name": "PresentationReminders",
+          "headers": [
+            "Key",
+            "Session ID",
+            "Session Start UTC",
+            "Paper IDs",
+            "Presenter Email",
+            "State",
+            "Attempted At",
+            "Sent At",
+            "Issue"
+          ],
+          "role": "system",
+          "examples": [],
+          "notes": ""
+        },
+        {
+          "name": "ReminderReadiness",
+          "headers": [
+            "Paper ID",
+            "Session ID",
+            "Session Start ({{city}})",
+            "Presenting Author",
+            "Presenting Email",
+            "Recipient Status",
+            "Chair Status",
+            "Action Needed"
+          ],
+          "role": "system",
+          "examples": [],
+          "notes": ""
+        }
+      ]
+    },
+    {
+      "key": "scheduleId",
+      "title": "Detailed Schedule",
+      "tabs": [
+        {
+          "name": "Conference",
+          "headers": [
+            "Time / Day",
+            "Room / Paper ID",
+            "Session / Title / Author",
+            "Count / Notes",
+            ""
+          ],
+          "examples": [
+            [
+              "DAY 1 | {{conferenceStart}} @ {{mainVenue}}",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "09:00 AM - 10:00 AM",
+              "Room A",
+              "Paper Session 1: Example theme",
+              "1",
+              ""
+            ],
+            [
+              "",
+              "1001",
+              "Example contribution 1",
+              "",
+              ""
+            ],
+            [
+              "",
+              "",
+              "Example Author",
+              "",
+              ""
+            ],
+            [
+              "",
+              "",
+              "Session Chair: Example Chair",
+              "",
+              ""
+            ],
+            [
+              "10:00 AM - 11:00 AM",
+              "Room A",
+              "Paper Session 2: Example theme",
+              "1",
+              ""
+            ],
+            [
+              "",
+              "1002",
+              "Example contribution 2",
+              "",
+              ""
+            ],
+            [
+              "",
+              "",
+              "Example Author",
+              "",
+              ""
+            ],
+            [
+              "",
+              "",
+              "Session Chair: Example Chair",
+              "",
+              ""
+            ],
+            [
+              "11:00 AM - 12:00 PM",
+              "Room A",
+              "Paper Session 3: Example theme",
+              "1",
+              ""
+            ],
+            [
+              "",
+              "1003",
+              "Example contribution 3",
+              "",
+              ""
+            ],
+            [
+              "",
+              "",
+              "Example Author",
+              "",
+              ""
+            ],
+            [
+              "",
+              "",
+              "Session Chair: Example Chair",
+              "",
+              ""
+            ],
+            [
+              "12:00 PM - 01:00 PM",
+              "Room A",
+              "Paper Session 4: Example theme",
+              "1",
+              ""
+            ],
+            [
+              "",
+              "1004",
+              "Example contribution 4",
+              "",
+              ""
+            ],
+            [
+              "",
+              "",
+              "Example Author",
+              "",
+              ""
+            ],
+            [
+              "",
+              "",
+              "Session Chair: Example Chair",
+              "",
+              ""
+            ]
+          ],
+          "role": "input",
+          "notes": "POSITIONAL LAYOUT: A day/time, B room or paper ID, C event/title/author, D count/notes. Day heading: DAY n | YYYY-MM-DD @ Venue. Keep four or more presentation sessions for the inherited presentation-sync completeness guard."
+        },
+        {
+          "name": "Workshops",
+          "headers": [
+            "Time / Day",
+            "Activity",
+            "Venue 1",
+            "Venue 2",
+            "Venue 3",
+            "Venue 4",
+            "Venue 5",
+            "Venue 6"
+          ],
+          "examples": [
+            [
+              "DAY 1 | {{conferenceStart}}",
+              "",
+              "{{mainVenue}}",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "08:30 AM",
+              "Registration",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "09:00 AM",
+              "Workshops begin",
+              "Example Workshop",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "10:30 AM",
+              "Coffee break",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "11:00 AM",
+              "Workshops resume",
+              "Example Workshop",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "12:00 PM",
+              "Lunch",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "01:00 PM",
+              "Workshops continue",
+              "Example Workshop",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "03:00 PM",
+              "Coffee break",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "03:30 PM",
+              "Workshops resume",
+              "Example Workshop",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "05:00 PM",
+              "Workshops adjourn",
+              "Example Workshop",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            [
+              "END OF DAY 1",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ]
+          ],
+          "role": "input",
+          "notes": "POSITIONAL LAYOUT: A day/time, B activity, C:H venues. Put venue names on each DAY heading row. Use explicit AM/PM times."
+        }
+      ]
+    },
+    {
+      "key": "recognitionId",
+      "title": "Recognition Portal",
+      "tabs": [
+        {
+          "name": "Settings",
+          "headers": [
+            "Key",
+            "Value",
+            "Notes"
+          ],
+          "role": "input",
+          "examples": [],
+          "notes": "Keep exact column order; certificate modules include positional readers."
+        },
+        {
+          "name": "Completed_Reviews",
+          "headers": [
+            "Submission ID",
+            "Paper Title",
+            "Reviewer Name",
+            "Reviewer Email",
+            "Status",
+            "Completed Date (EasyChair)",
+            "Unique Key"
+          ],
+          "role": "system",
+          "examples": [],
+          "notes": "Keep exact column order; certificate modules include positional readers."
+        },
+        {
+          "name": "Reviewer_Summary",
+          "headers": [
+            "Reviewer Name",
+            "Reviewer Email",
+            "Completed Review Count",
+            "Submission IDs",
+            "Reviewed Paper Titles",
+            "Normalized Name",
+            "Login Enabled"
+          ],
+          "role": "system",
+          "examples": [],
+          "notes": "Keep exact column order; certificate modules include positional readers."
+        },
+        {
+          "name": "Certificate_Log",
+          "headers": [
+            "Request ID",
+            "Generated At",
+            "Reviewer Name",
+            "Reviewer Email",
+            "Review Count",
+            "Submission IDs",
+            "Paper Titles",
+            "PDF File ID",
+            "PDF File Name",
+            "PDF URL",
+            "Template File ID",
+            "Data Fingerprint"
+          ],
+          "role": "system",
+          "examples": [],
+          "notes": "Keep exact column order; certificate modules include positional readers."
+        },
+        {
+          "name": "Reviewer_{{nextYear}}_Interest",
+          "headers": [
+            "Response Updated At",
+            "EasyChair Reviewer Name",
+            "EasyChair Reviewer Email",
+            "Preferred Name Prefix",
+            "Certificate Display Name",
+            "Willing to Review ACADIA {{nextYear}}",
+            "Completed Review Count",
+            "Submission IDs"
+          ],
+          "role": "system",
+          "examples": [],
+          "notes": "Keep exact column order; certificate modules include positional readers."
+        },
+        {
+          "name": "Workshop_Catalog",
+          "headers": [
+            "Workshop ID",
+            "Workshop Title",
+            "Workshop Dates",
+            "Workshop Location"
+          ],
+          "role": "input",
+          "examples": [
+            [
+              "W01",
+              "Example Workshop",
+              "{{workshopDates}}",
+              "{{mainVenue}}"
+            ]
+          ],
+          "notes": "Keep exact column order; certificate modules include positional readers."
+        },
+        {
+          "name": "Workshop_Registrations",
+          "headers": [
+            "Registration ID",
+            "Attendee Name",
+            "Attendee Email",
+            "Workshop ID",
+            "Enabled"
+          ],
+          "role": "input",
+          "examples": [
+            [
+              "REG01",
+              "Example Attendee",
+              "attendee@example.org",
+              "W01",
+              false
+            ]
+          ],
+          "notes": "Keep exact column order; certificate modules include positional readers."
+        },
+        {
+          "name": "Workshop_Instructors",
+          "headers": [
+            "Registration ID",
+            "Instructor Name",
+            "Name Aliases",
+            "Workshop ID",
+            "Enabled"
+          ],
+          "role": "input",
+          "examples": [
+            [
+              "INS01",
+              "Example Instructor",
+              "Example Alias",
+              "W01",
+              false
+            ]
+          ],
+          "notes": "Keep exact column order; certificate modules include positional readers."
+        },
+        {
+          "name": "Workshop_Certificate_Log",
+          "headers": [
+            "Request ID",
+            "Generated At",
+            "Registration ID",
+            "Attendee Name",
+            "Attendee Email",
+            "Workshop ID",
+            "Workshop Title",
+            "PDF File ID",
+            "PDF File Name",
+            "Template File ID",
+            "Data Fingerprint"
+          ],
+          "role": "system",
+          "examples": [],
+          "notes": "Keep exact column order; certificate modules include positional readers."
+        },
+        {
+          "name": "Workshop_Instructor_Log",
+          "headers": [
+            "Request ID",
+            "Generated At",
+            "Registration ID",
+            "Instructor Name",
+            "Identity Name",
+            "Workshop ID",
+            "Workshop Title",
+            "PDF File ID",
+            "PDF File Name",
+            "Template File ID",
+            "Data Fingerprint"
+          ],
+          "role": "system",
+          "examples": [],
+          "notes": "Keep exact column order; certificate modules include positional readers."
+        },
+        {
+          "name": "Presentation_Confirmations",
+          "headers": [
+            "Paper ID",
+            "Status",
+            "Confirmed Presenter",
+            "Confirmed By",
+            "Confirmed At",
+            "Notes"
+          ],
+          "role": "input",
+          "examples": [],
+          "notes": "Keep exact column order; certificate modules include positional readers."
+        },
+        {
+          "name": "Presentation_Certificate_Log",
+          "headers": [
+            "Request ID",
+            "Generated At",
+            "Identity Key",
+            "Author Name",
+            "Author Email",
+            "Track",
+            "Paper IDs",
+            "Session IDs",
+            "PDF File ID",
+            "PDF File Name",
+            "Template File ID",
+            "Data Fingerprint"
+          ],
+          "role": "system",
+          "examples": [],
+          "notes": "Keep exact column order; certificate modules include positional readers."
+        },
+        {
+          "name": "Session_Chair_Certificate_Log",
+          "headers": [
+            "Request ID",
+            "Generated At",
+            "Identity Key",
+            "Chair Name",
+            "Chair Email",
+            "Session IDs",
+            "Session Count",
+            "Presentation Count",
+            "PDF File ID",
+            "PDF File Name",
+            "Template File ID",
+            "Data Fingerprint"
+          ],
+          "role": "system",
+          "examples": [],
+          "notes": "Keep exact column order; certificate modules include positional readers."
+        },
+        {
+          "name": "Volunteers",
+          "headers": [
+            "Volunteer ID",
+            "Full Name",
+            "Affiliation",
+            "Name Aliases",
+            "Enabled"
+          ],
+          "role": "input",
+          "examples": [
+            [
+              "V01",
+              "Example Volunteer",
+              "Example University",
+              "",
+              false
+            ]
+          ],
+          "notes": "Keep exact column order; certificate modules include positional readers."
+        },
+        {
+          "name": "Volunteer_Certificate_Log",
+          "headers": [
+            "Request ID",
+            "Generated At",
+            "Volunteer ID",
+            "Full Name",
+            "Affiliation",
+            "PDF File ID",
+            "PDF File Name",
+            "Template File ID",
+            "Data Fingerprint"
+          ],
+          "role": "system",
+          "examples": [],
+          "notes": "Keep exact column order; certificate modules include positional readers."
+        },
+        {
+          "name": "Awards",
+          "headers": [
+            "Award ID",
+            "Award Name",
+            "Paper ID",
+            "Track",
+            "Award Work Title",
+            "Award Authors",
+            "Enabled"
+          ],
+          "role": "input",
+          "examples": [],
+          "notes": "Keep exact column order; certificate modules include positional readers."
+        },
+        {
+          "name": "Award_Certificate_Log",
+          "headers": [
+            "Request ID",
+            "Generated At",
+            "Identity Key",
+            "Recipient Name",
+            "Recipient Email",
+            "Award ID",
+            "Paper ID",
+            "Award Name",
+            "PDF File ID",
+            "PDF File Name",
+            "Template File ID",
+            "Data Fingerprint"
+          ],
+          "role": "system",
+          "examples": [],
+          "notes": "Keep exact column order; certificate modules include positional readers."
+        }
+      ]
+    },
+    {
+      "key": "chairCoordinationId",
+      "title": "Session Chair Coordination",
+      "tabs": [
+        {
+          "name": "Sessions",
+          "headers": [
+            "Session ID",
+            "Session title",
+            "Date",
+            "Start (ET)",
+            "End (ET)",
+            "Session chair",
+            "Chair email"
+          ],
+          "role": "input",
+          "examples": [
+            [
+              "P01",
+              "Paper Session 1: Example theme",
+              "{{conferenceStart}}",
+              "09:00",
+              "10:00",
+              "Example Chair",
+              "chair@example.org"
+            ]
+          ],
+          "notes": "These legacy ET column names are required by the reader. Their values use the configured conference time zone; the guide documents this legacy label."
+        }
+      ]
+    },
+    {
+      "key": "phdMonitorId",
+      "title": "PhD Workshop Monitor",
+      "tabs": [
+        {
+          "name": "Submission Monitor",
+          "headers": [
+            "Paper ID",
+            "Title",
+            "Authors",
+            "Corresponding Author",
+            "Corresponding Email",
+            "Overall Status",
+            "Task 1 Metadata + Website",
+            "Task 2 Exhibition Poster",
+            "Poster File",
+            "Task 3 Copyright + Recording Consent",
+            "Consent File",
+            "Task 4 Attendance",
+            "Presenter",
+            "Task 5 Indexing",
+            "Task 6 Volunteer Preferences",
+            "Volunteer Preferences",
+            "Other Preference",
+            "Available Time Slots",
+            "Task 7 Conference Registration",
+            "Registration Confirmation File",
+            "Last Activity",
+            "Last Activity Detail",
+            "Last Updated",
+            "Submission Folder"
+          ],
+          "role": "system",
+          "examples": [],
+          "notes": "Generated by the PhD monitoring module. Only assignment columns H:K are organizer inputs."
+        },
+        {
+          "name": "Activity Log",
+          "headers": [
+            "Timestamp",
+            "Paper ID",
+            "Title",
+            "Event",
+            "Task",
+            "Detail"
+          ],
+          "role": "system",
+          "examples": [],
+          "notes": "Generated by the PhD monitoring module. Only assignment columns H:K are organizer inputs."
+        },
+        {
+          "name": "Volunteer Assignments",
+          "headers": [
+            "Paper ID",
+            "Title",
+            "Participant / Authors",
+            "Volunteer Preferences",
+            "Other Preference",
+            "Available Time Slots",
+            "Preference Submitted",
+            "Assigned Role",
+            "Shift / Date / Time",
+            "Coordinator Notes",
+            "Assignment Status"
+          ],
+          "role": "input",
+          "examples": [],
+          "notes": "Generated by the PhD monitoring module. Only assignment columns H:K are organizer inputs."
+        }
+      ]
+    }
+  ],
+  "certificates": {
+    "reviewerTemplateId": {
+      "title": "Peer Review Certification",
+      "tokens": [
+        "REVIEWER_NAME",
+        "REVIEW_COUNT",
+        "REVIEWED_TITLES",
+        "DATE",
+        "CONFERENCE_NAME",
+        "CONFERENCE_DATES",
+        "CONFERENCE_LOCATION",
+        "CONTACT_EMAIL"
+      ]
+    },
+    "workshopTemplateId": {
+      "title": "Workshop Participation",
+      "tokens": [
+        "ATTENDEE_NAME",
+        "WORKSHOP_TITLE",
+        "WORKSHOP_DATES",
+        "WORKSHOP_LOCATION",
+        "ISSUED_DATE"
+      ]
+    },
+    "instructorTemplateId": {
+      "title": "Workshop Instruction",
+      "tokens": [
+        "INSTRUCTOR_NAME",
+        "WORKSHOP_TITLE",
+        "WORKSHOP_DATES",
+        "WORKSHOP_LOCATION",
+        "ISSUED_DATE"
+      ]
+    },
+    "presenterCertificateTemplateId": {
+      "title": "Conference Presentation",
+      "tokens": [
+        "PRESENTER_NAME",
+        "TRACK_LABEL",
+        "PRESENTATION_STATEMENT",
+        "PRESENTATIONS",
+        "ISSUED_DATE"
+      ]
+    },
+    "chairTemplateId": {
+      "title": "Session Chair Recognition",
+      "tokens": [
+        "CHAIR_NAME",
+        "CHAIR_STATEMENT",
+        "CHAIR_SESSIONS",
+        "ISSUED_DATE"
+      ]
+    },
+    "volunteerTemplateId": {
+      "title": "Volunteer Recognition",
+      "tokens": [
+        "VOLUNTEER_NAME",
+        "VOLUNTEER_AFFILIATION",
+        "ISSUED_DATE"
+      ]
+    },
+    "awardTemplateId": {
+      "title": "Award Certificate",
+      "tokens": [
+        "RECIPIENT_NAME",
+        "AUTHOR_ROLE",
+        "WORK_TYPE",
+        "AWARD_NAME",
+        "WORK_TITLE",
+        "AUTHOR_TEAM",
+        "ISSUED_DATE"
+      ]
+    },
+    "acceptanceTemplateId": {
+      "title": "Acceptance Letter",
+      "tokens": [
+        "ACCEPTANCE_STATEMENT",
+        "SUBMISSION_ID",
+        "TRACK",
+        "SUBMISSION_TITLE",
+        "AUTHORS",
+        "AFFILIATIONS",
+        "ISSUED_DATE"
+      ]
+    }
+  }
+}

@@ -1,0 +1,100 @@
+<style>
+ .presenter-list{display:grid;gap:20px;margin-top:24px}.presenter-group{border:1px solid var(--line);border-radius:14px;padding:26px}.presenter-group h3{margin:0 0 8px}.presenter-works{padding-left:22px;margin:20px 0 24px}.presenter-works li{padding-left:4px;margin-bottom:20px}.presenter-work-title{font-size:17px;line-height:1.45}.presenter-work-session{color:var(--muted);font-size:14px;line-height:1.5;margin-top:6px}.presenter-dialog{width:min(560px,calc(100% - 40px));border:0;border-radius:18px;padding:34px;box-shadow:0 24px 80px #0004;color:var(--ink);background:var(--paper)}.presenter-dialog::backdrop{background:#1119}.presenter-dialog p{line-height:1.65}#presenterChannel .reviewer-welcome p+p{margin-top:18px}@media(max-width:600px){.presenter-group,.presenter-dialog{padding:22px}}
+</style>
+<div id="presenterScreens">
+ <section id="presenterChannel" class="hidden" aria-labelledby="presenterHeading">
+  <nav class="channel-nav"><button class="btn btn-link" type="button" id="presenterBack">← All certificate channels</button></nav>
+  <div class="reviewer-grid">
+   <article class="card reviewer-welcome">
+    <div class="eyebrow">Presentation &amp; Award Certificates</div><h1 id="presenterHeading">Thank you for sharing your work.</h1>
+    <p>%%ACADIA_HTML_t0137%%</p>
+    <p>Sign in with your author name and registered email to view every eligible work that lists you as an author, including coauthored works, and its presentation session. Works in the same track are listed together on one certificate; each track has a separate PDF.</p>
+    <p>Authors of award-winning papers and projects can also download their individual award certificates here.</p>
+   </article>
+   <aside class="card login">
+    <div class="eyebrow">Conference presenter access</div><h2>Author sign in</h2>
+    <form id="presenterLoginForm">
+     <div class="field"><label for="presenterName">Author name</label><input id="presenterName" name="presenterName" autocomplete="name" maxlength="200" required></div>
+     <div class="field"><label for="presenterEmail">Registered email</label><input id="presenterEmail" name="presenterEmail" type="email" autocomplete="email" maxlength="254" required><span class="hint">Use the name and email recorded in the ACADIA Author Hub.</span></div>
+     <button class="btn btn-primary" id="presenterLoginButton" type="submit">View my certificates</button>
+     <div class="error" id="presenterLoginError" role="alert"></div>
+    </form>
+    <p class="hint">Need help with your author record? Contact <a href="%%ACADIA_HTML_t0036%%">%%ACADIA_HTML_t0037%%</a>.</p>
+   </aside>
+  </div>
+ </section>
+ <section id="presenterPortal" class="card dashboard hidden" aria-live="polite">
+  <nav class="channel-nav"><button class="btn btn-link" type="button" id="presenterDashboardBack">← All certificate channels</button></nav>
+  <div class="eyebrow">Presentation &amp; Award Certificates</div><h2 id="presenterDisplayName"></h2>
+  <p>Each PDF is issued in your name and includes all eligible works that list you as an author in that track, regardless of author order or who presented, with their presentation sessions.</p>
+  <div id="presenterList" class="presenter-list"></div>
+  <section id="presenterAwardsSection" class="hidden" aria-labelledby="presenterAwardsHeading">
+   <h2 id="presenterAwardsHeading" style="margin-top:34px">%%ACADIA_HTML_t0138%%</h2>
+   <p>Congratulations! Each award certificate is issued in your name and recognizes the award-winning work and its author team.</p>
+   <div id="presenterAwardsList" class="presenter-list"></div>
+  </section>
+  <p id="presenterAwardNotice" class="hint hidden" role="status"></p>
+  <div class="error" id="presenterCertificateError" role="alert"></div>
+  <div class="actions"><button class="btn btn-secondary" id="presenterSignOut" type="button">Sign out</button></div>
+ </section>
+</div>
+<dialog id="presenterDownloadDialog" class="presenter-dialog" aria-labelledby="presenterThanksHeading" aria-describedby="presenterThanksText">
+ <div class="eyebrow">With gratitude from ACADIA</div><h2 id="presenterThanksHeading">%%ACADIA_HTML_t0134%%</h2>
+ <p id="presenterThanksText">We appreciate the research, ideas, and conversations you shared with our community. Your presentation certificate is ready to download.</p>
+ <p class="meta" id="presenterDownloadTitle"></p>
+ <div class="actions"><button class="btn btn-primary" id="presenterDownloadButton" type="button">Download PDF</button><button class="btn btn-secondary" id="presenterDialogClose" type="button">Close</button></div>
+</dialog>
+<script>
+ const presenterState={token:'',presenter:null,groups:[],awards:[],download:null,busy:false};
+ document.addEventListener('DOMContentLoaded',()=>{
+  const wrapper=$('presenterScreens'),footer=document.querySelector('main.shell > footer');
+  while(wrapper.firstElementChild)footer.before(wrapper.firstElementChild);wrapper.remove();
+  $('presenterLoginForm').addEventListener('submit',loginPresenter);
+  $('presenterBack').addEventListener('click',returnToChannels);$('presenterDashboardBack').addEventListener('click',returnToChannels);
+  $('presenterSignOut').addEventListener('click',async()=>{setLoading(true);await endPresenterSession();setLoading(false);openPresenterChannel()});
+  $('presenterDialogClose').addEventListener('click',()=>$('presenterDownloadDialog').close());
+  $('presenterDownloadDialog').addEventListener('close',()=>{presenterState.download=null});
+  $('presenterDownloadButton').addEventListener('click',()=>{const d=presenterState.download;if(d)downloadBase64File(d.pdfBase64,d.mimeType||'application/pdf',d.fileName)});
+ });
+ function hidePresenterMessages(){['presenterLoginError','presenterCertificateError'].forEach(id=>{$(id).style.display='none';$(id).textContent=''})}
+ function openPresenterChannel(){
+  ['home','portal','reviewerChannel','workshopChannel','workshopPortal','instructorChannel','instructorPortal','presenterPortal'].forEach(id=>$(id).classList.add('hidden'));
+  $('presenterChannel').classList.remove('hidden');hidePresenterMessages();$('presenterLoginButton').disabled=!!(state.config&&state.config.enabled===false);
+  window.scrollTo({top:$('presenterChannel').offsetTop-25,behavior:'smooth'});$('presenterName').focus({preventScroll:true});
+ }
+ async function loginPresenter(event){
+  event.preventDefault();if(presenterState.busy)return;presenterState.busy=true;hidePresenterMessages();setLoading(true);
+  try{const r=await gas('loginConferencePresenter',$('presenterName').value,$('presenterEmail').value);
+   presenterState.token=r.token;presenterState.presenter=r.presenter;presenterState.groups=r.groups;presenterState.awards=r.awards||[];
+   $('presenterDisplayName').textContent=`Thank you, ${r.presenter.name}.`;
+   $('presenterList').innerHTML=r.groups.map(g=>`<article class="presenter-group"><h3>${escapeHtml(g.label)}</h3><p>${g.presentations.length} presentation${g.presentations.length===1?'':'s'} · One certificate</p><ol class="presenter-works">${g.presentations.map(w=>`<li><div class="presenter-work-title">${escapeHtml(w.title)}</div>${w.sessions.map(s=>`<div class="presenter-work-session">${escapeHtml(s.title)} · ${escapeHtml(s.date)}</div>`).join('')}</li>`).join('')}</ol><button type="button" class="btn btn-primary" data-presenter-track="${escapeAttr(g.track)}">Get ${escapeHtml(g.label)} certificate</button></article>`).join('');
+   document.querySelectorAll('[data-presenter-track]').forEach(b=>b.addEventListener('click',()=>generatePresenter(b.dataset.presenterTrack)));
+   $('presenterAwardsList').innerHTML=presenterState.awards.map(a=>`<article class="presenter-group"><div class="eyebrow">${escapeHtml(a.track==='projects'?'Projects':'Papers')} · Award certificate</div><h3>${escapeHtml(a.name)}</h3><p class="presenter-work-title">${escapeHtml(a.title)}</p><p class="presenter-work-session">${a.authors.length===1?'Author':'Authors'}: ${escapeHtml(a.authors.join(', '))}</p><button type="button" class="btn btn-primary" data-presenter-award="${escapeAttr(a.id)}">Get award certificate</button></article>`).join('');
+   $('presenterAwardsSection').classList.toggle('hidden',!presenterState.awards.length);
+   $('presenterAwardNotice').textContent=r.awardNotice||'';$('presenterAwardNotice').classList.toggle('hidden',!r.awardNotice);
+   document.querySelectorAll('[data-presenter-award]').forEach(b=>b.addEventListener('click',()=>generatePresenterAward(b.dataset.presenterAward)));
+   $('presenterChannel').classList.add('hidden');$('presenterPortal').classList.remove('hidden');window.scrollTo({top:$('presenterPortal').offsetTop-25,behavior:'smooth'});
+  }catch(e){showBox('presenterLoginError',friendlyError(e))}finally{presenterState.busy=false;setLoading(false)}
+ }
+ async function generatePresenter(track){
+  if(presenterState.busy)return;presenterState.busy=true;hidePresenterMessages();setLoading(true);
+  try{const r=await gas('generatePresentationCertificate',presenterState.token,track);if(!r.pdfBase64)throw new Error('Your certificate could not be downloaded. Please try again.');
+   presenterState.download=r;const g=presenterState.groups.find(g=>g.track===track);$('presenterThanksHeading').textContent="__ACADIA_TEXT_t0134__";$('presenterThanksText').textContent='We appreciate the research, ideas, and conversations you shared with our community. Your presentation certificate is ready to download.';$('presenterDownloadTitle').textContent=g?`${g.label} · ${g.presentations.length} presentation${g.presentations.length===1?'':'s'}`:'';$('presenterDownloadDialog').showModal();
+  }catch(e){const message=friendlyError(e);if(/session has expired/i.test(message)){await endPresenterSession();openPresenterChannel();showBox('presenterLoginError',message)}else showBox('presenterCertificateError',message)}finally{presenterState.busy=false;setLoading(false)}
+ }
+ async function generatePresenterAward(awardId){
+  if(presenterState.busy)return;presenterState.busy=true;hidePresenterMessages();setLoading(true);
+  try{const r=await gas('generateAwardCertificate',presenterState.token,awardId);if(!r.pdfBase64)throw new Error('Your award certificate could not be downloaded. Please try again.');
+   presenterState.download=r;const a=presenterState.awards.find(item=>item.id===awardId);
+   $('presenterThanksHeading').textContent="__ACADIA_TEXT_t0135__";
+   $('presenterThanksText').textContent="__ACADIA_TEXT_t0136__";
+   $('presenterDownloadTitle').textContent=a?a.name+' · '+a.title:'';$('presenterDownloadDialog').showModal();
+  }catch(e){const message=friendlyError(e);if(/session has expired/i.test(message)){await endPresenterSession();openPresenterChannel();showBox('presenterLoginError',message)}else showBox('presenterCertificateError',message)}finally{presenterState.busy=false;setLoading(false)}
+ }
+ async function endPresenterSession(){
+  const token=presenterState.token;presenterState.token='';presenterState.presenter=null;presenterState.groups=[];presenterState.awards=[];presenterState.download=null;
+  $('presenterAwardsList').innerHTML='';$('presenterAwardsSection').classList.add('hidden');$('presenterAwardNotice').textContent='';$('presenterAwardNotice').classList.add('hidden');$('presenterDownloadTitle').textContent='';
+  $('presenterDownloadDialog').close();$('presenterLoginForm').reset();$('presenterDisplayName').textContent='';$('presenterList').innerHTML='';hidePresenterMessages();
+  if(token){try{await gas('logoutConferencePresenter',token)}catch(ignored){}}
+ }
+</script>

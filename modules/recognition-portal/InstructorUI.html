@@ -1,0 +1,81 @@
+<style>
+  .instructor-list{display:grid;gap:16px;margin-top:24px}.instructor-item{border:1px solid var(--line);border-radius:14px;padding:24px}.instructor-item h3{margin:0 0 12px;line-height:1.4}.instructor-item p{margin:5px 0 20px}.instructor-dialog{width:min(560px,calc(100% - 40px));border:0;border-radius:18px;padding:34px;box-shadow:0 24px 80px #0004;color:var(--ink);background:var(--paper)}.instructor-dialog::backdrop{background:#1119}.instructor-dialog h2{margin-top:10px}.instructor-dialog p{line-height:1.65}.instructor-dialog .meta{margin-bottom:24px;overflow-wrap:anywhere}#instructorChannel .reviewer-welcome p+p{margin-top:18px}#instructorChannel .hint{margin-top:18px}@media(max-width:600px){.instructor-dialog{padding:24px}}
+</style>
+<div id="instructorScreens">
+  <section id="instructorChannel" class="hidden" aria-labelledby="instructorHeading">
+    <nav class="channel-nav"><button class="btn btn-link" type="button" id="instructorBack">← All certificate channels</button></nav>
+    <div class="reviewer-grid">
+      <article class="card reviewer-welcome">
+        <div class="eyebrow">Workshop Instruction Certificate</div>
+        <h1 id="instructorHeading">Thank you for sharing your expertise.</h1>
+        <p>%%ACADIA_HTML_t0124%%</p>
+        <p>Enter your instructor name to view your workshops and download your official instruction certificate.</p>
+      </article>
+      <aside class="card login">
+        <div class="eyebrow">Workshop instructor access</div><h2>Instructor sign in</h2>
+        <form id="instructorLoginForm">
+          <div class="field"><label for="instructorName">Instructor name</label><input id="instructorName" name="instructorName" autocomplete="name" maxlength="200" required><span class="hint">Use your full name as listed by ACADIA.</span></div>
+          <button class="btn btn-primary" id="instructorLoginButton" type="submit">View my instruction certificates</button>
+          <div class="error" id="instructorLoginError" role="alert"></div>
+        </form>
+        <p class="hint">Need help with your instructor record? Contact <a href="%%ACADIA_HTML_t0036%%">%%ACADIA_HTML_t0037%%</a>.</p>
+      </aside>
+    </div>
+  </section>
+  <section id="instructorPortal" class="card dashboard hidden" aria-live="polite">
+    <nav class="channel-nav"><button class="btn btn-link" type="button" id="instructorDashboardBack">← All certificate channels</button></nav>
+    <div class="eyebrow">Workshop Instruction Certificate</div><h2 id="instructorDisplayName"></h2>
+    <p>Download an instruction certificate for each workshop listed below.</p>
+    <div id="instructorList" class="instructor-list"></div>
+    <div class="error" id="instructorCertificateError" role="alert"></div>
+    <div class="actions"><button class="btn btn-secondary" id="instructorSignOut" type="button">Sign out</button></div>
+  </section>
+</div>
+<dialog id="instructorDownloadDialog" class="instructor-dialog" aria-labelledby="instructorThanksHeading" aria-describedby="instructorThanksText">
+  <div class="eyebrow">With gratitude from ACADIA</div><h2 id="instructorThanksHeading">Thank you for leading a workshop!</h2>
+  <p id="instructorThanksText">%%ACADIA_HTML_t0125%%</p>
+  <p class="meta" id="instructorDownloadTitle"></p>
+  <div class="actions"><button class="btn btn-primary" id="instructorDownloadButton" type="button">Download PDF</button><button class="btn btn-secondary" id="instructorDialogClose" type="button">Close</button></div>
+</dialog>
+<script>
+  const instructorState={token:'',instructor:null,workshops:[],download:null,busy:false};
+  document.addEventListener('DOMContentLoaded',()=>{
+    const wrapper=$('instructorScreens'),footer=document.querySelector('main.shell > footer');
+    while(wrapper.firstElementChild)footer.before(wrapper.firstElementChild);wrapper.remove();
+    $('instructorLoginForm').addEventListener('submit',loginInstructor);
+    $('instructorBack').addEventListener('click',returnToChannels);$('instructorDashboardBack').addEventListener('click',returnToChannels);
+    $('instructorSignOut').addEventListener('click',async()=>{setLoading(true);await endInstructorSession();setLoading(false);openInstructorChannel()});
+    $('instructorDialogClose').addEventListener('click',()=>$('instructorDownloadDialog').close());
+    $('instructorDownloadDialog').addEventListener('close',()=>{instructorState.download=null});
+    $('instructorDownloadButton').addEventListener('click',()=>{const data=instructorState.download;if(data)downloadBase64File(data.pdfBase64,data.mimeType||'application/pdf',data.fileName)});
+  });
+  function hideInstructorMessages(){['instructorLoginError','instructorCertificateError'].forEach(id=>{$(id).style.display='none';$(id).textContent=''})}
+  function openInstructorChannel(){
+    ['home','portal','reviewerChannel','workshopChannel','workshopPortal','instructorPortal'].forEach(id=>$(id).classList.add('hidden'));
+    $('instructorChannel').classList.remove('hidden');hideInstructorMessages();$('instructorLoginButton').disabled=!!(state.config&&state.config.enabled===false);
+    window.scrollTo({top:$('instructorChannel').offsetTop-25,behavior:'smooth'});$('instructorName').focus({preventScroll:true});
+  }
+  async function loginInstructor(event){
+    event.preventDefault();if(instructorState.busy)return;instructorState.busy=true;hideInstructorMessages();setLoading(true);
+    try{const result=await gas('loginWorkshopInstructor',$('instructorName').value);
+      instructorState.token=result.token;instructorState.instructor=result.instructor;instructorState.workshops=result.workshops;
+      $('instructorDisplayName').textContent=`Thank you, ${result.instructor.name}.`;
+      $('instructorList').innerHTML=result.workshops.map(item=>`<article class="instructor-item"><h3>${escapeHtml(item.title)}</h3><p>${escapeHtml(item.dates)} · ${escapeHtml(item.location)}</p><button type="button" class="btn btn-primary" data-instructor-registration="${escapeAttr(item.registrationId)}">Get instruction certificate</button></article>`).join('');
+      document.querySelectorAll('[data-instructor-registration]').forEach(button=>button.addEventListener('click',()=>generateInstructor(button.dataset.instructorRegistration)));
+      $('instructorChannel').classList.add('hidden');$('instructorPortal').classList.remove('hidden');window.scrollTo({top:$('instructorPortal').offsetTop-25,behavior:'smooth'});
+    }catch(error){showBox('instructorLoginError',friendlyError(error))}finally{instructorState.busy=false;setLoading(false)}
+  }
+  async function generateInstructor(registrationId){
+    if(instructorState.busy)return;instructorState.busy=true;hideInstructorMessages();setLoading(true);
+    try{const result=await gas('generateInstructorCertificate',instructorState.token,registrationId);
+      if(!result.pdfBase64)throw new Error('Your certificate could not be downloaded. Please try again.');
+      instructorState.download=result;const item=instructorState.workshops.find(item=>item.registrationId===registrationId);
+      $('instructorDownloadTitle').textContent=item?item.title:'';$('instructorDownloadDialog').showModal();
+    }catch(error){const message=friendlyError(error);if(/session has expired/i.test(message)){await endInstructorSession();openInstructorChannel();showBox('instructorLoginError',message)}else showBox('instructorCertificateError',message)}finally{instructorState.busy=false;setLoading(false)}
+  }
+  async function endInstructorSession(){
+    const token=instructorState.token;instructorState.token='';instructorState.instructor=null;instructorState.workshops=[];instructorState.download=null;
+    $('instructorDownloadDialog').close();$('instructorLoginForm').reset();$('instructorDisplayName').textContent='';$('instructorList').innerHTML='';hideInstructorMessages();
+    if(token){try{await gas('logoutWorkshopInstructor',token)}catch(ignored){}}
+  }
+</script>

@@ -1,0 +1,1908 @@
+<script>
+(function () {
+  'use strict';
+
+  const BOOT = window.__ACADIA_BOOTSTRAP__ || {};
+  const DEADLINE_NOTICE = 'Deadlines are reminders only. Uploading, saving, and submitting remain available after the displayed dates.';
+  const CAMERA_READY_TASKS = ['feedback', 'metadata', 'camera_ready', 'consent', 'attendance', 'indexing'];
+  const REQUIRED = CAMERA_READY_TASKS.concat(['registration']);
+  const BOOK_FORUM_TASKS = ['registration', 'book_poster', 'book_proceeding'];
+  const BOOK_FORUM_DEADLINE_DATE = "__ACADIA_TEXT_t0038__";
+  const BOOK_FORUM_DEADLINE_LABEL = BOOK_FORUM_DEADLINE_DATE + ', 11:59 PM AoE';
+  const TASK_INFO = {
+    feedback: {
+      number: '1', title: 'Reviewer feedback',
+      subtitle: 'Read the reviewer comments assigned to this submission and confirm that the revised work responds to them.',
+      description: 'Read the anonymous reviewer comments and record an optional revision summary.'
+    },
+    metadata: {
+      number: '2', title: 'Authors, publication metadata, and website materials',
+      subtitle: 'Enter the final publication record, unblinded abstract, and up to five conference-website images.',
+      description: 'Final title, author order, affiliations, abstract, keywords, images, captions, credits, and alt text.'
+    },
+    phd_poster: {
+      number: '2', title: 'PhD Workshop Exhibition Poster',
+      subtitle: 'Download the official poster materials and upload one press-quality PhD Workshop exhibition poster PDF.',
+      description: 'One exhibition poster PDF for the PhD Workshop.'
+    },
+    volunteer: {
+      number: '6', title: 'Volunteer Service Preferences',
+      subtitle: 'Select the conference volunteer roles you would be willing to support and all times when you are available.',
+      description: 'Select one or more volunteer preferences and at least one availability slot. The organizing team will confirm the final assignment separately.'
+    },
+    camera_ready: {
+      number: '3', title: 'Camera-ready publication package',
+      subtitle: 'Download the template package and instructions, then upload one complete camera-ready ZIP.',
+      description: 'One ZIP per accepted submission. Maximum file size: 1 GB.'
+    },
+    consent: {
+      number: '4', title: 'Copyright and recording consent',
+      subtitle: 'Download the consent PDF, sign it, rename it using the Paper ID, and upload the signed PDF.',
+      description: 'The signed PDF filename must be the Paper ID, for example 319.pdf.'
+    },
+    attendance: {
+      number: '5', title: 'Confirm your attendance',
+      subtitle: "__ACADIA_TEXT_t0039__",
+      description: 'Confirm attendance and provide the presenting author’s name and email.'
+    },
+    indexing: {
+      number: '6', title: 'Indexing metadata',
+      subtitle: 'Continue to the ACADIA indexing portal, enter the requested information, and confirm completion here.',
+      description: 'The final title and author order must match the camera-ready submission.'
+    },
+    registration: {
+      number: '7', title: 'Conference registration',
+      subtitle: 'Purchase the required registration and upload the confirmation-page PDF.',
+      description: 'A single registration may cover: one Full Paper + one Project/Field Note, OR one Project, OR one Field Note. It cannot cover Project + Project or Project + Field Note.'
+    },
+    book_poster: {
+      number: '2', title: 'Book Forum Poster',
+      subtitle: 'Download the official poster template and upload one press-quality Book Forum poster PDF.',
+      description: 'One press-quality poster PDF prepared with the official ACADIA poster template.'
+    },
+    book_proceeding: {
+      number: '3', title: 'Book Forum Proceedings Pages',
+      subtitle: 'Download the proceedings template and upload the complete Book Forum Proceedings InDesign package as one ZIP.',
+      description: 'One InDesign package ZIP prepared with the Book Forum Proceedings template. Maximum formatted length: four pages.'
+    },
+    presentation: {number: '8', title: 'Conference presentation', subtitle: 'Session details, PowerPoint slides, and prerecorded presentation videos.', description: 'Check your presentation date and upload deadline. Upload slides and, for remote presentations, a prerecorded video.'},
+    author_proof: {
+      number: 'P', title: 'Author proof',
+      subtitle: 'Download the copyedited PDF, answer the copyeditor directly with PDF annotations, and upload the annotated PDF with any requested replacement files.',
+      description: 'Download, annotate, and return the proof PDF through the portal.'
+    }
+  };
+
+  const state = {
+    token: sessionStorage.getItem('acadiaAuthorHubToken') || '',
+    portal: null,
+    activeTask: '',
+    proof: null,
+    proofObjectUrl: '',
+    clientId: getClientId_()
+  };
+
+  const $ = id => document.getElementById(id);
+
+  document.addEventListener('DOMContentLoaded', init_);
+
+  function init_() {
+    const bannerImage = $('siteBannerImage');
+    const bannerFallback = $('siteBannerFallback');
+    if (BOOT.bannerUrl && bannerImage) {
+      bannerImage.onload = function () {
+        bannerImage.classList.remove('hidden');
+        if (bannerFallback) bannerFallback.classList.add('hidden');
+      };
+      bannerImage.onerror = function () {
+        bannerImage.classList.add('hidden');
+        if (bannerFallback) bannerFallback.classList.remove('hidden');
+      };
+      bannerImage.src = BOOT.bannerUrl;
+    }
+    updateDeadlineBar_();
+    window.setInterval(updateConferenceCountdown_, 30000);
+    document.addEventListener('visibilitychange', function () {
+      if (!document.hidden) updateConferenceCountdown_();
+    });
+    window.addEventListener('pageshow', updateConferenceCountdown_);
+    renderFooter_();
+    const loginMode = $('loginMode');
+    if (loginMode) loginMode.addEventListener('change', updateLoginMode_);
+    $('loginButton').addEventListener('click', login_);
+    $('loginTitle').addEventListener('keydown', e => { if (e.key === 'Enter') login_(); });
+    $('loginPaperId').addEventListener('keydown', e => { if (e.key === 'Enter') $('loginTitle').focus(); });
+    const loginBookTitle = $('loginBookTitle');
+    if (loginBookTitle) loginBookTitle.addEventListener('keydown', e => { if (e.key === 'Enter') login_(); });
+    $('refreshButton').addEventListener('click', function () { leaveTaskSafely_(()=>refreshPortal_(false)); });
+    $('logoutButton').addEventListener('click', ()=>leaveTaskSafely_(logout_));
+    $('backButton').addEventListener('click', ()=>leaveTaskSafely_(showPortal_));
+    $('saveTaskButton').addEventListener('click', () => saveActiveTask_(false));
+    $('submitTaskButton').addEventListener('click', () => saveActiveTask_(true));
+    $('contactLink').href = BOOT.contactEmail
+      ? 'mailto:' + encodeURIComponent(BOOT.contactEmail) + '?subject=' + encodeURIComponent("__ACADIA_TEXT_t0040__")
+      : 'mailto:?subject=' + encodeURIComponent("__ACADIA_TEXT_t0040__");
+
+    const visaOpenButton = $('visaLetterOpenButton');
+    const visaCloseButton = $('visaLetterCloseButton');
+    const visaCancelButton = $('visaLetterCancelButton');
+    const visaGenerateButton = $('visaLetterGenerateButton');
+    const visaModal = $('visaLetterModal');
+    if (visaOpenButton) visaOpenButton.addEventListener('click', openVisaLetterModal_);
+    if (visaCloseButton) visaCloseButton.addEventListener('click', closeVisaLetterModal_);
+    if (visaCancelButton) visaCancelButton.addEventListener('click', closeVisaLetterModal_);
+    if (visaGenerateButton) visaGenerateButton.addEventListener('click', generateVisaLetter_);
+    if (visaModal) visaModal.addEventListener('click', function (event) {
+      if (event.target === visaModal) closeVisaLetterModal_();
+    });
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape') closeVisaLetterModal_();
+    });
+
+    window.addEventListener('pageshow', function () {
+      $('transitionOverlay').classList.remove('active');
+      setLoading_(false);
+    });
+
+    $('taskContent').addEventListener('input',scheduleAutoSave_);
+    $('taskContent').addEventListener('change',scheduleAutoSave_);
+    window.addEventListener('online',()=>{if(hasUnsavedChanges_())flushAutoSave_();});
+    window.addEventListener('beforeunload',function(event){if(hasUnsavedChanges_()||authorUploadBusy_){event.preventDefault();event.returnValue='';}});
+    document.addEventListener('visibilitychange',()=>{if(document.hidden&&hasUnsavedChanges_())flushAutoSave_();});
+    initAcceptanceLetter_();
+    updateLoginMode_();
+    if (state.token) refreshPortal_(true);
+  }
+
+  function updateLoginMode_() {
+    const isBookForum = Boolean($('loginMode') && $('loginMode').value === 'book_forum');
+    if ($('standardLoginFields')) $('standardLoginFields').classList.toggle('hidden', isBookForum);
+    if ($('bookForumLoginFields')) $('bookForumLoginFields').classList.toggle('hidden', !isBookForum);
+    if ($('loginRequiredTasks')) $('loginRequiredTasks').textContent = isBookForum ? '3 required tasks' : 'Tasks 1–6 + registration';
+    if ($('loginLaterStage')) $('loginLaterStage').textContent = isBookForum ? 'Presentation upload' : 'Conference presentation for main-conference tracks; author proof review';
+    if ($('loginAccessMethod')) $('loginAccessMethod').textContent = isBookForum ? 'Complete book title only' : 'Paper ID + original title';
+    if ($('loginError')) $('loginError').style.display = 'none';
+    updateDeadlineBar_();
+  }
+
+  function conferenceCountdownText_(now) {
+    // Compare Detroit calendar dates, independent of the visitor's time zone.
+    const dateParts = new Intl.DateTimeFormat('en-US', {
+      timeZone: "__ACADIA_TEXT_t0023__", year: 'numeric', month: 'numeric', day: 'numeric'
+    }).formatToParts(now || new Date());
+    const parts = {};
+    dateParts.forEach(part => { parts[part.type] = part.value; });
+    const today = Date.UTC(Number(parts.year), Number(parts.month) - 1, Number(parts.day));
+    const days = Math.round((Date.parse("__ACADIA_VALUE_conferenceStart__" + "T00:00:00Z") - today) / 86400000);
+    if (days > 0) {
+      return 'Only ' + days + (days === 1 ? ' day' : ' days') +
+        "__ACADIA_TEXT_t0041__";
+    }
+    if (days === 0) return "__ACADIA_TEXT_t0042__";
+    if (days >= -2) return "__ACADIA_TEXT_t0043__";
+    return "__ACADIA_TEXT_t0044__";
+  }
+
+  function updateConferenceCountdown_() {
+    const line = $('conferenceCountdown');
+    if (!line) return;
+    const text = conferenceCountdownText_();
+    if (line.textContent !== text) line.textContent = text;
+  }
+
+  function updateDeadlineBar_() {
+    const bar = $('deadlineBar');
+    if (!bar) return;
+    bar.classList.remove('closed');
+    bar.textContent = '';
+
+    const mainLine = document.createElement('div');
+    mainLine.id = 'conferenceCountdown';
+    mainLine.className = 'deadline-main';
+    mainLine.textContent = conferenceCountdownText_();
+    bar.appendChild(mainLine);
+
+    const detailLine = document.createElement('div');
+    detailLine.className = 'deadline-extra';
+    const isPhd = Boolean(state.portal && state.portal.submission &&
+      state.portal.submission.track === 'PhD Workshop');
+    if (isPhd) {
+      detailLine.textContent = (state.portal.phdWorkshopOpen
+        ? 'PhD Workshop materials are open for submissions and revisions. Earlier uploads are retained. '
+        : 'PhD Workshop materials submissions are closed. ') +
+        'Conference registration is due by ' +
+        (BOOT.registrationDeadlineLabel || "__ACADIA_TEXT_t0012__") + '.';
+    } else {
+      const data = presentationState_.data;
+      const sub = state.portal && state.portal.submission;
+      const requirements = data && sub && String(data.paperId) === String(sub.paperId) ? data.requirements : null;
+      detailLine.textContent = requirements && requirements.confirmed
+        ? 'Your presentation: ' + requirements.dateLabel + '. Upload your final slides or presentation video by ' + requirements.deadlineLabel + "__ACADIA_TEXT_t0045__"
+        : "__ACADIA_TEXT_t0046__";
+    }
+    if(state.portal&&state.portal.authorUpdatesOpen)detailLine.textContent+=' Author information remains open for updates. Form changes save automatically; previous file versions are retained.';
+    detailLine.textContent = DEADLINE_NOTICE + ' ' + detailLine.textContent;
+    bar.appendChild(detailLine);
+  }
+
+  function renderFooter_() {
+    const sites = (BOOT.siteChairs || []).map(esc_).join(' · ');
+    const tech = (BOOT.technicalChairs || []).map(esc_).join(' · ');
+    $('footerChairs').innerHTML = '<strong>Site Chairs</strong> ' + sites + '<br><strong>Technical Chairs</strong> ' + tech;
+  }
+
+  async function login_() {
+    const isBookForum = Boolean($('loginMode') && $('loginMode').value === 'book_forum');
+    const paperId = $('loginPaperId').value.trim();
+    const title = $('loginTitle').value.trim();
+    const bookTitle = $('loginBookTitle') ? $('loginBookTitle').value.trim() : '';
+    $('loginError').style.display = 'none';
+    if (isBookForum && !bookTitle) return showLoginError_('Enter the complete accepted book title.');
+    if (!isBookForum && (!paperId || !title)) return showLoginError_('Enter both the Paper ID and original paper title.');
+    setLoading_(true);
+    try {
+      const result = isBookForum
+        ? await gas_('loginBookForum', bookTitle, state.clientId)
+        : await gas_('loginAuthor', paperId, title, state.clientId);
+
+      if (!result || !result.token) {
+        throw new Error('The portal login response was empty. Please try again.');
+      }
+
+      // All tracks now return the portal in one request. Keep the token-only
+      // fallback for compatibility with earlier server deployments.
+      if (!result.portal) {
+        result.portal = parsePortalPayload_(await gas_('getPortalData', result.token));
+      }
+      if (!result.portal || !result.portal.submission) {
+        throw new Error('The submission portal data could not be loaded. Please try again.');
+      }
+
+      state.token = result.token;
+      state.portal = result.portal;
+      sessionStorage.setItem('acadiaAuthorHubToken', state.token);
+      showPortal_();
+
+      // Keep the activity record, but write it after the portal is visible.
+      presentationSyncExpired_ = false;
+      if (result.logPortalOpen || (!isBookForum && state.portal.submission.track === 'Field Note')) {
+        gas_('recordPortalOpened', state.token).catch(function (err) {
+          console.warn('Could not record portal-opened activity:', friendlyError_(err));
+        });
+      }
+    } catch (err) {
+      showLoginError_(friendlyError_(err));
+    } finally {
+      setLoading_(false);
+    }
+  }
+
+  function showLoginError_(message) {
+    $('loginError').textContent = message;
+    $('loginError').style.display = 'block';
+  }
+
+  async function refreshPortal_(silent) {
+    if (presentationBusyGuard_()) return;
+    if (!state.token) return;
+    if (!silent) setLoading_(true);
+    try {
+      state.portal = parsePortalPayload_(await gas_('getPortalData', state.token));
+      if (!state.portal || !state.portal.submission) {
+        throw new Error('The submission portal data could not be loaded. Please try again.');
+      }
+      showPortal_();
+      if (!silent) toast_('Status refreshed.');
+    } catch (err) {
+      sessionStorage.removeItem('acadiaAuthorHubToken');
+      state.token = '';
+      state.portal = null;
+      showLogin_();
+      if (!silent) toast_(friendlyError_(err), true);
+    } finally {
+      if (!silent) setLoading_(false);
+    }
+  }
+
+  function logout_() {
+    if (presentationBusyGuard_()) return;
+    sessionStorage.removeItem('acadiaAuthorHubToken');
+    state.token = '';
+    state.portal = null;
+    state.activeTask = '';
+    revokeProofUrl_();
+    showLogin_();
+    updateDeadlineBar_();
+  }
+
+  function showLogin_() {
+    $('loginView').classList.remove('hidden');
+    $('portalView').classList.add('hidden');
+    $('taskView').classList.add('hidden');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function showPortal_() {
+    if (presentationBusyGuard_()) return;
+    if (!state.portal) return showLogin_();
+    state.activeTask = '';
+    revokeProofUrl_();
+    $('loginView').classList.add('hidden');
+    $('taskView').classList.add('hidden');
+    $('portalView').classList.remove('hidden');
+    renderPortal_();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function renderPortal_() {
+    const portal = state.portal;
+    const sub = portal.submission;
+    const isPhd = sub.track === 'PhD Workshop';
+    const isBookForum = sub.track === 'Book Forum';
+    $('portalEyebrow').textContent = 'Submission ' + sub.paperId + ' · ' + (sub.track || 'Accepted submission');
+    $('portalTitle').textContent = sub.finalTitle || sub.originalTitle;
+    $('portalMeta').textContent = [sub.volume, sub.correspondingAuthor ? 'Corresponding author: ' + sub.correspondingAuthor : '', 'Final acceptance pending completion and review'].filter(Boolean).join(' · ');
+    $('sidePaperId').textContent = sub.paperId;
+    $('sideDeadline').textContent = isBookForum ? BOOK_FORUM_DEADLINE_LABEL
+      : isPhd ? (BOOT.phdWorkshopDeadlineLabel || "__ACADIA_TEXT_t0009__")
+      : (BOOT.deadlineLabel || "__ACADIA_TEXT_t0007__");
+
+    const visaCard = $('visaLetterCard');
+    if (visaCard) visaCard.classList.toggle('hidden', !BOOT.visaLetterEnabled);
+
+    const requiredTasks = portal.tasks.filter(function (task) {
+      if (task.phase !== 'required') return false;
+      if (!isPhd && ['phd_poster', 'volunteer'].includes(task.id)) return false;
+      return true;
+    });
+    const doneStatuses = ['Submitted', 'Under review', 'Approved'];
+    const completed = requiredTasks.filter(t => doneStatuses.includes(t.status)).length;
+    const total = requiredTasks.length;
+    const percent = total ? Math.round(completed / total * 100) : 0;
+    $('progressText').textContent = completed + ' of ' + total;
+    $('progressPercent').textContent = percent + '%';
+    $('progressBar').style.width = percent + '%';
+
+    const materialTasks = requiredTasks.filter(t => t.id !== 'registration');
+    const materialRemaining = materialTasks.filter(t => !doneStatuses.includes(t.status)).length;
+    const registrationTask = requiredTasks.find(t => t.id === 'registration');
+    const registrationRemaining = !registrationTask || !doneStatuses.includes(registrationTask.status);
+    let todoText;
+
+    if (isBookForum) {
+      todoText = materialRemaining
+        ? materialRemaining + ' Book Forum ' + (materialRemaining === 1 ? 'file task remains' : 'file tasks remain') + '. Conference registration is also required.'
+        : registrationRemaining
+          ? 'The Poster and Proceedings Pages have been submitted. Conference Registration remains.'
+          : 'All three required Book Forum tasks have been submitted. The Technical Chairs will contact you if corrections are needed.';
+    } else if (isPhd) {
+      todoText = materialRemaining
+        ? materialRemaining + ' PhD Workshop ' + (materialRemaining === 1 ? 'task remains' : 'tasks remain') + '. Conference registration is Task 7.'
+        : registrationRemaining
+          ? 'Tasks 1–6 have been submitted. Task 7 (Conference Registration) remains.'
+          : 'All seven required PhD Workshop tasks have been submitted. The organizing team will contact you if corrections are needed.';
+    } else {
+      todoText = materialRemaining
+        ? materialRemaining + ' camera-ready ' + (materialRemaining === 1 ? 'task remains' : 'tasks remain') + ' before ' + (BOOT.deadlineLabel || 'the camera-ready deadline') + '. Conference registration is due by ' + (BOOT.registrationDeadlineLabel || "__ACADIA_TEXT_t0012__") + '.'
+        : registrationRemaining
+          ? 'Tasks 1–6 have been submitted. Task 7 (Conference Registration) remains due by ' + (BOOT.registrationDeadlineLabel || "__ACADIA_TEXT_t0012__") + '.'
+          : 'All seven required tasks have been submitted. The Technical Chairs will contact you if corrections are needed.';
+
+      const posterRequired = ['Projects', 'Field Note'].includes(sub.track);
+      const projectPosterFile = posterRequired
+        ? activeFile_('camera_ready', 'project_poster_pdf')
+        : null;
+      if (posterRequired && !projectPosterFile) {
+        todoText += ' Your required exhibition poster is due by ' +
+          (BOOT.projectPosterDeadlineLabel || "__ACADIA_TEXT_t0047__") + '.';
+      }
+    }
+    $('todoSummary').textContent = todoText;
+
+    setOverallStatus_(sub.overallStatus || (isBookForum ? 'Book Forum materials in progress' : (isPhd ? 'Workshop materials in progress' : 'Camera-ready in progress')));
+    $('requiredTaskList').innerHTML = requiredTasks.concat(portal.tasks.filter(t=>t.phase==='optional')).map(taskCard_).join('');
+
+    const proofTask = portal.tasks.find(t => t.id === 'author_proof');
+    $('proofTaskList').innerHTML = proofTask ? taskCard_(proofTask) : '';
+
+    const presentationTask = portal.tasks.find(t => t.id === 'presentation');
+    const presentationCard = $('presentationTemplateCard');
+    if (presentationCard) {
+      presentationCard.classList.toggle('hidden', !presentationTask);
+      presentationCard.innerHTML = presentationTask ? taskCard_(presentationTask) : '';
+    }
+    $('acceptanceLetterCard').classList.toggle('hidden', !['Full Paper', 'Projects', 'Field Note', 'PhD Workshop', 'Book Forum'].includes(sub.track));
+    const laterStageLabel = $('laterStageLabel');
+    if (laterStageLabel) {
+      laterStageLabel.classList.toggle('hidden', !proofTask && !presentationTask);
+      laterStageLabel.textContent = presentationTask ? 'Conference presentation and publication stages' : 'Later publication stage';
+    }
+    const registrationCoverageNote = $('registrationCoverageNote');
+    if (registrationCoverageNote) registrationCoverageNote.classList.toggle('hidden', isPhd || isBookForum);
+
+    $('activityList').innerHTML = portal.activity.length
+      ? portal.activity.map(eventHtml_).join('')
+      : '<div class="meta">No activity has been recorded yet.</div>';
+    updateDeadlineBar_();
+  }
+
+  function setOverallStatus_(status) {
+    const el = $('overallStatus');
+    el.textContent = status;
+    el.className = 'status ' + (
+      /action required/i.test(status) ? 'status-action' :
+      /complete|final acceptance/i.test(status) ? 'status-good' :
+      /review pending|submitted/i.test(status) ? 'status-review' : 'status-open'
+    );
+  }
+
+  function taskCard_(task) {
+    const info = TASK_INFO[task.id] || { number: '?', title: task.name, description: '' };
+    const isPaperRevisionTask = task.id === 'camera_ready' && state.portal &&
+      state.portal.submission.track === 'Full Paper' && isTaskOpen_(task.id);
+    const locked = task.status === 'Locked' && !isTaskOpen_(task.id);
+    const isPhd = state.portal && state.portal.submission.track === 'PhD Workshop';
+    const isBookForum = state.portal && state.portal.submission.track === 'Book Forum';
+    const isProjectPosterTask = task.id === 'camera_ready' &&
+      state.portal && state.portal.projectPosterRequired;
+    const posterFile = isProjectPosterTask ? activeFile_('camera_ready', 'project_poster_pdf') : null;
+    const proofReturn = task.id === 'author_proof' ? activeFile_('author_proof', 'author_annotated_proof_pdf') : null;
+    const description = isPaperRevisionTask
+      ? 'Upload a revised InDesign package when requested by the copyeditor. All earlier uploads are retained.'
+      : isProjectPosterTask
+      ? (posterFile
+        ? 'Camera-ready publication package submitted. Required exhibition poster uploaded.'
+        : 'Additional exhibition requirement: download the poster template and upload the final poster by ' +
+          (BOOT.projectPosterDeadlineLabel || "__ACADIA_TEXT_t0047__") + '.')
+      : task.id === 'author_proof'
+        ? (proofReturn
+          ? 'Annotated proof PDF uploaded. Submit the task after all requested replacement files are included.'
+          : info.description)
+        : task.id === 'registration' && isBookForum
+          ? 'Complete conference registration for this Book Forum entry and upload the confirmation-page PDF.'
+        : task.id === 'registration' && isPhd
+          ? 'Use the 100% discount promo code sent separately, complete conference registration, and upload the confirmation-page PDF.'
+        : info.description;
+    const posterPill = isProjectPosterTask
+      ? '<span class="pill ' + (posterFile ? 'pill-approved' : 'pill-action') + '">' +
+        (posterFile ? 'Exhibition Poster uploaded' : 'Exhibition Poster due') + '</span>'
+      : '';
+    const buttonLabel = isPaperRevisionTask
+      ? 'Upload / view revisions'
+      : task.id === 'author_proof'
+      ? (proofReturn ? 'Review return' : 'Download / return proof')
+      : (isProjectPosterTask && !posterFile ? 'Open / upload Exhibition Poster' : 'Open');
+
+    return '<div class="task-card">' +
+      '<div class="task-number">' + esc_((task.phase === 'required' || task.id === 'presentation') ? String(task.order) : info.number) + '</div>' +
+      '<div><h4>' + esc_(info.title) + '</h4><p>' + esc_(task.actionRequiredNote || description) + '</p></div>' +
+      '<div class="task-actions">' + posterPill + '<span class="pill ' + statusClass_(task.status) + '">' + esc_(task.status) + '</span>' +
+      '<button class="btn btn-secondary btn-small" type="button" ' + (locked ? 'disabled' : '') +
+      ' onclick="window.ACADIA.openTask(\'' + escAttr_(task.id) + '\')">' + esc_(buttonLabel) + '</button></div></div>';
+  }
+
+  function eventHtml_(event) {
+    const date = event.timestamp ? new Date(event.timestamp).toLocaleString() : '';
+    return '<div class="event"><div class="event-dot"></div><div><strong>' + esc_(event.event) + '</strong><span>' + esc_(event.detail || '') + (date ? '<br>' + esc_(date) : '') + '</span></div></div>';
+  }
+
+  async function openTask_(taskId) {
+    if (presentationBusyGuard_()) return;
+    const currentTrack = state.portal && state.portal.submission
+      ? state.portal.submission.track
+      : '';
+    if (['phd_poster', 'volunteer'].includes(taskId) && currentTrack !== 'PhD Workshop') {
+      return toast_('This task is available only to the PhD Workshop track.', true);
+    }
+    const task = getTask_(taskId);
+    const paperRevisionOpen = taskId === 'camera_ready' && currentTrack === 'Full Paper' && isTaskOpen_(taskId);
+    if (!task || (task.status === 'Locked' && !isTaskOpen_(taskId))) return toast_('This publication stage is not open yet.', true);
+    if(authorUploadBusy_)return toast_('Please wait for the file upload to finish.',true);
+    if(!(await flushAutoSave_()))return;
+    state.activeTask = taskId;
+    $('portalView').classList.add('hidden');
+    $('loginView').classList.add('hidden');
+    $('taskView').classList.remove('hidden');
+    renderTaskShell_(task);
+    renderTaskContent_();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (taskId === 'author_proof') await loadProof_();
+  }
+
+  function renderTaskShell_(task) {
+    if (task.id === 'presentation') return renderPresentationShell_(task);
+    const info = TASK_INFO[task.id];
+    const isPhd = state.portal.submission.track === 'PhD Workshop';
+    const isBookForum = state.portal.submission.track === 'Book Forum';
+    const requiredCount = state.portal.tasks.filter(t => t.phase === 'required').length;
+    $('taskEyebrow').textContent = task.phase === 'later'
+      ? 'Later publication stage'
+      : task.phase==='optional' ? 'Publication information' : 'Required task ' + task.order + ' of ' + requiredCount;
+    $('taskTitle').textContent = info.title;
+    $('taskSubtitle').textContent = task.id === 'registration' && isPhd
+      ? 'Use the 100% discount promo code sent separately, complete conference registration, and upload the confirmation-page PDF.'
+      : task.id === 'camera_ready' && state.portal.projectPosterRequired
+        ? info.subtitle + ' Project and Field Note authors must also upload the required exhibition poster by ' +
+          (BOOT.projectPosterDeadlineLabel || "__ACADIA_TEXT_t0047__") + '.'
+        : info.subtitle;
+    $('taskStatus').textContent = task.status;
+    $('taskStatus').className = 'pill ' + statusClass_(task.status);
+    $('lastSave').textContent = task.submittedAt ? 'Submitted ' + new Date(task.submittedAt).toLocaleString() : 'Changes are saved to the ACADIA Author Hub.';
+    $('taskSideNote').textContent = task.id === 'indexing'
+      ? 'The indexing form is a separate ACADIA system. This page records when it was opened and when the author confirms completion.'
+      : task.id === 'attendance'
+        ? (isPhd
+          ? 'The presenter must be one of the authors entered in Task 1.'
+          : 'The presenter must be one of the authors entered in Task 2. Conditional remote presentation requires written approval from the organizing team.')
+        : task.id === 'registration'
+          ? (isBookForum
+            ? 'Complete conference registration for this Book Forum entry and upload the confirmation-page PDF.'
+            : isPhd
+            ? 'This is Task 7 for PhD Workshop participants. The 100% discount promo code will be sent separately by the organizing team.'
+            : 'Task 7 remains open after the camera-ready deadline and is due by ' + (BOOT.registrationDeadlineLabel || "__ACADIA_TEXT_t0012__") + '.')
+          : task.id === 'volunteer'
+            ? 'Select all roles you would be willing to support. These selections are preferences; the organizing team will confirm the final assignment separately.'
+          : task.id === 'phd_poster'
+            ? 'Upload one press-quality PDF, then click Submit task.'
+            : task.id === 'book_poster'
+              ? 'Upload one press-quality Book Forum poster PDF, then click Submit task.'
+            : task.id === 'book_proceeding'
+                ? 'Upload one Book Forum Proceedings InDesign package ZIP. The formatted contribution must not exceed four pages. Then click Submit task.'
+            : task.id === 'camera_ready' && state.portal.projectPosterRequired
+              ? 'The exhibition poster is due by ' +
+                (BOOT.projectPosterDeadlineLabel || "__ACADIA_TEXT_t0047__") +
+                '. Poster submission is separate from the camera-ready ZIP and does not reopen or replace that file.'
+              : task.id === 'author_proof'
+                ? 'Download the editor’s PDF, answer queries using PDF annotations, then upload the annotated PDF and any requested replacement assets. File uploads save automatically; click Submit task when the return package is complete.'
+                : 'Uploaded files are stored in this Paper ID’s Google Drive folder. Replaced files are retained in Previous Versions.';
+    $('taskSideNote').textContent += ' ' + DEADLINE_NOTICE;
+    const fileOnly = ['camera_ready', 'phd_poster', 'consent', 'book_poster', 'book_proceeding'].includes(task.id);
+    const taskOpen = isTaskOpen_(task.id);
+    $('saveTaskButton').disabled = fileOnly || !taskOpen;
+    $('saveTaskButton').textContent = fileOnly ? 'Uploads save automatically' : 'Save changes';
+    $('submitTaskButton').disabled = !taskOpen;
+    $('submitTaskButton').textContent = 'Submit task';
+  }
+
+  function renderTaskContent_() {
+    const id = state.activeTask;
+    if (id === 'presentation') loadPresentation_();
+    else if (id === 'feedback') renderFeedback_();
+    else if (id === 'metadata') renderMetadata_();
+    else if (id === 'camera_ready') renderCameraReady_();
+    else if (id === 'phd_poster') renderPhdWorkshopPoster_();
+    else if (id === 'book_poster') renderBookForumPoster_();
+    else if (id === 'book_proceeding') renderBookForumProceeding_();
+    else if (id === 'consent') renderConsent_();
+    else if (id === 'attendance') renderAttendance_();
+    else if (id === 'indexing') renderIndexing_();
+    else if (id === 'volunteer') renderPhdWorkshopVolunteer_();
+    else if (id === 'registration') renderRegistration_();
+    else if (id === 'author_proof') renderProofPlaceholder_();
+    beginAutoSave_();
+  }
+
+  function renderFeedback_() {
+    const reviews = state.portal.reviews || [];
+    const draft = (state.portal.taskData && state.portal.taskData.feedback) || {};
+    $('taskContent').innerHTML =
+      '<div class="content-box"><h3>Reviewer comments for Submission ' + esc_(state.portal.submission.paperId) + '</h3>' +
+      (reviews.length ? reviews.map((r, i) => '<div class="review-card"><strong>' + esc_(r.label || 'Reviewer ' + (i + 1)) + '</strong><p>' + esc_(r.comment) + '</p></div>').join('') : '<p>No author-visible reviewer comments are currently available. Contact the Technical Chairs if this appears incorrect.</p>') +
+      '</div><div class="content-box"><h3>Revision response</h3>' +
+      '<div class="field"><label for="revisionSummary">Optional revision summary</label><textarea id="revisionSummary" placeholder="Briefly note how the final version addresses the main reviewer comments.">' + esc_(draft.revisionSummary || '') + '</textarea></div>' +
+      '<label style="font-size:10px"><input id="reviewConfirmed" type="checkbox" style="width:auto;margin-right:7px" ' + (draft.confirmed ? 'checked' : '') + '>I have read the reviewer comments and revised the submission accordingly.</label></div>';
+  }
+
+  function renderMetadata_() {
+    const p = state.portal;
+    const authors = p.authors && p.authors.length ? p.authors : [{
+      name: p.submission.track === 'PhD Workshop' ? (p.submission.correspondingAuthor || '') : '',
+      email: p.website.correspondingEmail || '',
+      affiliation: '',
+      orcid: '',
+      corresponding: true,
+      presenting: true
+    }];
+    const imagesBySlot = {};
+    (p.websiteImages || []).forEach(img => { imagesBySlot[img.slot] = img; });
+    $('taskContent').innerHTML =
+      '<div class="content-box"><h3>Publication metadata</h3>' +
+      '<div class="field"><label for="finalTitle">Final publication title</label><input id="finalTitle" value="' + escAttr_(p.website.finalTitle || p.submission.finalTitle || p.submission.originalTitle) + '"></div>' +
+      '<div class="two-col"><div class="field"><label>Submission category</label><div class="readonly-value">' + esc_(p.submission.track) + '</div><span class="hint">The category is fixed by the final acceptance record.</span></div><div class="field"><label for="correspondingEmail">Corresponding-author email</label><input id="correspondingEmail" type="email" value="' + escAttr_(p.website.correspondingEmail || '') + '"></div></div></div>' +
+      '<div class="content-box"><h3>Authors</h3><p>Enter authors in final publication order. Identify the corresponding and presenting author.</p><div id="authorsWrap">' + authors.map(authorRowHtml_).join('') + '</div><button class="btn btn-secondary btn-small" type="button" onclick="window.ACADIA.addAuthor()">+ Add author</button></div>' +
+      '<div class="content-box"><h3>Conference website materials</h3>' +
+      '<div class="field"><label for="abstractText">Unblinded abstract <span class="hint">Maximum 250 words</span></label><textarea id="abstractText">' + esc_(p.website.abstract || '') + '</textarea><div id="abstractCounter" class="counter"></div></div>' +
+      '<div class="field"><label for="keywords">Keywords</label><input id="keywords" value="' + escAttr_(p.website.keywords || '') + '" placeholder="Up to five keywords, separated by commas"></div>' +
+      '<div id="imagesWrap">' + [1,2,3,4,5].map(slot => imageRowHtml_(slot, imagesBySlot[slot] || {})).join('') + '</div></div>';
+    $('abstractText').addEventListener('input', updateAbstractCounter_);
+    updateAbstractCounter_();
+  }
+
+  function authorRowHtml_(author) {
+    return '<div class="author-row">' +
+      '<input data-author="name" placeholder="Full name" value="' + escAttr_(author.name || '') + '">' +
+      '<input data-author="email" type="email" placeholder="Email" value="' + escAttr_(author.email || '') + '">' +
+      '<input data-author="affiliation" placeholder="Affiliation" value="' + escAttr_(author.affiliation || '') + '">' +
+      '<input data-author="orcid" placeholder="ORCID" value="' + escAttr_(author.orcid || '') + '">' +
+      '<button class="remove" type="button" onclick="window.ACADIA.removeAuthor(this)">×</button>' +
+      '<label style="font-size:8.5px"><input data-author="corresponding" type="checkbox" style="width:auto;margin-right:5px" ' + (author.corresponding ? 'checked' : '') + '>Corresponding</label>' +
+      '<label style="font-size:8.5px"><input data-author="presenting" type="checkbox" style="width:auto;margin-right:5px" ' + (author.presenting ? 'checked' : '') + '>Presenting</label></div>';
+  }
+
+  function addAuthor_() {
+    $('authorsWrap').insertAdjacentHTML('beforeend', authorRowHtml_({}));
+    scheduleAutoSave_();
+  }
+
+  function imageRowHtml_(slot, image) {
+    const file = image.active && image.fileName
+      ? '<div class="file-chip"><span>' + esc_(image.fileName) + '</span><span>Uploaded</span></div>' : '';
+    return '<div class="image-row" data-image-slot="' + slot + '">' +
+      '<div class="image-slot">' + String(slot).padStart(2, '0') + '</div>' +
+      '<div><div class="upload-zone"><input id="websiteImageInput_' + slot + '" type="file" accept="image/jpeg,image/png,image/webp,image/tiff"><div class="button-row" style="justify-content:center;margin-top:8px"><button class="btn btn-secondary btn-small" type="button" onclick="window.ACADIA.uploadWebsiteImage(' + slot + ')">Upload / replace image</button></div></div>' + file + '<div class="upload-progress"><div id="websiteImageProgress_' + slot + '"></div></div><div id="websiteImageMessage_' + slot + '" class="upload-message"></div></div>' +
+      '<div class="image-fields"><input data-image="caption" placeholder="Caption" value="' + escAttr_(image.caption || '') + '"><input data-image="credit" placeholder="Image credit" value="' + escAttr_(image.credit || '') + '"><input data-image="altText" placeholder="Alt text" value="' + escAttr_(image.altText || '') + '"></div></div>';
+  }
+
+  function renderCameraReady_() {
+    const file = activeFile_('camera_ready', 'camera_ready_zip');
+    const track = state.portal.submission.track;
+    const isFullPaper = track === 'Full Paper';
+    const isPosterTrack = ['Projects', 'Field Note'].includes(track);
+    const templateUrl = isFullPaper ? BOOT.paperTemplateUrl : BOOT.projectFieldNoteTemplateUrl;
+    const templateTitle = isFullPaper ? 'Full Paper InDesign template' : 'Project / Field Note InDesign template';
+    const templateText = isFullPaper
+      ? 'Use this package only for submissions accepted to the Full Paper track.'
+      : 'This shared package is required for submissions accepted as Projects or Field Notes.';
+    const templateButton = isFullPaper ? 'Download Full Paper template' : 'Download Project / Field Note template';
+
+    let projectPosterHtml = '';
+    if (isPosterTrack) {
+      const posterFile = activeFile_('camera_ready', 'project_poster_pdf');
+      const posterDeadline = BOOT.projectPosterDeadlineLabel || "__ACADIA_TEXT_t0010__";
+      const posterMax = humanBytes_(BOOT.projectPosterMaxBytes || 100 * 1024 * 1024);
+      const posterButton = '<button class="btn btn-primary" type="button" onclick="window.ACADIA.uploadTaskFile(\'camera_ready\',\'project_poster_pdf\',\'projectPosterInput\',\'projectPosterProgress\',\'projectPosterMessage\')">Upload Exhibition Poster PDF</button>';
+
+      projectPosterHtml =
+        '<div class="content-box"><div class="eyebrow">Conference exhibition requirement</div><h3>Exhibition poster</h3>' +
+        "__ACADIA_TEXT_t0048__" +
+        '<div class="download-grid">' +
+        downloadCard_('Poster template package (ZIP)', 'Download the official poster template package for Projects and Field Notes.', BOOT.projectPosterTemplateUrl, 'Download poster template ZIP') +
+        downloadCard_('Poster instructions PDF', 'Review the required layout, text, image, caption, and export instructions.', BOOT.projectPosterInstructionsUrl, 'Download poster instructions PDF') +
+        '</div>' +
+        '<div class="rule-note"><strong>Choose ONE layout option.</strong> The template/instructions show three different poster master-page layouts. These are alternative options based on how you want to present your work; select one layout and use it to make one poster. Keep your poster within the parameters of the selected option.</div>' +
+        '<ul><li>Use a maximum of four images.</li><li>Limit the main description to approximately 175 words / 1,100 characters.</li><li>Export the final poster as a press-quality PDF.</li></ul>' +
+        '<div class="rule-note"><strong>Poster deadline: ' + esc_(posterDeadline) + '.</strong> This requirement applies to both Projects and Field Notes.</div></div>' +
+        '<div class="content-box"><h3>Upload final Exhibition Poster PDF</h3>' +
+        '<p>Upload one press-quality PDF. The upload itself constitutes poster submission; no additional Submit button is required. Uploading a replacement creates a new version.</p>' +
+        '<div class="upload-zone"><input id="projectPosterInput" type="file" accept="application/pdf,.pdf"><div class="button-row" style="justify-content:center;margin-top:9px">' + posterButton + '</div><div class="hint">PDF only · Maximum size: ' + esc_(posterMax) + '</div></div>' +
+        fileChip_(posterFile) +
+        (posterFile ? '<div class="notice-box" style="display:block">Poster submitted. Uploading a replacement will create a new version.</div>' : '') +
+        '<div class="upload-progress"><div id="projectPosterProgress"></div></div><div id="projectPosterMessage" class="upload-message"></div></div>';
+    }
+
+    $('taskContent').innerHTML =
+      '<div class="content-box"><h3>Download before formatting</h3><div class="download-grid">' +
+      downloadCard_(templateTitle, templateText, templateUrl, templateButton) +
+      downloadCard_('Publication instructions', 'Formatting, packaging, citation, image, and delivery requirements.', BOOT.publicationInstructionsUrl, 'Open instructions PDF') +
+      '</div><div class="rule-note">Your accepted category is <strong>' + esc_(track) + '</strong>. The portal has selected the required template automatically.</div></div>' +
+      '<div class="content-box"><h3>' + (isFullPaper ? 'Upload camera-ready or revised InDesign package' : 'Upload one camera-ready ZIP') + '</h3><p>Package the complete InDesign submission according to the instructions. Upload one complete ZIP per version. Maximum size: 1 GB.</p>' +
+      (isFullPaper ? '<div class="rule-note">You may upload revised files whenever the copyeditor requests changes. Each completed upload creates a new version. Earlier files are kept in Previous Versions; they are not overwritten or deleted. After uploading, click Submit task to submit the new version for review.</div>' : '') +
+      '<div class="upload-zone"><input id="cameraInput" type="file" accept=".zip,application/zip"><div class="button-row" style="justify-content:center;margin-top:9px"><button class="btn btn-primary" type="button" onclick="window.ACADIA.uploadTaskFile(\'camera_ready\',\'camera_ready_zip\',\'cameraInput\',\'cameraProgress\',\'cameraMessage\')">Upload camera-ready ZIP</button></div><div class="hint">Uploading large files takes time; please be patient and do not click the "Upload camera-ready ZIP" button multiple times.</div></div>' + fileChip_(file) + '<div class="upload-progress"><div id="cameraProgress"></div></div><div id="cameraMessage" class="upload-message"></div></div>' +
+      (isFullPaper ? paperCameraReadyHistoryHtml_() : '') + projectPosterHtml;
+  }
+
+  function paperCameraReadyHistoryHtml_() {
+    const history = state.portal.paperCameraReadyHistory || [];
+    if (!history.length) return '';
+    return '<div class="content-box"><h3>Upload history</h3><p>All completed versions are retained for the editorial team.</p>' +
+      history.map(file => '<div>' + fileChip_(file) + '<div class="hint">' +
+        (file.active ? 'Current version' : 'Previous version retained') +
+        (file.uploadedAt ? ' · Uploaded ' + esc_(new Date(file.uploadedAt).toLocaleString()) : '') +
+        '</div></div>').join('') + '</div>';
+  }
+
+  function renderPhdWorkshopPoster_() {
+    const file = activeFile_('phd_poster', 'phd_workshop_poster_pdf');
+    const posterDeadline = BOOT.phdWorkshopDeadlineLabel || "__ACADIA_TEXT_t0009__";
+    const posterMax = humanBytes_(BOOT.projectPosterMaxBytes || 100 * 1024 * 1024);
+    $('taskContent').innerHTML =
+      '<div class="content-box"><div class="eyebrow">PhD Workshop exhibition requirement</div><h3>PhD Workshop exhibition poster</h3>' +
+      "__ACADIA_TEXT_t0049__" +
+      '<div class="download-grid">' +
+      downloadCard_('Poster template package (ZIP)', 'Download the official poster template package for PhD Workshop participants.', BOOT.projectPosterTemplateUrl, 'Download poster template ZIP') +
+      downloadCard_('Poster instructions PDF', 'Review the required layout, text, image, caption, and export instructions.', BOOT.projectPosterInstructionsUrl, 'Download poster instructions PDF') +
+      '</div>' +
+      '<div class="rule-note"><strong>Choose ONE layout option.</strong> The template/instructions show three different poster master-page layouts. These are alternative options based on how you want to present your work; select one layout and use it to make one poster. Keep your poster within the parameters of the selected option.</div>' +
+      '<ul><li>Use a maximum of four images.</li><li>Limit the main description to approximately 175 words / 1,100 characters.</li><li>Export the final poster as a press-quality PDF.</li></ul>' +
+      '<div class="rule-note">Poster deadline: ' + esc_(posterDeadline) + '. ' + esc_(DEADLINE_NOTICE) + ' Earlier uploaded files are retained in Previous Versions.</div></div>' +
+      '<div class="content-box"><h3>Upload final PhD Workshop poster PDF</h3>' +
+      '<p>Upload one press-quality PDF. Uploading a replacement creates a new version. After the upload finishes, click Submit task to complete the PhD Workshop Exhibition Poster requirement.</p>' +
+      '<div class="upload-zone"><input id="phdPosterInput" type="file" accept="application/pdf,.pdf">' +
+      '<div class="button-row" style="justify-content:center;margin-top:9px"><button class="btn btn-primary" type="button" onclick="window.ACADIA.uploadTaskFile(\'phd_poster\',\'phd_workshop_poster_pdf\',\'phdPosterInput\',\'phdPosterProgress\',\'phdPosterMessage\')">Upload PhD Workshop poster PDF</button></div>' +
+      '<div class="hint">PDF only · Maximum size: ' + esc_(posterMax) + '</div></div>' +
+      fileChip_(file) +
+      (file ? '<div class="notice-box" style="display:block">PhD Workshop poster uploaded. Uploading a replacement will create a new version.</div>' : '') +
+      '<div class="upload-progress"><div id="phdPosterProgress"></div></div><div id="phdPosterMessage" class="upload-message"></div></div>';
+  }
+
+  function renderBookForumPoster_() {
+    const file = activeFile_('book_poster', 'BOOK_FORUM_POSTER');
+    const posterDeadline = BOOK_FORUM_DEADLINE_LABEL;
+    const posterMax = humanBytes_(BOOT.bookForumPosterMaxBytes || 100 * 1024 * 1024);
+    $('taskContent').innerHTML =
+      '<div class="content-box"><div class="eyebrow">Book Forum exhibition requirement</div><h3>Book Forum exhibition poster</h3>' +
+      "__ACADIA_TEXT_t0050__" +
+      '<div class="download-grid">' +
+      downloadCard_('Poster template package (ZIP)', 'Download the official poster template package for Book Forum authors.', BOOT.bookForumPosterTemplateUrl || BOOT.projectPosterTemplateUrl, 'Download poster template ZIP') +
+      downloadCard_('Poster instructions PDF', 'Review the required layout, text, image, caption, and export instructions.', BOOT.projectPosterInstructionsUrl, 'Download poster instructions PDF') +
+      '</div>' +
+      '<div class="rule-note"><strong>Choose ONE layout option.</strong> The template/instructions show three different poster master-page layouts. These are alternative options based on how you want to present your work; select one layout and use it to make one poster. Keep your poster within the parameters of the selected option.</div>' +
+      '<ul><li>Use a maximum of four images.</li><li>Limit the main description to approximately 175 words / 1,100 characters.</li><li>Export the final poster as a press-quality PDF.</li></ul>' +
+      '<div class="rule-note"><strong>Book Forum poster deadline: ' + esc_(posterDeadline) + '.</strong> This requirement applies to all Book Forum entries.</div></div>' +
+      '<div class="content-box"><h3>Upload final Book Forum poster PDF</h3>' +
+      '<p>Upload one press-quality PDF. Uploading a replacement creates a new version. After the upload finishes, click Submit task to complete the Book Forum Poster requirement.</p>' +
+      '<div class="upload-zone"><input id="bookForumPosterInput" type="file" accept="application/pdf,.pdf">' +
+      '<div class="button-row" style="justify-content:center;margin-top:9px"><button class="btn btn-primary" type="button" onclick="window.ACADIA.uploadTaskFile(\'book_poster\',\'BOOK_FORUM_POSTER\',\'bookForumPosterInput\',\'bookForumPosterProgress\',\'bookForumPosterMessage\')">Upload Book Forum poster PDF</button></div>' +
+      '<div class="hint">PDF only · Maximum size: ' + esc_(posterMax) + '</div></div>' +
+      fileChip_(file) +
+      (file ? '<div class="notice-box" style="display:block">Book Forum poster uploaded. Uploading a replacement will create a new version.</div>' : '') +
+      '<div class="upload-progress"><div id="bookForumPosterProgress"></div></div><div id="bookForumPosterMessage" class="upload-message"></div></div>';
+  }
+
+  function renderBookForumProceeding_() {
+    const file = activeFile_('book_proceeding', 'BOOK_FORUM_PROCEEDING');
+    const proceedingMax = humanBytes_(BOOT.bookForumProceedingMaxBytes || 1000000000);
+    $('taskContent').innerHTML =
+      '<div class="content-box"><div class="eyebrow">Book Forum proceedings requirement</div><h3>Prepare the proceedings pages</h3>' +
+      '<p>Download the Book Forum Proceedings template and use it to prepare the Book Forum contribution.</p>' +
+      '<div class="download-grid">' +
+      downloadCard_('Book Forum Proceedings template', 'Use this template to prepare the Book Forum Proceedings pages.', BOOT.bookForumProceedingTemplateUrl || BOOT.paperTemplateUrl, 'Download Book Forum Proceedings template') +
+      '</div><div class="rule-note"><strong>Book Forum Proceedings page limit: four pages maximum.</strong> Complete and package the InDesign document according to the template requirements.</div></div>' +
+      '<div class="content-box"><h3>Upload Book Forum Proceedings InDesign package</h3>' +
+      '<p>Package the complete InDesign submission as one ZIP. The formatted Book Forum Proceedings contribution must not exceed four pages. Uploading a replacement creates a new version. After the upload finishes, click Submit task.</p>' +
+      '<div class="upload-zone"><input id="bookForumProceedingInput" type="file" accept=".zip,application/zip">' +
+      '<div class="button-row" style="justify-content:center;margin-top:9px"><button class="btn btn-primary" type="button" onclick="window.ACADIA.uploadTaskFile(\'book_proceeding\',\'BOOK_FORUM_PROCEEDING\',\'bookForumProceedingInput\',\'bookForumProceedingProgress\',\'bookForumProceedingMessage\')">Upload Proceedings ZIP</button></div>' +
+      '<div class="hint">InDesign package ZIP · Four formatted pages maximum · Maximum file size: ' + esc_(proceedingMax) + '</div></div>' +
+      fileChip_(file) +
+      (file ? '<div class="notice-box" style="display:block">Book Forum Proceedings ZIP uploaded. Uploading a replacement will create a new version.</div>' : '') +
+      '<div class="upload-progress"><div id="bookForumProceedingProgress"></div></div><div id="bookForumProceedingMessage" class="upload-message"></div></div>';
+  }
+
+  function renderPhdWorkshopVolunteer_() {
+    const data = (state.portal.taskData && state.portal.taskData.volunteer) || {};
+    const selected = Array.isArray(data.preferences) ? data.preferences : [];
+    const selectedSlots = Array.isArray(data.availabilitySlots) ? data.availabilitySlots : [];
+    const options = [
+      'Conference registration desk',
+      'Author communications and slides',
+      'Navigation guides',
+      'AGM slides',
+      'Other'
+    ];
+    const optionHtml = options.map(function (option, index) {
+      return '<label class="download-card" style="display:flex;flex-direction:row;align-items:flex-start;gap:10px;cursor:pointer">' +
+        '<input data-volunteer-option type="checkbox" value="' + escAttr_(option) + '" style="width:auto;margin-top:2px" ' +
+        (selected.indexOf(option) !== -1 ? 'checked' : '') + '>' +
+        '<span><strong>' + esc_(option) + '</strong></span></label>';
+    }).join('');
+    const days = ["__ACADIA_TEXT_t0051__", "__ACADIA_TEXT_t0052__", "__ACADIA_TEXT_t0053__"];
+    const periods = ['Morning', 'Afternoon', 'Evening'];
+    const availabilityHtml = days.map(function (day) {
+      const checkboxes = periods.map(function (period) {
+        const slot = day + ' — ' + period;
+        return '<label style="display:flex;align-items:center;gap:9px;margin-top:10px;cursor:pointer">' +
+          '<input data-volunteer-slot type="checkbox" value="' + escAttr_(slot) + '" style="width:auto" ' +
+          (selectedSlots.indexOf(slot) !== -1 ? 'checked' : '') + '>' +
+          '<span>' + esc_(period) + '</span></label>';
+      }).join('');
+      return '<div class="download-card"><strong>' + esc_(day) + '</strong>' + checkboxes + '</div>';
+    }).join('');
+
+    $('taskContent').innerHTML =
+      '<div class="content-box"><div class="eyebrow">PhD Workshop participant commitment</div><h3>Select volunteer service preferences</h3>' +
+      "__ACADIA_TEXT_t0054__" +
+      '<div class="rule-note"><strong>Select all roles you would be willing to support.</strong> Your selections are preferences. The organizing team will confirm the final role, schedule, and instructions separately.</div>' +
+      '<div class="download-grid">' + optionHtml + '</div>' +
+      '<div class="field" style="margin-top:16px"><label for="volunteerOtherPreference">Other volunteer work <span class="hint">Required only when Other is selected</span></label>' +
+      '<textarea id="volunteerOtherPreference" rows="4" placeholder="Describe other conference support you would be willing to provide.">' + esc_(data.otherPreference || '') + '</textarea></div>' +
+      '<h3 style="margin-top:24px">When are you available?</h3>' +
+      '<div class="rule-note"><strong>Select every time slot when you could volunteer.</strong> Choose at least one. The organizing team will use these choices when assigning the final role and schedule.</div>' +
+      '<div class="download-grid">' + availabilityHtml + '</div>' +
+      '<label class="attendance-confirmation"><input id="volunteerConfirmed" type="checkbox" ' + (data.confirmed ? 'checked' : '') + '>' +
+      '<span>I understand that the organizing team will assign the final volunteer role and schedule based on operational needs and the availability I selected, and I confirm that I am available to complete the assigned work.</span></label></div>';
+  }
+
+  function renderConsent_() {
+    const file = activeFile_('consent', 'signed_consent');
+    const paperId = state.portal.submission.paperId;
+    $('taskContent').innerHTML =
+      '<div class="content-box"><h3>Download and sign</h3><p>Download the copyright release and recording consent, complete all required fields, and sign the document.</p>' +
+      linkButton_(BOOT.consentPdfUrl, 'Download consent PDF', 'btn-secondary') + '</div>' +
+      '<div class="content-box"><h3>Upload the signed PDF</h3><p>Rename the signed document using only the Paper ID before uploading it.</p>' +
+      '<div class="upload-zone"><input id="consentInput" type="file" accept="application/pdf,.pdf"><div class="button-row" style="justify-content:center;margin-top:9px"><button class="btn btn-primary" type="button" onclick="window.ACADIA.uploadTaskFile(\'consent\',\'signed_consent\',\'consentInput\',\'consentProgress\',\'consentMessage\')">Upload signed consent</button></div><div class="hint">Required filename: ' + esc_(paperId) + '.pdf</div></div>' + fileChip_(file) + '<div class="upload-progress"><div id="consentProgress"></div></div><div id="consentMessage" class="upload-message"></div></div>';
+  }
+
+  function renderAttendance_() {
+    const metadataTaskNumber = state.portal.submission.track === 'PhD Workshop' ? '1' : '2';
+    const attendance = state.portal.attendance || {};
+    const presenterName = attendance.presenterName || state.portal.submission.presentingAuthor || '';
+    const presenterEmail = attendance.presenterEmail || state.portal.submission.presentingEmail || '';
+    $('taskContent').innerHTML =
+      '<div class="content-box"><h3>Confirm attendance and presenter</h3>' +
+      "__ACADIA_TEXT_t0055__" +
+      '<label class="attendance-confirmation"><input id="attendanceConfirmed" type="checkbox" ' + (attendance.confirmed ? 'checked' : '') + '>' +
+      "__ACADIA_TEXT_t0056__" +
+      '<div class="two-col" style="margin-top:14px"><div class="field"><label for="attendancePresenterName">Presenting author’s full name</label><input id="attendancePresenterName" value="' + escAttr_(presenterName) + '"></div>' +
+      '<div class="field"><label for="attendancePresenterEmail">Presenting author’s email</label><input id="attendancePresenterEmail" type="email" value="' + escAttr_(presenterEmail) + '"></div></div>' +
+      '<div class="rule-note">The presenter must appear in the final author list entered in Task ' + metadataTaskNumber + "__ACADIA_TEXT_t0057__";
+  }
+
+  function attendanceFaqHtml_() {
+  const faq="__ACADIA_VALUE_attendanceFaq__";
+  const escape=value=>String(value||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  return '<div class="content-box attendance-faq"><h3>Attendance, travel, and registration</h3><div class="faq-list">'+faq.map(item=>'<details class="faq-item"><summary>'+escape(item.question)+'</summary><div class="faq-answer"><p>'+escape(item.answer).replace(/\n/g,'<br>')+'</p></div></details>').join('')+'</div></div>';
+}
+
+  function renderRegistration_() {
+    const r = state.portal.registration || {};
+    const file = activeFile_('registration', 'registration_receipt');
+    const isPhd = state.portal.submission.track === 'PhD Workshop';
+    const isBookForum = state.portal.submission.track === 'Book Forum';
+    const coverageRule = isPhd || isBookForum
+      ? ''
+      : '<div class="rule-note"><strong>Registration coverage:</strong> one registration may cover (1) one Full Paper + one Project/Field Note, OR (2) one Project, OR (3) one Field Note. It cannot cover Project + Project or Project + Field Note. A coauthor must register separately for every additional accepted submission beyond these limits.</div>';
+    const conflictMessage = isBookForum
+      ? 'This registration is already linked to another Book Forum entry. A separate valid registration is required for this entry.'
+      : isPhd
+      ? 'This registration is already linked to another PhD Workshop submission.'
+      : 'This registration already covers another accepted submission in the same registration-coverage category. One registration may cover one Full Paper + one Project/Field Note, or one Project, or one Field Note. It cannot cover Project + Project or Project + Field Note. A coauthor must register separately for the additional submission.';
+    const registrationIntro = isBookForum
+      ? '<div class="content-box"><div class="eyebrow">Book Forum registration</div><h3>Complete conference registration</h3>' +
+        '<p>Use the ACADIA registration site to complete the required conference registration for this Book Forum entry. Save the confirmation page or receipt as a PDF.</p>' +
+        linkButton_(BOOT.registrationUrl, 'Open conference registration', 'btn-primary') + '</div>'
+      : isPhd
+      ? '<div class="content-box"><div class="eyebrow">PhD Workshop registration</div><h3>Complete conference registration with your promo code</h3>' +
+        '<p>The organizing team will send your PhD Workshop promo code separately. Enter the code during registration to receive a 100% discount, complete the registration process, and save the confirmation page as a PDF. The promo code is not entered or stored in this portal.</p>' +
+        linkButton_(BOOT.registrationUrl, 'Open conference registration', 'btn-primary') + '</div>'
+      : '<div class="content-box"><h3>Purchase conference registration</h3><p>Use the ACADIA registration site to purchase the required ticket. Save the confirmation page or receipt as a PDF.</p>' +
+        linkButton_(BOOT.registrationUrl, 'Open conference registration', 'btn-primary') +
+        coverageRule + '</div>';
+
+    $('taskContent').innerHTML =
+      registrationIntro +
+      (isPhd || isBookForum ? '' : attendanceFaqHtml_()) +
+      '<div class="content-box"><h3>Registered presenting author</h3><div class="two-col"><div class="field"><label for="registeredAuthor">Full name</label><input id="registeredAuthor" value="' + escAttr_(r.registeredAuthor || '') + '"></div><div class="field"><label for="registeredEmail">Email used for registration</label><input id="registeredEmail" type="email" value="' + escAttr_(r.registeredEmail || '') + '"></div></div>' +
+      '<div class="field"><label for="registrationNumber">Confirmation or order number</label><input id="registrationNumber" value="' + escAttr_(r.confirmationNumber || '') + '"></div>' +
+      '<div class="upload-zone"><input id="registrationInput" type="file" accept="application/pdf,.pdf"><div class="button-row" style="justify-content:center;margin-top:9px"><button class="btn btn-primary" type="button" onclick="window.ACADIA.uploadTaskFile(\'registration\',\'registration_receipt\',\'registrationInput\',\'registrationProgress\',\'registrationMessage\')">Upload confirmation PDF</button></div></div>' + fileChip_(file) + '<div class="upload-progress"><div id="registrationProgress"></div></div><div id="registrationMessage" class="upload-message"></div>' +
+      (r.uniqueAuthorCheck === 'CONFLICT' ? '<div class="error-box" style="display:block">' + esc_(conflictMessage) + '</div>' : '') + '</div>';
+  }
+
+  function renderIndexing_() {
+    const data = state.portal.indexing || {};
+    const indexingUrl = String(BOOT.indexingUrl || '').trim();
+    const launchControl = indexingUrl
+      ? '<a class="btn btn-primary" href="' + escAttr_(indexingUrl) + '" target="_blank" rel="noopener noreferrer" onclick="window.ACADIA.noteIndexingOpened()">Continue to ACADIA Indexing Metadata</a>'
+      : "__ACADIA_TEXT_t0058__";
+
+    $('taskContent').innerHTML =
+      '<div class="content-box"><h3>Submit information for indexing</h3><p>The indexing form is maintained as a separate ACADIA web application. It will open in a new browser tab. Keep this Author Hub tab open, complete the indexing form, then return here to confirm completion.</p>' +
+      launchControl +
+      (data.openedAt ? '<div class="file-chip"><span>Indexing portal opened</span><span>' + esc_(new Date(data.openedAt).toLocaleString()) + '</span></div>' : '') + '</div>' +
+      '<div class="content-box"><h3>Confirm completion</h3><label style="font-size:10px"><input id="indexConfirmed" type="checkbox" style="width:auto;margin-right:7px" ' + (data.confirmed ? 'checked' : '') + '>I submitted the final information in the ACADIA indexing system.</label>' +
+      '<div class="field" style="margin-top:14px"><label for="indexNote">Confirmation number or note <span class="hint">Optional</span></label><input id="indexNote" value="' + escAttr_(data.confirmationNote || '') + '"></div></div>';
+  }
+
+  function renderProofPlaceholder_() {
+    $('taskContent').innerHTML = '<div class="content-box"><h3>Loading copyedited proof…</h3><p>The proof download and secure return uploader will appear here.</p></div>';
+  }
+
+  async function loadProof_() {
+    setLoading_(true);
+    try {
+      state.proof = await gas_('getAuthorProof', state.token);
+      renderProof_();
+    } catch (err) {
+      $('taskContent').innerHTML = '<div class="content-box"><h3>Author proof unavailable</h3><p>' + esc_(friendlyError_(err)) + '</p></div>';
+      toast_(friendlyError_(err), true);
+    } finally {
+      setLoading_(false);
+    }
+  }
+
+  function renderProof_() {
+    // Revoke only the previous browser object URL. Keep state.proof because it
+    // contains the PDF payload returned by getAuthorProof().
+    if (state.proofObjectUrl) URL.revokeObjectURL(state.proofObjectUrl);
+    state.proofObjectUrl = '';
+    if (!state.proof || !state.proof.base64) {
+      throw new Error('The author proof PDF response is empty.');
+    }
+    const binary = atob(state.proof.base64);
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i += 1) bytes[i] = binary.charCodeAt(i);
+    state.proofObjectUrl = URL.createObjectURL(new Blob([bytes], { type: state.proof.mimeType || 'application/pdf' }));
+
+    const task = getTask_('author_proof');
+    const proofOpen = isTaskOpen_('author_proof');
+    const draft = state.proof.draft || { authorName: '', confirmed: false };
+    const responseFile = state.proof.authorResponse || activeFile_('author_proof', 'author_annotated_proof_pdf');
+    const attachmentSlots = Math.max(1, Math.min(5, Number(BOOT.authorProofAttachmentSlots || 5)));
+    const attachmentsByRole = {};
+    (state.proof.attachments || []).forEach(file => { attachmentsByRole[file.role] = file; });
+
+    const responseUploader = proofOpen
+      ? '<div class="upload-zone"><input id="annotatedProofInput" type="file" accept="application/pdf,.pdf">' +
+        '<div class="button-row" style="justify-content:center;margin-top:9px"><button class="btn btn-primary" type="button" onclick="window.ACADIA.uploadTaskFile(\'author_proof\',\'author_annotated_proof_pdf\',\'annotatedProofInput\',\'annotatedProofProgress\',\'annotatedProofMessage\')">Upload annotated proof PDF</button></div>' +
+        '<div class="hint">Required. Save all Acrobat comments and annotations into the PDF before uploading.</div></div>'
+      : '<div class="notice-box" style="display:block">This Author Proof return has been submitted. Contact the Technical Chairs if another upload is required.</div>';
+
+    const attachmentCards = Array.from({ length: attachmentSlots }, (_, index) => {
+      const slot = index + 1;
+      const slotLabel = String(slot).padStart(2, '0');
+      const role = 'author_proof_attachment_' + slotLabel;
+      const file = attachmentsByRole[role] || activeFile_('author_proof', role);
+      return proofAttachmentCard_(slot, file, proofOpen);
+    }).join('');
+
+    $('taskContent').innerHTML =
+      '<div class="content-box"><h3>1. Download the copyedited proof PDF</h3>' +
+      '<p>Download the PDF prepared by the copyeditor. Open it in Adobe Acrobat, Adobe Acrobat Reader, or another PDF application that preserves annotations. Use the Comment tools to answer every copyeditor query and mark each requested correction directly in the PDF. Save the annotated PDF locally before returning here.</p>' +
+      '<div class="button-row"><a class="btn btn-primary" href="' + escAttr_(state.proofObjectUrl) + '" download="' + escAttr_(state.proof.fileName) + '">Download copyedited proof PDF</a>' +
+      '<a class="btn btn-secondary" href="' + escAttr_(state.proofObjectUrl) + '" target="_blank" rel="noopener">Open PDF in a new tab</a></div>' +
+      '<div class="file-chip"><span>' + esc_(state.proof.fileName) + '</span><span>Proof ' + esc_(state.proof.version || '') + '</span></div>' +
+      (state.proof.dueLabel ? '<div class="rule-note">Author proof response due: ' + esc_(state.proof.dueLabel) + '</div>' : '') + '</div>' +
+
+      '<div class="content-box"><h3>2. Upload the annotated PDF</h3>' +
+      '<p>Upload the PDF in which you answered the copyeditor’s queries and added your corrections. Do not upload a newly typeset manuscript or an unannotated replacement PDF.</p>' +
+      responseUploader + fileChip_(responseFile) +
+      '<div class="upload-progress"><div id="annotatedProofProgress"></div></div><div id="annotatedProofMessage" class="upload-message"></div></div>' +
+
+      '<div class="content-box"><h3>3. Optional replacement or supporting files</h3>' +
+      '<p>Upload only files specifically requested by the copyeditor, such as corrected or higher-resolution figures. Up to ' + attachmentSlots + ' files may be returned separately. Accepted formats: JPG, PNG, TIFF, PDF, EPS, AI, PSD, SVG, or ZIP.</p>' +
+      '<div class="download-grid">' + attachmentCards + '</div></div>' +
+
+      '<div class="content-box"><h3>4. Submit the completed return package</h3>' +
+      '<div class="field"><label for="proofAuthorName">Author completing this review</label><input id="proofAuthorName" value="' + escAttr_(draft.authorName || '') + '" ' + (proofOpen ? '' : 'disabled') + '></div>' +
+      '<label class="attendance-confirmation"><input id="proofConfirmed" type="checkbox" ' + (draft.confirmed ? 'checked' : '') + ' ' + (proofOpen ? '' : 'disabled') + '>' +
+      '<span>I reviewed the complete copyedited proof, answered all copyeditor queries in the annotated PDF, and uploaded all requested replacement or supporting files.</span></label></div>';
+    beginAutoSave_();
+  }
+
+  function proofAttachmentCard_(slot, file, proofOpen) {
+    const slotLabel = String(slot).padStart(2, '0');
+    const role = 'author_proof_attachment_' + slotLabel;
+    const inputId = 'proofAttachmentInput_' + slotLabel;
+    const progressId = 'proofAttachmentProgress_' + slotLabel;
+    const messageId = 'proofAttachmentMessage_' + slotLabel;
+    const uploader = proofOpen
+      ? '<input id="' + inputId + '" type="file" accept=".jpg,.jpeg,.png,.tif,.tiff,.pdf,.eps,.ai,.psd,.svg,.zip,image/jpeg,image/png,image/tiff,application/pdf,application/zip">' +
+        '<div class="button-row" style="margin-top:8px"><button class="btn btn-secondary btn-small" type="button" onclick="window.ACADIA.uploadTaskFile(\'author_proof\',\'' + role + '\',\'' + inputId + '\',\'' + progressId + '\',\'' + messageId + '\')">Upload / replace file ' + slotLabel + '</button></div>'
+      : '';
+    return '<div class="download-card"><strong>Supporting file ' + slotLabel + '</strong>' +
+      '<span>Optional figure or replacement asset requested by the copyeditor.</span>' +
+      uploader + fileChip_(file) + '<div class="upload-progress"><div id="' + progressId + '"></div></div><div id="' + messageId + '" class="upload-message"></div></div>';
+  }
+
+  function addProofComment_() {
+    // Legacy no-op. Author responses are now returned inside the annotated PDF.
+  }
+
+  // A single queue keeps the last edit authoritative, including edits made during a save.
+  const autoSave_ = {task:'', saved:'', timer:null, pending:null, suspended:false};
+  let authorUploadBusy_ = false;
+  function collectTaskSave_() {
+    const id=state.activeTask;
+    if(!id || !isTaskOpen_(id))return null;
+    if(id==='feedback')return {fn:'saveFeedbackTask',payload:{revisionSummary:value_('revisionSummary'),confirmed:checked_('reviewConfirmed')}};
+    if(id==='metadata' && $('finalTitle'))return {fn:'saveMetadataTask',payload:collectMetadata_()};
+    if(id==='attendance')return {fn:'saveAttendanceTask',payload:{confirmed:checked_('attendanceConfirmed'),presenterName:value_('attendancePresenterName'),presenterEmail:value_('attendancePresenterEmail')}};
+    if(id==='registration')return {fn:'saveRegistrationTask',payload:{registeredAuthor:value_('registeredAuthor'),registeredEmail:value_('registeredEmail'),confirmationNumber:value_('registrationNumber')}};
+    if(id==='indexing')return {fn:'saveIndexingTask',payload:{confirmed:checked_('indexConfirmed'),confirmationNote:value_('indexNote')}};
+    if(id==='volunteer')return {fn:'savePhdWorkshopVolunteerTask',payload:{preferences:Array.from(document.querySelectorAll('[data-volunteer-option]:checked')).map(input=>input.value),otherPreference:value_('volunteerOtherPreference'),availabilitySlots:Array.from(document.querySelectorAll('[data-volunteer-slot]:checked')).map(input=>input.value),confirmed:checked_('volunteerConfirmed')}};
+    if(id==='author_proof' && $('proofAuthorName'))return {fn:'saveAuthorProof',payload:collectProof_()};
+    return null;
+  }
+  function autoSaveMessage_(message,error) {
+    const el=$('lastSave');if(!el)return;
+    el.textContent=message;el.setAttribute('role','status');el.style.color=error?'#a32828':'';
+  }
+  function beginAutoSave_() {
+    clearTimeout(autoSave_.timer);autoSave_.task=state.activeTask;
+    const request=collectTaskSave_();autoSave_.saved=request?JSON.stringify(request):'';
+    if(request)autoSaveMessage_('Changes save automatically.');
+  }
+  function hasUnsavedChanges_() {
+    const request=collectTaskSave_();
+    return Boolean(autoSave_.pending || (request && autoSave_.task===state.activeTask && JSON.stringify(request)!==autoSave_.saved));
+  }
+  function scheduleAutoSave_(event) {
+    if(autoSave_.suspended || (event && event.target && (event.target.type==='file' || !event.target.closest('#taskContent'))))return;
+    if(state.activeTask==='metadata' && event && event.target){
+      const target=event.target,rows=Array.from(document.querySelectorAll('#authorsWrap .author-row'));
+      if(target.id==='correspondingEmail'){
+        const selected=rows.filter(row=>row.querySelector('[data-author="corresponding"]').checked);
+        if(selected.length===1)selected[0].querySelector('[data-author="email"]').value=target.value;
+      } else if(target.matches('[data-author="email"], [data-author="corresponding"]')){
+        const row=target.closest('.author-row');
+        if(row && row.querySelector('[data-author="corresponding"]').checked)$('correspondingEmail').value=row.querySelector('[data-author="email"]').value;
+      }
+    }
+    if(!hasUnsavedChanges_())return;
+    clearTimeout(autoSave_.timer);autoSaveMessage_('Unsaved changes — saving shortly…');
+    autoSave_.timer=setTimeout(flushAutoSave_,1500);
+  }
+  async function flushAutoSave_() {
+    clearTimeout(autoSave_.timer);
+    if(autoSave_.pending)return autoSave_.pending;
+    const task=state.activeTask,token=state.token;
+    if(!token || autoSave_.task!==task)return true;
+    const first=collectTaskSave_();if(!first || JSON.stringify(first)===autoSave_.saved)return true;
+    autoSave_.pending=(async function(){
+      try {
+        while(state.activeTask===task && state.token===token){
+          const request=collectTaskSave_();if(!request)break;
+          const signature=JSON.stringify(request);if(signature===autoSave_.saved)break;
+          autoSaveMessage_('Saving changes…');
+          const portal=parsePortalPayload_(await gas_(request.fn,token,request.payload,false));
+          if(state.activeTask!==task || state.token!==token)return false;
+          if(!portal || !portal.submission)throw new Error('The save response could not be verified. Please retry.');
+          state.portal=portal;autoSave_.saved=signature;
+          const latest=getTask_(task);if(latest){$('taskStatus').textContent=latest.status;$('taskStatus').className='pill '+statusClass_(latest.status);}
+          if(task==='author_proof' && state.proof)state.proof.draft=Object.assign({},state.proof.draft,request.payload);
+          // Do not redraw inputs: the author may be typing the next edit.
+        }
+        autoSaveMessage_('All changes saved · '+new Date().toLocaleTimeString());return true;
+      } catch(err){autoSaveMessage_('Not saved: '+friendlyError_(err)+' Your edits remain here; use Save changes to retry.',true);return false;}
+    })();
+    try{return await autoSave_.pending;}finally{autoSave_.pending=null;}
+  }
+  async function leaveTaskSafely_(action) {
+    if(presentationBusyGuard_())return;
+    if(authorUploadBusy_)return toast_('Please wait for the file upload to finish.',true);
+    if(await flushAutoSave_())return action();
+    toast_('Your changes have not been saved. Please retry before leaving this task.',true);
+  }
+  function removeAuthor_(button){button.parentElement.remove();scheduleAutoSave_();}
+
+  async function saveActiveTask_(submit) {
+    if(!state.activeTask)return;
+    if(state.activeTask==='presentation')return startPresentationClient_();
+    if(authorUploadBusy_)return toast_('Please wait for the file upload to finish.',true);
+    if(!(await flushAutoSave_()))return;
+    if(['camera_ready','phd_poster','consent','book_poster','book_proceeding'].includes(state.activeTask)){
+      if(submit)return submitFileTask_();
+      return toast_('Uploaded files are saved automatically.');
+    }
+    if(!submit)return toast_('All changes saved.');
+    const request=collectTaskSave_();if(!request)return;
+    autoSave_.suspended=true;setLoading_(true);
+    try {
+      state.portal=parsePortalPayload_(await gas_(request.fn,state.token,request.payload,true));
+      autoSave_.saved=JSON.stringify(request);toast_('Task submitted.');showPortal_();
+    } catch(err){toast_(friendlyError_(err),true);}
+    finally{autoSave_.suspended=false;setLoading_(false);}
+  }
+
+  async function submitFileTask_() {
+    setLoading_(true);
+    try {
+      state.portal = await gas_('submitFileTask', state.token, state.activeTask);
+      toast_('Task submitted.');
+      showPortal_();
+    } catch (err) {
+      toast_(friendlyError_(err), true);
+    } finally {
+      setLoading_(false);
+    }
+  }
+
+  function collectMetadata_() {
+    const authors = Array.from(document.querySelectorAll('#authorsWrap .author-row')).map(row => ({
+      name: row.querySelector('[data-author="name"]').value.trim(),
+      email: row.querySelector('[data-author="email"]').value.trim(),
+      affiliation: row.querySelector('[data-author="affiliation"]').value.trim(),
+      orcid: row.querySelector('[data-author="orcid"]').value.trim(),
+      corresponding: row.querySelector('[data-author="corresponding"]').checked,
+      presenting: row.querySelector('[data-author="presenting"]').checked
+    }));
+    const images = Array.from(document.querySelectorAll('#imagesWrap .image-row')).map(row => ({
+      slot: Number(row.dataset.imageSlot),
+      caption: row.querySelector('[data-image="caption"]').value.trim(),
+      credit: row.querySelector('[data-image="credit"]').value.trim(),
+      altText: row.querySelector('[data-image="altText"]').value.trim()
+    }));
+    return {
+      finalTitle: value_('finalTitle'), category: state.portal.submission.track,
+      correspondingEmail: value_('correspondingEmail'),
+      abstract: value_('abstractText'), keywords: value_('keywords'),
+      authors, images
+    };
+  }
+
+  function collectProof_() {
+    return {
+      authorName: value_('proofAuthorName'),
+      confirmed: checked_('proofConfirmed')
+    };
+  }
+
+  async function uploadTaskFile_(taskId, role, inputId, progressId, messageId) {
+    if(!(await flushAutoSave_()))return;
+    const input = $(inputId);
+    const file = input && input.files && input.files[0];
+    if (!file) return toast_('Choose a file first.', true);
+    if (!isUploadOpen_(taskId, role)) {
+      return toast_(taskId === 'author_proof'
+        ? 'The Author Proof return is not currently open.'
+        : taskId === 'registration'
+          ? 'Conference registration is closed.'
+          : 'This upload is not currently open.', true);
+    }
+
+    // Preserve typed registration or Author Proof information before the upload
+    // causes the task view to refresh from the server-side record.
+    if (taskId === 'registration') {
+      setLoading_(true);
+      try {
+        state.portal = await gas_('saveRegistrationTask', state.token, {
+          registeredAuthor: value_('registeredAuthor'),
+          registeredEmail: value_('registeredEmail'),
+          confirmationNumber: value_('registrationNumber')
+        }, false);
+      } catch (err) {
+        setLoading_(false);
+        return toast_(friendlyError_(err), true);
+      }
+      setLoading_(false);
+    } else if (taskId === 'author_proof') {
+      setLoading_(true);
+      try {
+        await gas_('saveAuthorProofDraftForUpload', state.token, collectProof_());
+      } catch (err) {
+        setLoading_(false);
+        return toast_(friendlyError_(err), true);
+      }
+      setLoading_(false);
+    }
+
+    await performUpload_(taskId, role, file, progressId, messageId);
+  }
+
+  async function uploadWebsiteImage_(slot) {
+    if(!(await flushAutoSave_()))return;
+    const input = $('websiteImageInput_' + slot);
+    const file = input && input.files && input.files[0];
+    if (!file) return toast_('Choose an image first.', true);
+    setLoading_(true);
+    try {
+      state.portal = await gas_('saveMetadataTask', state.token, collectMetadata_(), false);
+    } catch (err) {
+      setLoading_(false);
+      return toast_(friendlyError_(err), true);
+    }
+    setLoading_(false);
+    await performUpload_('metadata', 'website_image_' + slot, file, 'websiteImageProgress_' + slot, 'websiteImageMessage_' + slot);
+  }
+
+  async function performUpload_(taskId, role, file, progressId, messageId) {
+    if(authorUploadBusy_)return toast_('A file upload is already in progress.',true);
+    if (!isUploadOpen_(taskId, role)) {
+      const closedMessage = taskId === 'registration'
+        ? 'Conference registration is closed.'
+        : taskId === 'author_proof'
+          ? 'The Author Proof return is not currently open.'
+          : taskId === 'camera_ready' && role === 'project_poster_pdf'
+            ? 'The Author Portal is currently disabled.'
+            : 'Tasks 1–6 are closed.';
+      return toast_(closedMessage, true);
+    }
+    const progress = $(progressId);
+    const message = $(messageId);
+    if (progress) progress.style.width = '0%';
+    if (message) message.textContent = 'Preparing secure Google Drive upload…';
+    authorUploadBusy_=true;
+    setLoading_(true);
+    try {
+      const upload = await gas_('createDriveUploadSession', state.token, {
+        taskId, role, originalName: file.name, mimeType: file.type || 'application/octet-stream', sizeBytes: file.size
+      });
+      setLoading_(false);
+      const finalized = await uploadChunksThroughAppsScript_(upload.receipt, file, upload.chunkBytes || BOOT.uploadChunkBytes, percent => {
+        if (progress) progress.style.width = percent.toFixed(1) + '%';
+        if (message) message.textContent = 'Uploading ' + humanBytes_(file.size) + ' · ' + Math.floor(percent) + '%';
+      });
+      state.portal = finalized.portal;
+      if(!(await flushAutoSave_()))return;
+      if (progress) progress.style.width = '100%';
+      if (message) message.textContent = finalized.fileName + ' uploaded successfully.';
+      toast_('File uploaded to Google Drive.');
+      renderTaskShell_(getTask_(state.activeTask));
+      if (state.activeTask === 'author_proof') await loadProof_();
+      else renderTaskContent_();
+    } catch (err) {
+      if (message) message.textContent = friendlyError_(err);
+      toast_(friendlyError_(err), true);
+    } finally {
+      authorUploadBusy_=false;
+      setLoading_(false);
+    }
+  }
+
+  /**
+   * Sends fixed-size file chunks to Apps Script. The server forwards each chunk
+   * into a private Drive resumable-upload session, so no OAuth token or Drive
+   * upload URL is exposed to the browser.
+   */
+  async function uploadChunksThroughAppsScript_(receipt, file, chunkBytes, onProgress) {
+    const unit = 256 * 1024;
+    const chunkSize = Math.max(unit, Math.floor(Number(chunkBytes || 8 * 1024 * 1024) / unit) * unit);
+    let offset = 0;
+    let attempts = 0;
+
+    while (offset < file.size) {
+      const endExclusive = Math.min(offset + chunkSize, file.size);
+      const chunk = file.slice(offset, endExclusive);
+      const base64 = await blobToBase64_(chunk);
+      try {
+        const result = await gas_('uploadDriveChunk', state.token, receipt, offset, base64);
+        if (result.complete) {
+          onProgress(100);
+          return result;
+        }
+        const next = Number(result.nextOffset || endExclusive);
+        if (!Number.isFinite(next) || next <= offset || next > file.size) {
+          throw new Error('Google Drive returned an invalid upload offset.');
+        }
+        offset = next;
+        attempts = 0;
+        onProgress(offset / file.size * 100);
+      } catch (err) {
+        attempts += 1;
+        if (attempts > 5) throw err;
+        await wait_(Math.min(10000, attempts * 1600));
+        try {
+          const status = await gas_('queryDriveUploadStatus', state.token, receipt);
+          if (status.complete) {
+            onProgress(100);
+            return status;
+          }
+          const recovered = Number(status.nextOffset || 0);
+          if (Number.isFinite(recovered) && recovered >= 0 && recovered <= file.size) {
+            offset = recovered;
+            onProgress(offset / file.size * 100);
+          }
+        } catch (statusError) {
+          if (attempts > 4) throw statusError;
+        }
+      }
+    }
+    throw new Error('The upload ended without a Google Drive completion response.');
+  }
+
+  function blobToBase64_(blob) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onerror = () => reject(new Error('The selected file chunk could not be read.'));
+      reader.onload = () => {
+        const result = String(reader.result || '');
+        const comma = result.indexOf(',');
+        resolve(comma >= 0 ? result.slice(comma + 1) : result);
+      };
+      reader.readAsDataURL(blob);
+    });
+  }
+
+  function noteIndexingOpened_() {
+    // Both the Author Hub and the indexing system are Apps Script web apps.
+    // The indexing portal must open as a top-level page in a new tab, never inside
+    // the Author Hub iframe. This logging call is fire-and-forget and does not delay navigation.
+    try {
+      google.script.run
+        .withFailureHandler(function (err) {
+          console.warn('Could not record indexing-opened timestamp:', err);
+        })
+        .recordIndexingOpened(state.token);
+    } catch (err) {
+      console.warn('Could not start indexing-opened log call:', err);
+    }
+    return true;
+  }
+
+  // Optional acceptance letter; no RPC or PDF work is performed during login.
+  const acceptanceLetterState_ = {record: null, busy: false, sequence: 0, objectUrl: ''};
+
+  function initAcceptanceLetter_() {
+    $('acceptanceLetterOpenButton').addEventListener('click', openAcceptanceLetter_);
+    $('acceptanceLetterCloseButton').addEventListener('click', closeAcceptanceLetter_);
+    $('acceptanceLetterCancelButton').addEventListener('click', closeAcceptanceLetter_);
+    $('acceptanceLetterGenerateButton').addEventListener('click', generateAcceptanceLetter_);
+    $('acceptanceLetterConfirm').addEventListener('change', function () {
+      $('acceptanceLetterGenerateButton').disabled = acceptanceLetterState_.busy || !acceptanceLetterState_.record || !acceptanceLetterState_.record.ready || !$('acceptanceLetterConfirm').checked;
+    });
+    $('acceptanceLetterModal').addEventListener('click', function (event) {
+      if (event.target === $('acceptanceLetterModal')) closeAcceptanceLetter_();
+    });
+    document.addEventListener('keydown', function (event) {
+      const modal = $('acceptanceLetterModal');
+      if (modal.classList.contains('hidden')) return;
+      if (event.key === 'Escape') closeAcceptanceLetter_();
+      if (event.key === 'Tab') {
+        const focusable = Array.from(modal.querySelectorAll('button:not([disabled]), input:not([disabled]), a[href]')).filter(function (el) { return !el.classList.contains('hidden'); });
+        const first = focusable[0], last = focusable[focusable.length - 1];
+        if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+        else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+      }
+    });
+  }
+
+  function clearAcceptanceDownload_() {
+    if (acceptanceLetterState_.objectUrl) URL.revokeObjectURL(acceptanceLetterState_.objectUrl);
+    acceptanceLetterState_.objectUrl = '';
+    const link = $('acceptanceLetterDownloadLink');
+    link.removeAttribute('href'); link.classList.add('hidden');
+  }
+
+  async function openAcceptanceLetter_() {
+    if (!state.portal || acceptanceLetterState_.busy) return;
+    const sequence = ++acceptanceLetterState_.sequence;
+    const token = state.token;
+    acceptanceLetterState_.record = null;
+    clearAcceptanceDownload_();
+    const modal = $('acceptanceLetterModal');
+    modal.classList.remove('hidden'); modal.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('modal-open');
+    $('acceptanceLetterError').style.display = 'none';
+    $('acceptanceLetterNotice').style.display = 'none';
+    $('acceptanceLetterDetails').textContent = 'Loading the saved submission record…';
+    $('acceptanceLetterGenerateButton').disabled = true;
+    $('acceptanceLetterConfirm').checked = false;
+    $('acceptanceLetterConfirm').disabled = true;
+    $('acceptanceLetterCloseButton').focus();
+    try {
+      const data = await gas_('getAcceptanceLetterData', token);
+      if (sequence !== acceptanceLetterState_.sequence || token !== state.token) return;
+      acceptanceLetterState_.record = data;
+      const details = $('acceptanceLetterDetails');
+      details.replaceChildren();
+      const meta = document.createElement('p');
+      meta.textContent = 'Submission ' + data.paperId + ' · ' + data.track;
+      const title = document.createElement('h3'); title.textContent = data.title;
+      const heading = document.createElement('p'); heading.textContent = 'All authors · saved publication order';
+      const list = document.createElement('ol');
+      data.authors.forEach(function (author) {
+        const row = document.createElement('li'); row.style.marginBottom = '8px';
+        const name = document.createElement('strong'); name.textContent = author.name || 'Name missing';
+        const affiliation = document.createElement('div'); affiliation.textContent = author.affiliation || 'Affiliation missing';
+        row.append(name, affiliation); list.appendChild(row);
+      });
+      details.append(meta, title, heading, list);
+      if (!data.ready) {
+        $('acceptanceLetterError').textContent = data.issues.join(' ') + "__ACADIA_TEXT_t0059__";
+        $('acceptanceLetterError').style.display = 'block';
+      }
+      $('acceptanceLetterConfirm').disabled = !data.ready;
+    } catch (error) {
+      if (sequence !== acceptanceLetterState_.sequence || token !== state.token) return;
+      $('acceptanceLetterDetails').textContent = '';
+      $('acceptanceLetterError').textContent = friendlyError_(error);
+      $('acceptanceLetterError').style.display = 'block';
+    }
+  }
+
+  function closeAcceptanceLetter_() {
+    if (acceptanceLetterState_.busy) return;
+    const modal = $('acceptanceLetterModal');
+    if (modal.classList.contains('hidden')) return;
+    acceptanceLetterState_.sequence += 1;
+    acceptanceLetterState_.record = null;
+    clearAcceptanceDownload_();
+    modal.classList.add('hidden'); modal.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('modal-open');
+    $('acceptanceLetterOpenButton').focus();
+  }
+
+  async function generateAcceptanceLetter_() {
+    const record = acceptanceLetterState_.record;
+    if (!record || !record.ready || acceptanceLetterState_.busy || !$('acceptanceLetterConfirm').checked) return;
+    const token = state.token;
+    const button = $('acceptanceLetterGenerateButton');
+    acceptanceLetterState_.busy = true;
+    button.disabled = true; button.textContent = 'Generating PDF…';
+    $('acceptanceLetterConfirm').disabled = true;
+    $('acceptanceLetterCloseButton').disabled = true;
+    $('acceptanceLetterCancelButton').disabled = true;
+    $('acceptanceLetterError').style.display = 'none';
+    $('acceptanceLetterNotice').style.display = 'none';
+    clearAcceptanceDownload_();
+    try {
+      const result = await gas_('generateOfficialAcceptanceLetter', token, {recordKey: record.recordKey, confirmed: true});
+      if (token !== state.token) return;
+      if (!result || !result.base64 || result.mimeType !== 'application/pdf') throw new Error('The PDF could not be generated. Please try again.');
+      const binary = atob(result.base64);
+      const bytes = new Uint8Array(binary.length);
+      for (let i = 0; i < binary.length; i += 1) bytes[i] = binary.charCodeAt(i);
+      const url = URL.createObjectURL(new Blob([bytes], {type: 'application/pdf'}));
+      acceptanceLetterState_.objectUrl = url;
+      const link = $('acceptanceLetterDownloadLink');
+      link.href = url; link.download = result.fileName; link.classList.remove('hidden');
+      link.click();
+      $('acceptanceLetterNotice').textContent = 'Your letter is ready. If the download did not start, use Download PDF below.';
+      $('acceptanceLetterNotice').style.display = 'block';
+    } catch (error) {
+      $('acceptanceLetterError').textContent = friendlyError_(error);
+      $('acceptanceLetterError').style.display = 'block';
+    } finally {
+      acceptanceLetterState_.busy = false;
+      button.disabled = false; button.textContent = 'Generate and download PDF';
+      $('acceptanceLetterConfirm').disabled = false;
+      $('acceptanceLetterCloseButton').disabled = false;
+      $('acceptanceLetterCancelButton').disabled = false;
+    }
+  }
+
+  function openVisaLetterModal_() {
+    if (!BOOT.visaLetterEnabled) return toast_('The invitation-letter service is not currently available.', true);
+    if (!state.portal) return;
+    const modal = $('visaLetterModal');
+    const title = state.portal.submission.finalTitle || state.portal.submission.originalTitle || '';
+    $('visaLetterPaperTitle').textContent = title;
+    $('visaLetterAuthorName').value = '';
+    $('visaLetterError').style.display = 'none';
+    $('visaLetterNotice').style.display = 'none';
+    modal.classList.remove('hidden');
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('modal-open');
+    setTimeout(function () { $('visaLetterAuthorName').focus(); }, 50);
+  }
+
+  function closeVisaLetterModal_() {
+    const modal = $('visaLetterModal');
+    if (!modal || modal.classList.contains('hidden')) return;
+    modal.classList.add('hidden');
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('modal-open');
+  }
+
+  async function generateVisaLetter_() {
+    const authorName = value_('visaLetterAuthorName');
+    const error = $('visaLetterError');
+    const notice = $('visaLetterNotice');
+    error.style.display = 'none';
+    notice.style.display = 'none';
+
+    if (!authorName) {
+      error.textContent = 'Enter the full legal name exactly as shown on the passport.';
+      error.style.display = 'block';
+      return;
+    }
+
+    const button = $('visaLetterGenerateButton');
+    button.disabled = true;
+    button.textContent = 'Generating PDF…';
+    setLoading_(true);
+
+    try {
+      const result = await gas_('generateVisaInvitationLetter', state.token, {
+        authorName: authorName
+      });
+      const binary = atob(result.base64 || '');
+      const bytes = new Uint8Array(binary.length);
+      for (let i = 0; i < binary.length; i += 1) bytes[i] = binary.charCodeAt(i);
+      const objectUrl = URL.createObjectURL(new Blob([bytes], {
+        type: result.mimeType || 'application/pdf'
+      }));
+      const link = document.createElement('a');
+      link.href = objectUrl;
+      link.download = result.fileName || "__ACADIA_TEXT_t0060__";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setTimeout(function () { URL.revokeObjectURL(objectUrl); }, 2000);
+
+      notice.textContent = 'Your invitation letter has been generated and downloaded. A private copy has been retained by ACADIA.';
+      notice.style.display = 'block';
+      toast_('Invitation letter generated.');
+      await refreshPortal_(true);
+    } catch (err) {
+      error.textContent = friendlyError_(err);
+      error.style.display = 'block';
+    } finally {
+      setLoading_(false);
+      button.disabled = false;
+      button.textContent = 'Generate and download PDF';
+    }
+  }
+
+  function isUploadOpen_(taskId, role) {
+    return isTaskOpen_(taskId);
+  }
+
+  function isTaskOpen_(taskId) {
+    if(!state.portal || !state.portal.authorUpdatesOpen)return false;
+    if(taskId==='author_proof')return Boolean(state.portal.authorProofOpen);
+    return Boolean(getTask_(taskId));
+  }
+
+  function activeFile_(taskId, role) {
+    return (state.portal.files || []).find(file => file.taskId === taskId && file.role === role) || null;
+  }
+
+  function fileChip_(file) {
+    return file ? '<div class="file-chip"><span>' + esc_(file.fileName) + '</span><span>v' + esc_(file.version) + ' · ' + humanBytes_(file.sizeBytes) + '</span></div>' : '';
+  }
+
+  function downloadCard_(title, text, url, label) {
+    return '<div class="download-card"><strong>' + esc_(title) + '</strong><span>' + esc_(text) + '</span>' + linkButton_(url, label, 'btn-secondary btn-small') + '</div>';
+  }
+
+  function linkButton_(url, label, classes) {
+    if (!url) return '<button class="btn ' + classes + '" type="button" disabled>' + esc_(label) + ' — link pending</button>';
+    return '<a class="btn ' + classes + '" href="' + escAttr_(url) + '" target="_blank" rel="noopener">' + esc_(label) + '</a>';
+  }
+
+  function getTask_(taskId) {
+    return state.portal && state.portal.tasks.find(task => task.id === taskId);
+  }
+
+  function statusClass_(status) {
+    if (status === 'Approved') return 'pill-approved';
+    if (['Submitted', 'Under review'].includes(status)) return 'pill-submitted';
+    if (status === 'Action required') return 'pill-action';
+    if (status === 'Draft saved') return 'pill-draft';
+    if (status === 'Proof ready') return 'pill-ready';
+    return 'pill-not';
+  }
+
+  function updateAbstractCounter_() {
+    const el = $('abstractText');
+    const counter = $('abstractCounter');
+    if (!el || !counter) return;
+    const count = wordCountClient_(el.value);
+    counter.textContent = count + ' / 250 words';
+    counter.classList.toggle('over', count > 250);
+  }
+
+  function option_(value, selected) {
+    return '<option value="' + escAttr_(value) + '" ' + (String(value) === String(selected) ? 'selected' : '') + '>' + esc_(value) + '</option>';
+  }
+
+  function value_(id) { const el = $(id); return el ? String(el.value || '').trim() : ''; }
+  function checked_(id) { const el = $(id); return Boolean(el && el.checked); }
+  function wordCountClient_(text) { const value = String(text || '').trim(); return value ? value.split(/\s+/).length : 0; }
+  function humanBytes_(bytes) { const n = Number(bytes || 0); if (n >= 1024 ** 3) return (n / 1024 ** 3).toFixed(2) + ' GB'; if (n >= 1024 ** 2) return (n / 1024 ** 2).toFixed(1) + ' MB'; if (n >= 1024) return Math.ceil(n / 1024) + ' KB'; return n + ' bytes'; }
+  function wait_(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
+
+  function parsePortalPayload_(payload) {
+    if (typeof payload !== 'string') return payload;
+    try {
+      return JSON.parse(payload);
+    } catch (err) {
+      throw new Error('The submission portal returned an unreadable response.');
+    }
+  }
+
+  function gas_(functionName, ...args) {
+    return new Promise((resolve, reject) => {
+      const runner = google.script.run
+        .withSuccessHandler(resolve)
+        .withFailureHandler(error => reject(new Error(error && error.message ? error.message : String(error))));
+      runner[functionName](...args);
+    });
+  }
+
+  function setLoading_(active) { $('loadingOverlay').classList.toggle('active', Boolean(active)); }
+  let toastTimer = null;
+  function toast_(message, error) {
+    const el = $('toast');
+    el.textContent = message;
+    el.className = 'toast show' + (error ? ' error' : '');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => { el.className = 'toast'; }, 5000);
+  }
+  function friendlyError_(error) { return String(error && error.message ? error.message : error || 'An unexpected error occurred.').replace(/^Exception:\s*/i, ''); }
+  function esc_(value) { return String(value == null ? '' : value).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;' }[c])); }
+  function escAttr_(value) { return esc_(value).replace(/`/g, '&#096;'); }
+  function getClientId_() {
+    let id = localStorage.getItem('acadiaAuthorHubClientId');
+    if (!id) {
+      id = (window.crypto && window.crypto.randomUUID ? window.crypto.randomUUID() : 'client-' + Math.random().toString(36).slice(2) + Date.now());
+      localStorage.setItem('acadiaAuthorHubClientId', id);
+    }
+    return id;
+  }
+  function revokeProofUrl_() { if (state.proofObjectUrl) URL.revokeObjectURL(state.proofObjectUrl); state.proofObjectUrl = ''; state.proof = null; }
+
+  // Presentation files are transferred as binary Blob slices directly to Drive.
+  // google.script.run carries only metadata and progress queries, never file bytes.
+  const presentationState_ = {data:null,busy:false,paused:false,xhr:null,receipt:null};
+  window.addEventListener('beforeunload', function(e) {
+    if(presentationState_.busy) {e.preventDefault();e.returnValue='';}
+  });
+
+  function presentationBusyGuard_() {
+    if(!presentationState_.busy) return false;
+    toast_('Please pause the presentation upload before leaving this step.',true);return true;
+  }
+
+  function renderPresentationShell_(task) {
+    $('taskEyebrow').textContent='Conference presentation · Step '+task.order;
+    $('taskTitle').textContent='Presentation and session information';
+    $('taskSubtitle').textContent='Download the template, check your session, and upload your presentation.';
+    $('taskStatus').textContent=task.status;$('taskStatus').className='pill '+statusClass_(task.status);
+    $('lastSave').textContent=task.submittedAt?'Presentation submitted · '+new Date(task.submittedAt).toLocaleString():'Choose your file below, then click Submit presentation or Upload / resume. A verified upload completes submission.';
+    $('taskSideNote').textContent='Choose your PowerPoint or video, enter the presenter’s name, then click Submit presentation or Upload / resume. Both buttons upload and submit the selected file. Completed uploads need no extra submission. Slides, videos, and all previous versions are retained. '+DEADLINE_NOTICE;
+    $('saveTaskButton').disabled=true;$('saveTaskButton').textContent='Upload saves automatically';
+    // Enabled once presentation data is loaded; disabled only while loading or uploading.
+    $('submitTaskButton').disabled=true;
+    $('submitTaskButton').textContent='Submit presentation';
+  }
+
+  async function loadPresentation_() {
+    presentationState_.data=null;
+    $('submitTaskButton').disabled=true;
+    $('taskContent').innerHTML='<div class="content-box"><p>Loading session information…</p></div>';
+    try {
+      const data=await gas_('getPresentationData',state.token);
+      if(state.activeTask!=='presentation') return;
+      presentationState_.data=data;renderPresentation_(data);
+    } catch(err) {
+      if(state.activeTask==='presentation') $('taskContent').innerHTML='<div class="content-box"><p>'+esc_(friendlyError_(err))+'</p><button class="btn btn-secondary" id="presRetryLoad">Retry</button></div>';
+      if($('presRetryLoad')) $('presRetryLoad').onclick=loadPresentation_;
+    }
+  }
+
+  function presentationRequirementsHtml_(data) {
+    const r=data.requirements||{};
+    return '<h3>Upload deadline and venue requirements</h3>'+
+      (r.confirmed?'<p>Your presentation: '+esc_(r.dateLabel)+'</p><p>'+esc_(r.venue)+'<br>'+esc_(r.address)+'</p>':'')+
+      '<p>Upload deadline: '+esc_(data.deadlineLabel)+"__ACADIA_TEXT_t0061__"+
+      '<p>'+esc_(DEADLINE_NOTICE)+'</p>'+ 
+      '<p>'+esc_(r.handover||'Check your confirmed presentation date for the applicable deadline.')+'</p>'+
+      (r.restrictions||[]).map(function(text){return '<p>'+esc_(text)+'</p>';}).join('')+
+      '<p>Accepted files: PowerPoint (.ppt, .pptx) or a prerecorded presentation video (.mp4, .mov, .m4v, .webm, .avi, .mkv).</p>';
+  }
+
+  function updatePresentationRequirements_(data) {
+    if($('presRequirements'))$('presRequirements').innerHTML=presentationRequirementsHtml_(data);
+    if($('presDeadlineStatus'))$('presDeadlineStatus').textContent=data.isLate
+      ? 'The upload deadline for your presentation has passed. Contact the organizing team before relying on a late upload. Uploading a file does not guarantee it can be included; Friday and Saturday files cannot be changed after delivery to venue management.' : '';
+    updateDeadlineBar_();
+  }
+
+  function renderPresentation_(data) {
+    const s=data.session,isBook=data.track==='Book Forum',requirements=data.requirements||{};
+    presentationState_.data=Object.assign({},presentationState_.data,data);
+    $('submitTaskButton').disabled=presentationState_.busy||!data.uploadsEnabled;
+    $('submitTaskButton').textContent=presentationState_.busy?'Uploading…':'Submit presentation';
+    const sessionHtml=s
+      ?'<h3>'+esc_(s['Session Title'])+'</h3><p><strong>'+esc_(s.Date)+' · '+esc_(s['Start Time'])+'–'+esc_(s['End Time'])+"__ACADIA_TEXT_t0062__"+
+       '<p>'+esc_(requirements.venue||s.Venue).replace(/\n/g,'<br>')+(requirements.address?'<br>'+esc_(requirements.address):'')+'<br>Room: '+esc_(s.Room)+'</p><p>Session chair: <strong>'+esc_(s.Chair||'TBD')+'</strong></p>'+
+       (data.presentationStart?'<p>Your presentation: '+esc_(data.presentationStart)+(data.presentationEnd?'–'+esc_(data.presentationEnd):'')+"__ACADIA_TEXT_t0063__":'<p>Your position in the session: '+esc_(data.order||'TBD')+'. Individual start times have not been announced.</p>')
+      :'<h3>Session to be announced</h3><p>You may upload your presentation now. The organizers will assign it to the correct session folder when your schedule is confirmed.</p>';
+    const peers=s?'<div class="content-box"><h3>In your session</h3><div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;text-align:left"><thead><tr><th style="padding:8px">Order</th><th style="padding:8px">ID</th><th style="padding:8px">Presentation / authors</th></tr></thead><tbody>'+
+      data.peers.map(function(p){const mine=p.paperId===data.paperId;return '<tr style="border-top:1px solid #dce2e8;'+(mine?'background:#edf4fa;':'')+'"><td style="padding:8px;vertical-align:top">'+esc_(p.order)+'</td><td style="padding:8px;vertical-align:top">'+esc_(p.paperId)+(mine?' (you)':'')+'</td><td style="padding:8px"><strong>'+esc_(p.title)+'</strong><p style="margin:4px 0">'+esc_(p.authors)+'</p>'+(p.presenter?'<div>Presenter: '+esc_(p.presenter)+'</div>':'')+'</td></tr>';}).join('')+'</tbody></table></div></div>':'';
+    const current=[data.current,data.videoCurrent].filter(Boolean).map(function(file){return '<div class="rule-note">'+(file.fileKind==='video'?'Submitted video: ':'Submitted slides: ')+esc_(file.fileName)+'<br>Version '+esc_(file.version)+' · '+humanBytes_(file.size)+' · '+new Date(file.uploadedAt).toLocaleString()+(file.late?' · Late upload':'')+'</div>';}).join('');
+    const sync=data.scheduleSync||{};
+    const scheduleHtml='<div class="content-box">'+sessionHtml+'<p id="presSyncNote">'+(sync.stale?'Schedule sync is temporarily unavailable. Showing the last confirmed schedule.':'Synced with the conference schedule'+(sync.checkedAt?' · '+new Date(sync.checkedAt).toLocaleTimeString():''))+'.</p><button id="presRefreshSchedule" class="btn btn-secondary">Refresh session details</button></div>'+peers;
+    if(data.__scheduleOnly){$('presSchedule').innerHTML=scheduleHtml;$('presRefreshSchedule').onclick=refreshPresentationSchedule_;updatePresentationCalendar_(data);updatePresentationRequirements_(data);return;}
+    $('taskContent').innerHTML='<div id="presSchedule">'+scheduleHtml+'</div>'+
+      '<div class="content-box" id="presRequirements">'+presentationRequirementsHtml_(data)+'</div>'+presentationCalendarHtml_(data)+ 
+      '<div class="content-box"><h3>Prepare your presentation</h3>'+(data.instruction?'<p>'+esc_(data.instruction)+'</p>':'')+
+      '<div class="rule-note"><p><strong>Presentation computer:</strong> To keep sessions running smoothly, all presentations must be delivered using the computer provided by the organizers. Presenting from your own computer is not permitted.</p>'+
+      '<p>For PowerPoint uploads, all videos, audio, and other media must be embedded directly in your file and work offline. Do not use online media, streaming content, or links to external media files.</p></div>'+
+      '<div class="rule-note"><p>Remote presenters may upload a prerecorded presentation video. Include your slides and narration in the recording and keep within your allotted presentation time.</p><p>PowerPoint slides and presentation videos are saved separately. Uploading a video keeps your existing slides; uploading slides keeps your existing video. Earlier versions of each are retained for the organizers.</p></div>'+
+      '<p>You may use or adapt the PowerPoint template, or use your own slide design. Please use the template’s title slide for a consistent conference format.</p>'+
+      (data.templateUrl?linkButton_(data.templateUrl,'Download PowerPoint template','btn-secondary'):'<p><strong>The presentation template will be available here once provided by the organizers.</strong></p>')+
+      '</div>'+ 
+      '<div class="content-box" id="presUploadBox"><h3>Upload and submit presentation slides or video</h3>'+current+
+      '<p>Select your file and click <strong>Submit presentation</strong> or <strong>Upload / resume</strong>. Wait for the submission confirmation; no second submission step is needed.</p>'+ 
+      '<p id="presDeadlineStatus" class="rule-note"></p>'+ 
+      (data.pending?'<p class="rule-note">An unfinished upload is available: '+esc_(data.pending.originalName)+'. Select the same unchanged file and click Upload / resume.</p>':'')+
+      '<div class="field"><label for="presName">Actual presenter’s full name</label><input id="presName" maxlength="160" value="'+escAttr_(data.pending?data.pending.presenterName:data.presenterName)+'"></div>'+
+      (isBook?'':'<div class="field"><label for="presLastName">Presenter’s family / last name</label><input id="presLastName" maxlength="80" value="'+escAttr_(data.pending?data.pending.presenterLastName:data.presenterLastName)+'"><p>Please enter your full family name, including compound surnames. It will be used in the filename.</p></div>')+
+      '<p>Files are renamed automatically: '+(isBook?'BookTitle.ext':'PaperID_PresenterLastName_PresentationTitle.ext')+', keeping the original extension (for example, .pptx or .mp4). All previous uploaded files are retained.</p>'+
+      '<input id="presFile" type="file" accept=".ppt,.pptx,.mp4,.mov,.m4v,.webm,.avi,.mkv"><p>PowerPoint: .ppt, .pptx. Video: .mp4, .mov, .m4v, .webm, .avi, .mkv. Up to '+humanBytes_(data.maxBytes)+' per file. Upload one file at a time. Keep this tab open while uploading. If interrupted, select the same unchanged file to resume.</p>'+
+      '<div class="button-row"><button id="presUpload" class="btn btn-primary" '+(data.uploadsEnabled?'':'disabled')+'>Upload / resume</button><button id="presPause" class="btn btn-secondary" disabled>Pause</button>'+
+      '<button id="presDiscard" class="btn btn-secondary" '+(data.pending?'':'disabled')+'>Discard unfinished upload</button></div>'+
+      '<div class="upload-progress"><div id="presProgress"></div></div><div id="presMessage" class="upload-message" role="status" aria-live="polite"></div>'+
+      (!data.uploadsEnabled?'<p>Presentation uploads are temporarily closed.</p>':'')+'</div>';
+    $('presRefreshSchedule').onclick=refreshPresentationSchedule_;
+    bindPresentationCalendar_();
+    updatePresentationRequirements_(data);
+    $('presUpload').onclick=startPresentationClient_;
+    // Keep the upload action visible before the longer session and venue details.
+    $('taskContent').insertBefore($('presUploadBox'),$('taskContent').firstChild);
+    if(data.pending) ['presName','presLastName'].forEach(function(id){if($(id)) $(id).disabled=true;});
+    $('presPause').onclick=function(){presentationState_.paused=true;if(presentationState_.xhr) presentationState_.xhr.abort();};
+    if($('presDiscard')) $('presDiscard').onclick=async function(){
+      if(!confirm('Discard this unfinished upload? Previously completed presentations will be kept.')) return;
+      try{await gas_('abandonPresentationUpload',state.token,data.pending.uploadId);await loadPresentation_();}catch(e){toast_(friendlyError_(e),true);}
+    };
+  }
+
+  let presentationCalendarBusy_=false;
+
+  function presentationCalendarCaption_(data) {
+    const calendar=data.calendar||{};
+    if(!calendar.available)return 'Available when your presentation session has a confirmed date and time.';
+    return (calendar.precision==='presentation'?'Your presentation: ':'Your full session: ')+
+      calendar.date+' · '+calendar.start+'–'+calendar.end+"__ACADIA_TEXT_t0064__"+
+      (calendar.precision==='session'?' Your individual presentation time has not been confirmed.':'');
+  }
+
+  function presentationCalendarHtml_(data) {
+    const calendar=data.calendar||{};
+    if(!calendar.enabled)return '';
+    return '<div class="content-box" id="presCalendarBox"><h3>Save to my calendar</h3>'+
+      '<p id="presCalendarCaption">'+esc_(presentationCalendarCaption_(data))+'</p>'+
+      '<button type="button" class="btn btn-secondary" id="presCalendarOpen" '+(calendar.available?'':'disabled')+'>Save to my calendar</button>'+
+      '<div id="presCalendarForm" class="hidden" style="margin-top:16px">'+
+      '<div class="field"><label for="presCalendarEmail">Email for your calendar invitation</label>'+
+      '<input id="presCalendarEmail" type="email" autocomplete="email" maxlength="254" required placeholder="you@example.com"></div>'+
+      '<p>Use the email address of your Google Calendar or Microsoft Outlook calendar. Accept the invitation to keep the event linked to conference schedule updates.</p>'+
+      '<p>Time, location, and session changes will update the same event. Your calendar may ask you to accept an update.</p>'+
+      '<button type="button" class="btn btn-primary" id="presCalendarSend">Send calendar invitation</button>'+
+      '<div id="presCalendarMessage" class="upload-message" role="status" aria-live="polite"></div></div></div>';
+  }
+
+  function updatePresentationCalendar_(data) {
+    presentationState_.data=Object.assign({},presentationState_.data,data);
+    if($('presCalendarCaption'))$('presCalendarCaption').textContent=presentationCalendarCaption_(data);
+    if($('presCalendarOpen'))$('presCalendarOpen').disabled=!(data.calendar&&data.calendar.available);
+    if($('presCalendarSend'))$('presCalendarSend').disabled=presentationCalendarBusy_||!(data.calendar&&data.calendar.available);
+  }
+
+  function bindPresentationCalendar_() {
+    if(!$('presCalendarOpen'))return;
+    presentationCalendarBusy_=false;
+    $('presCalendarOpen').onclick=function(){
+      $('presCalendarForm').classList.remove('hidden');$('presCalendarEmail').focus();
+    };
+    $('presCalendarSend').onclick=sendPresentationCalendarClient_;
+    $('presCalendarEmail').onkeydown=function(event){
+      if(event.key==='Enter'){event.preventDefault();sendPresentationCalendarClient_();}
+    };
+  }
+
+  async function sendPresentationCalendarClient_() {
+    if(presentationCalendarBusy_)return;
+    const input=$('presCalendarEmail'),button=$('presCalendarSend'),message=$('presCalendarMessage');
+    if(!input||!input.reportValidity())return;
+    const data=presentationState_.data,calendar=data&&data.calendar;
+    if(!calendar||!calendar.available){message.textContent='Please wait for your confirmed session time.';return;}
+    const paperId=data.paperId;
+    presentationCalendarBusy_=true;button.disabled=true;button.textContent='Sending invitation…';message.textContent='';
+    try{
+      const result=await gas_('sendPresentationCalendarInvite',state.token,input.value.trim());
+      if(state.activeTask==='presentation'&&presentationState_.data&&presentationState_.data.paperId===paperId){
+        message.textContent=result.message;
+      }
+    }catch(err){message.textContent=friendlyError_(err);}
+    finally{presentationCalendarBusy_=false;button.disabled=false;button.textContent='Send calendar invitation';}
+  }
+
+  let presentationSyncBusy_=false;
+  let presentationSyncExpired_=false;
+  async function refreshPresentationSchedule_(){
+    if(presentationSyncBusy_||presentationSyncExpired_||!state.token||document.hidden||state.activeTask!=='presentation'||!$('presSchedule'))return;
+    presentationSyncBusy_=true;
+    try{const fresh=await gas_('getPresentationData',state.token);if(state.activeTask==='presentation'&&$('presSchedule')){presentationState_.data.session=fresh.session;presentationState_.data.peers=fresh.peers;renderPresentation_(Object.assign({},fresh,{__scheduleOnly:true}));}}
+    catch(e){
+      presentationSyncExpired_=/portal session (?:has expired|is invalid)/i.test(friendlyError_(e));
+      if($('presSyncNote'))$('presSyncNote').textContent=presentationSyncExpired_
+        ? 'Your session has expired. Please sign in again to refresh or upload.'
+        : 'Unable to refresh. Showing the last confirmed schedule.';
+    }
+    finally{presentationSyncBusy_=false;}
+  }
+  setInterval(function(){if(!presentationState_.busy)refreshPresentationSchedule_();},60000);
+
+  async function presentationFingerprint_(file) {
+    const span=1024*1024;
+    const sample=new Blob([String(file.size)+':'+String(file.lastModified)+':',file.slice(0,span),file.slice(Math.max(span,file.size-span))]);
+    const digest=await crypto.subtle.digest('SHA-256',await sample.arrayBuffer());
+    return Array.from(new Uint8Array(digest)).map(function(n){return n.toString(16).padStart(2,'0');}).join('');
+  }
+
+  function presentationProgress_(done,total,startTime,startOffset,note) {
+    if(!$('presMessage')) return;
+    const elapsed=Math.max(0.001,(performance.now()-startTime)/1000),rate=Math.max(0,done-startOffset)/elapsed;
+    const eta=rate>0?Math.max(0,(total-done)/rate):0;
+    $('presProgress').style.width=Math.min(100,100*done/total).toFixed(1)+'%';
+    $('presMessage').textContent=note||Math.min(100,100*done/total).toFixed(1)+'% · '+humanBytes_(done)+' / '+humanBytes_(total)+(rate>0?' · '+humanBytes_(rate)+'/s · about '+Math.ceil(eta/60)+' min remaining':'');
+  }
+
+  function presentationPut_(receipt,blob,start,total,onProgress) {
+    return new Promise(function(resolve,reject){
+      const xhr=new XMLHttpRequest();presentationState_.xhr=xhr;
+      xhr.open('PUT',receipt.uploadUrl,true);xhr.timeout=10*60*1000;
+      xhr.setRequestHeader('Content-Type',receipt.mime);
+      xhr.setRequestHeader('Content-Range','bytes '+start+'-'+(start+blob.size-1)+'/'+total);
+      xhr.upload.onprogress=function(e){if(e.lengthComputable) onProgress(start+e.loaded);};
+      xhr.onload=function(){presentationState_.xhr=null;resolve({status:xhr.status,range:xhr.getResponseHeader('Range')});};
+      xhr.onerror=xhr.ontimeout=function(){presentationState_.xhr=null;reject(new Error('The direct connection to Google Drive was interrupted.'));};
+      xhr.onabort=function(){presentationState_.xhr=null;reject(new Error('Upload paused.'));};
+      // The browser sets Content-Length. Never attach the owner's OAuth token here.
+      xhr.send(blob);
+    });
+  }
+
+  async function startPresentationClient_() {
+    if(presentationState_.busy) return;
+    const data=presentationState_.data,input=$('presFile');
+    if(!data||!input)return toast_('Presentation information is still loading. Please wait or click Retry.',true);
+    if(!data.uploadsEnabled)return toast_('Presentation uploads are temporarily closed. Please contact the organizers.',true);
+    const file=input.files[0];
+    if(!file){
+      if(!data.pending&&(data.current||data.videoCurrent))return toast_('Your uploaded presentation is already submitted. Choose a new file only if you need to submit a revision.');
+      input.scrollIntoView({behavior:'smooth',block:'center'});input.focus();
+      return toast_(data.pending?'Select the same unchanged file to resume and complete your submission.':'Choose PowerPoint slides or a presentation video first.',true);
+    }
+    if(!/\.(pptx?|mp4|mov|m4v|webm|avi|mkv)$/i.test(file.name)||file.size<1||file.size>data.maxBytes) return toast_('Choose a supported PowerPoint or video file within the displayed size limit.',true);
+    const presenterName=value_('presName'),presenterLastName=value_('presLastName');
+    if(!presenterName||(data.track!=='Book Forum'&&!presenterLastName)) return toast_('Enter the presenter’s full name'+(data.track==='Book Forum'?'':' and family/last name')+'.',true);
+    const ps=presentationState_;ps.busy=true;ps.paused=false;
+    $('submitTaskButton').disabled=true;$('submitTaskButton').textContent='Uploading…';
+    ['presUpload','presFile','presName','presLastName','presDiscard'].forEach(function(id){if($(id)) $(id).disabled=true;});
+    $('presPause').disabled=false;$('presMessage').textContent='Preparing your file for a resumable upload…';
+    let success=false;
+    try {
+      const fingerprint=await presentationFingerprint_(file);
+      let receipt=data.pending?await gas_('resumePresentationUpload',state.token,data.pending.uploadId,fingerprint)
+        :await gas_('startPresentationUpload',state.token,{originalName:file.name,size:file.size,fingerprint:fingerprint,presenterName:presenterName,presenterLastName:presenterLastName});
+      ps.receipt=receipt;
+      data.pending={uploadId:receipt.uploadId,originalName:file.name,size:file.size,fingerprint:fingerprint,presenterName:presenterName,presenterLastName:presenterLastName};
+      let remote=receipt.completed?{complete:true,offset:file.size}:await gas_('getPresentationUploadStatus',state.token,receipt.uploadId);
+      let offset=remote.offset,chunkBytes=32*1024*1024,failures=0;
+      const started=performance.now(),initial=offset;
+      while(!remote.complete&&offset<file.size) {
+        if(ps.paused) throw new Error('Upload paused. Select the same file and click Upload / resume to continue.');
+        const end=Math.min(file.size,offset+chunkBytes),chunkStarted=performance.now();
+        try {
+          const response=await presentationPut_(receipt,file.slice(offset,end),offset,file.size,function(done){presentationProgress_(done,file.size,started,initial);});
+          if(response.status===200||response.status===201) {remote={complete:true,offset:file.size};offset=file.size;break;}
+          if(response.status!==308) throw new Error('Google Drive returned HTTP '+response.status+'.');
+          const match=response.range&&response.range.match(/bytes=0-(\d+)/);
+          remote=match?{complete:false,offset:Number(match[1])+1}:await gas_('getPresentationUploadStatus',state.token,receipt.uploadId);
+          if(remote.offset<=offset&&!remote.complete) throw new Error('No progress was confirmed by Google Drive.');
+          offset=remote.offset;failures=0;
+          const seconds=(performance.now()-chunkStarted)/1000;
+          if(seconds<8) chunkBytes=64*1024*1024;else if(seconds>45) chunkBytes=16*1024*1024;
+        } catch(error) {
+          if(ps.paused) throw new Error('Upload paused. Select the same file and click Upload / resume to continue.');
+          failures++;if(failures>4) throw new Error('The upload was interrupted repeatedly. Your confirmed progress is retained. Retry on a network that can connect directly to Google Drive.');
+          $('presMessage').textContent='Connection interrupted. Checking saved progress and retrying ('+failures+'/4)…';
+          await wait_(Math.min(8000,1000*Math.pow(2,failures-1)));
+          remote=await gas_('getPresentationUploadStatus',state.token,receipt.uploadId);offset=remote.offset;
+        }
+        if(!Number.isSafeInteger(offset)||offset<0||offset>file.size) throw new Error('Google Drive returned an invalid upload offset.');
+        presentationProgress_(offset,file.size,started,initial);
+      }
+      if(!remote.complete) {
+        remote=await gas_('getPresentationUploadStatus',state.token,receipt.uploadId);
+        if(!remote.complete) throw new Error('The upload is not complete. Click Upload / resume to continue.');
+      }
+      $('presMessage').textContent='Transfer complete. Verifying and filing your presentation…';
+      const result=await gas_('finishPresentationUpload',state.token,receipt.uploadId);
+      const task=getTask_('presentation');if(task){task.status='Uploaded';task.submittedAt=result.uploadedAt;renderPresentationShell_(task);}
+      success=true;toast_('Presentation submitted successfully'+(result.late?' (marked late)':'')+'. No further Submit action is needed.');
+    } catch(err) {
+      if($('presMessage')) $('presMessage').textContent=friendlyError_(err);
+      toast_(friendlyError_(err),true);
+    } finally {
+      ps.busy=false;ps.xhr=null;
+      ['presUpload','presFile','presName','presLastName','presDiscard'].forEach(function(id){if($(id)) $(id).disabled=((id==='presName'||id==='presLastName')&&Boolean(data.pending))||(id==='presDiscard'&&!data.pending);});
+      if($('presPause')) $('presPause').disabled=true;
+      $('submitTaskButton').disabled=!data.uploadsEnabled;
+      $('submitTaskButton').textContent='Submit presentation';
+      if(success) await loadPresentation_();
+    }
+  }
+
+  window.ACADIA = {
+    openTask: openTask_, addAuthor: addAuthor_, removeAuthor: removeAuthor_,
+    uploadTaskFile: uploadTaskFile_, uploadWebsiteImage: uploadWebsiteImage_,
+    noteIndexingOpened: noteIndexingOpened_
+  };
+})();
+</script>

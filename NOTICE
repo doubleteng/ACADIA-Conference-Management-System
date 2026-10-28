@@ -1,0 +1,21 @@
+ACADIA Conference Toolkit
+
+The toolkit derives from five ACADIA 2026 Google Apps Script projects supplied
+for open-source migration by Teng Teng. Original source snapshots are retained
+privately; the public source removes production identifiers and participant data.
+
+Roboto: the Conference Program HTML embeds Roboto font data. Copyright 2011
+The Roboto Project Authors (https://github.com/googlefonts/roboto-classic).
+Licensed under the SIL Open Font License, Version 1.1. The complete notice and
+license remain in modules/conference-program/Index.html and generated copies.
+That font is not relicensed under the toolkit's MIT License.
+
+PDF.js: the program optionally loads Mozilla PDF.js from a versioned jsDelivr
+URL. PDF.js is an external runtime dependency, not vendored JavaScript in this
+repository; its own Apache-2.0 license applies. Network access is required for
+that optional client PDF preview. Google APIs are external services.
+
+Conference names, logos, signatures, artwork, publication assets and participant
+content are not granted a license by this repository. Each edition supplies its
+own approved materials. No 2026 papers, signatures or populated rosters are part
+of this release.

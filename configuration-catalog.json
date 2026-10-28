@@ -1,0 +1,1672 @@
+{
+  "version": 1,
+  "texts": {
+    "t0001": {
+      "template": "ACADIA {{year}} Publication Portal",
+      "locations": [
+        "author-portal/Code.gs"
+      ]
+    },
+    "t0002": {
+      "template": "ACADIA {{year}}: {{theme}}",
+      "locations": [
+        "author-portal/Code.gs",
+        "author-portal/PresentationCalendar.gs",
+        "recognition-portal/Code.gs",
+        "recognition-portal/Index.html",
+        "recognition-portal/VolunteerUI.html",
+        "presentation-reminders/Code.gs"
+      ]
+    },
+    "t0003": {
+      "template": "{{location}}",
+      "locations": [
+        "author-portal/Code.gs",
+        "recognition-portal/Code.gs",
+        "recognition-portal/Index.html",
+        "conference-program/Code.gs",
+        "conference-program/Index.html"
+      ]
+    },
+    "t0004": {
+      "template": "{{workshopDates}}",
+      "locations": [
+        "author-portal/Code.gs",
+        "recognition-portal/Code.gs",
+        "recognition-portal/Index.html",
+        "conference-program/Code.gs"
+      ]
+    },
+    "t0005": {
+      "template": "{{conferenceDates}}",
+      "locations": [
+        "author-portal/Code.gs",
+        "recognition-portal/Code.gs",
+        "recognition-portal/Index.html",
+        "conference-program/Code.gs"
+      ]
+    },
+    "t0006": {
+      "template": "{{cameraReadyDeadlineUtc}}",
+      "locations": [
+        "author-portal/Code.gs"
+      ]
+    },
+    "t0007": {
+      "template": "{{cameraReadyDeadlineLabel}}",
+      "locations": [
+        "author-portal/Code.gs",
+        "author-portal/ClientJS.html"
+      ]
+    },
+    "t0008": {
+      "template": "{{phdDeadlineUtc}}",
+      "locations": [
+        "author-portal/Code.gs"
+      ]
+    },
+    "t0009": {
+      "template": "{{phdDeadlineLabel}}",
+      "locations": [
+        "author-portal/Code.gs",
+        "author-portal/ClientJS.html"
+      ]
+    },
+    "t0010": {
+      "template": "{{posterDeadlineLabel}}",
+      "locations": [
+        "author-portal/Code.gs",
+        "author-portal/ClientJS.html"
+      ]
+    },
+    "t0011": {
+      "template": "{{registrationDeadlineUtc}}",
+      "locations": [
+        "author-portal/Code.gs"
+      ]
+    },
+    "t0012": {
+      "template": "{{registrationDeadlineLabel}}",
+      "locations": [
+        "author-portal/Code.gs",
+        "author-portal/ClientJS.html"
+      ]
+    },
+    "t0013": {
+      "template": "{{earlyBirdLabel}}",
+      "locations": [
+        "author-portal/Code.gs"
+      ]
+    },
+    "t0014": {
+      "template": "{{siteChairs}}",
+      "locations": [
+        "author-portal/Code.gs"
+      ]
+    },
+    "t0015": {
+      "template": "{{technicalChairs}}",
+      "locations": [
+        "author-portal/Code.gs"
+      ]
+    },
+    "t0016": {
+      "template": "ACADIA{{year}}_",
+      "locations": [
+        "author-portal/Code.gs",
+        "recognition-portal/Awards.gs",
+        "calendar-sync/Code.gs"
+      ]
+    },
+    "t0017": {
+      "template": "Confirm that this submission will be presented at ACADIA {{year}}.",
+      "locations": [
+        "author-portal/Code.gs"
+      ]
+    },
+    "t0018": {
+      "template": "ACADIA {{year}} — Author Hub Master",
+      "locations": [
+        "author-portal/Code.gs"
+      ]
+    },
+    "t0019": {
+      "template": "ACADIA {{year}} — Author Proof Comments",
+      "locations": [
+        "author-portal/Code.gs"
+      ]
+    },
+    "t0020": {
+      "template": "Responses are created by the ACADIA {{year}} Author Hub. One response represents one page-specific author correction.",
+      "locations": [
+        "author-portal/Code.gs"
+      ]
+    },
+    "t0021": {
+      "template": "ACADIA {{year}} — Author Hub Master BACKUP before New Accepted Submissions ",
+      "locations": [
+        "author-portal/Code.gs"
+      ]
+    },
+    "t0022": {
+      "template": "ACADIA {{year}} — Author Hub Master BACKUP before Attendance Task ",
+      "locations": [
+        "author-portal/Code.gs"
+      ]
+    },
+    "t0023": {
+      "template": "{{timezone}}",
+      "locations": [
+        "author-portal/Code.gs",
+        "author-portal/ClientJS.html",
+        "author-portal/PresentationSync.gs",
+        "author-portal/AcceptanceLetter.gs",
+        "author-portal/PresentationCalendar.gs",
+        "author-portal/PresentationReminders.gs",
+        "recognition-portal/Code.gs",
+        "recognition-portal/Workshop.gs",
+        "recognition-portal/Instructor.gs",
+        "recognition-portal/Presenter.gs",
+        "recognition-portal/SessionChair.gs",
+        "recognition-portal/Volunteer.gs",
+        "recognition-portal/Awards.gs",
+        "conference-program/Code.gs",
+        "conference-program/Core.gs",
+        "conference-program/Index.html",
+        "presentation-reminders/Code.gs",
+        "calendar-sync/Code.gs"
+      ]
+    },
+    "t0024": {
+      "template": "ACADIA{{year}}_Invitation_Letter_",
+      "locations": [
+        "author-portal/Code.gs"
+      ]
+    },
+    "t0025": {
+      "template": "ACADIA {{year}} — Author Hub Master BACKUP before Visa Letter Module ",
+      "locations": [
+        "author-portal/Code.gs"
+      ]
+    },
+    "t0026": {
+      "template": "Existing ACADIA {{year}} Hub/Submission/PhD workshop folder.",
+      "locations": [
+        "author-portal/Code.gs"
+      ]
+    },
+    "t0027": {
+      "template": "ACADIA {{year}} {{theme}} — {{location}}",
+      "locations": [
+        "author-portal/Index.html"
+      ]
+    },
+    "t0028": {
+      "template": "ACADIA {{year}}",
+      "locations": [
+        "author-portal/Index.html",
+        "author-portal/PresentationCalendar.gs",
+        "recognition-portal/Index.html",
+        "conference-program/Code.gs",
+        "conference-program/Index.html",
+        "presentation-reminders/Code.gs",
+        "calendar-sync/Code.gs"
+      ]
+    },
+    "t0029": {
+      "template": "{{theme}} · {{location}}",
+      "locations": [
+        "author-portal/Index.html"
+      ]
+    },
+    "t0030": {
+      "template": "ACADIA {{year}}|{{theme}}",
+      "locations": [
+        "author-portal/Index.html"
+      ]
+    },
+    "t0031": {
+      "template": "\n              Contact ACADIA {{year}}\n            ",
+      "locations": [
+        "author-portal/Index.html"
+      ]
+    },
+    "t0032": {
+      "template": "\n              If you are an international author and need an\n              official invitation letter from the ACADIA {{year}}\n              Organizing Committee to support a visa application\n              or entry documentation for travel to the United\n              States, request one here.\n            ",
+      "locations": [
+        "author-portal/Index.html"
+      ]
+    },
+    "t0033": {
+      "template": "\n        ACADIA {{year}} · {{theme}} · {{location}}\n      ",
+      "locations": [
+        "author-portal/Index.html"
+      ]
+    },
+    "t0034": {
+      "template": "\n        ACADIA {{year}} Author Portal designed and developed by\n        Teng Teng.\n      ",
+      "locations": [
+        "author-portal/Index.html"
+      ]
+    },
+    "t0035": {
+      "template": "If any information above is incorrect or an author is missing, please contact the ACADIA {{year}} Organizing Committee at ",
+      "locations": [
+        "author-portal/Index.html"
+      ]
+    },
+    "t0036": {
+      "template": "mailto:{{contactEmail}}",
+      "locations": [
+        "author-portal/Index.html",
+        "recognition-portal/WorkshopUI.html",
+        "recognition-portal/InstructorUI.html",
+        "recognition-portal/PresenterUI.html",
+        "recognition-portal/SessionChairUI.html",
+        "recognition-portal/VolunteerUI.html"
+      ]
+    },
+    "t0037": {
+      "template": "{{contactEmail}}",
+      "locations": [
+        "author-portal/Index.html",
+        "recognition-portal/Code.gs",
+        "recognition-portal/WorkshopUI.html",
+        "recognition-portal/InstructorUI.html",
+        "recognition-portal/PresenterUI.html",
+        "recognition-portal/SessionChairUI.html",
+        "recognition-portal/VolunteerUI.html"
+      ]
+    },
+    "t0038": {
+      "template": "October 3, {{year}}",
+      "locations": [
+        "author-portal/ClientJS.html"
+      ]
+    },
+    "t0039": {
+      "template": "Confirm that this submission will be presented at ACADIA {{year}} and identify the presenting author.",
+      "locations": [
+        "author-portal/ClientJS.html"
+      ]
+    },
+    "t0040": {
+      "template": "ACADIA {{year}} Author Hub",
+      "locations": [
+        "author-portal/ClientJS.html"
+      ]
+    },
+    "t0041": {
+      "template": " to go until ACADIA {{year}}! We can’t wait to see you in {{city}}.",
+      "locations": [
+        "author-portal/ClientJS.html"
+      ]
+    },
+    "t0042": {
+      "template": "ACADIA {{year}} begins today! Welcome to {{city}}.",
+      "locations": [
+        "author-portal/ClientJS.html"
+      ]
+    },
+    "t0043": {
+      "template": "ACADIA {{year}} is underway! Welcome to {{city}}.",
+      "locations": [
+        "author-portal/ClientJS.html"
+      ]
+    },
+    "t0044": {
+      "template": "Thank you for being part of ACADIA {{year}}!",
+      "locations": [
+        "author-portal/ClientJS.html"
+      ]
+    },
+    "t0045": {
+      "template": ". Eastern Time ({{city}}). See your Conference presentation step for venue requirements.",
+      "locations": [
+        "author-portal/ClientJS.html"
+      ]
+    },
+    "t0046": {
+      "template": "{{presentationNotice}}",
+      "locations": [
+        "author-portal/ClientJS.html"
+      ]
+    },
+    "t0047": {
+      "template": "September 15, {{year}}",
+      "locations": [
+        "author-portal/ClientJS.html"
+      ]
+    },
+    "t0048": {
+      "template": "<p>Every accepted Project and Field Note is required to submit one poster for exhibition during ACADIA {{year}}. The organizing team will print the posters; authors do not need to print or ship a poster.</p>",
+      "locations": [
+        "author-portal/ClientJS.html"
+      ]
+    },
+    "t0049": {
+      "template": "<p>Every accepted PhD Workshop participant is required to submit one poster for exhibition during ACADIA {{year}}. The organizing team will print the posters; participants do not need to print or ship a poster.</p>",
+      "locations": [
+        "author-portal/ClientJS.html"
+      ]
+    },
+    "t0050": {
+      "template": "<p>Every accepted Book Forum entry is required to submit one poster for exhibition during ACADIA {{year}}. The organizing team will print the posters; authors do not need to print or ship a poster.</p>",
+      "locations": [
+        "author-portal/ClientJS.html"
+      ]
+    },
+    "t0051": {
+      "template": "October 22",
+      "locations": [
+        "author-portal/ClientJS.html"
+      ]
+    },
+    "t0052": {
+      "template": "October 23",
+      "locations": [
+        "author-portal/ClientJS.html"
+      ]
+    },
+    "t0053": {
+      "template": "October 24",
+      "locations": [
+        "author-portal/ClientJS.html"
+      ]
+    },
+    "t0054": {
+      "template": "<p>PhD Workshop participants will receive a conference-registration promo code that provides a 100% discount. Each participant is expected to complete an assigned volunteer role supporting ACADIA {{year}}.</p>",
+      "locations": [
+        "author-portal/ClientJS.html"
+      ]
+    },
+    "t0055": {
+      "template": "<p>At least one author must attend ACADIA {{year}} and present the work. Identify the author who will serve as the presenter.</p>",
+      "locations": [
+        "author-portal/ClientJS.html"
+      ]
+    },
+    "t0056": {
+      "template": "<span>I confirm that this submission will be presented at ACADIA {{year}} by the author identified below, in person unless conditional remote presentation has been approved in writing by the organizing team.</span></label>",
+      "locations": [
+        "author-portal/ClientJS.html"
+      ]
+    },
+    "t0057": {
+      "template": ". Conditional remote presentation is permitted only when an author’s travel-permit application is refused or rejected by a relevant authority or agency. Qualifying authors must notify <a href=\"mailto:{{contactEmail}}\">{{contactEmail}}</a> within one week of acceptance so that sessions can be arranged. Submitting this task does not constitute remote-presentation approval.</div></div>",
+      "locations": [
+        "author-portal/ClientJS.html"
+      ]
+    },
+    "t0058": {
+      "template": "<div class=\"error-box\" style=\"display:block\">The indexing portal URL has not been configured. Please contact ACADIA {{year}}.</div>",
+      "locations": [
+        "author-portal/ClientJS.html"
+      ]
+    },
+    "t0059": {
+      "template": " Please contact the ACADIA {{year}} Organizing Committee at {{contactEmail}}.",
+      "locations": [
+        "author-portal/ClientJS.html"
+      ]
+    },
+    "t0060": {
+      "template": "ACADIA{{year}}_Invitation_Letter.pdf",
+      "locations": [
+        "author-portal/ClientJS.html"
+      ]
+    },
+    "t0061": {
+      "template": ". All dates and times are Eastern Time ({{timezone}} local time).</p>",
+      "locations": [
+        "author-portal/ClientJS.html"
+      ]
+    },
+    "t0062": {
+      "template": " ({{timezone}} time)</strong></p>",
+      "locations": [
+        "author-portal/ClientJS.html"
+      ]
+    },
+    "t0063": {
+      "template": " ({{timezone}} time)</p>",
+      "locations": [
+        "author-portal/ClientJS.html"
+      ]
+    },
+    "t0064": {
+      "template": " ({{timezone}} time).",
+      "locations": [
+        "author-portal/ClientJS.html"
+      ]
+    },
+    "t0065": {
+      "template": "{{presentationDeadlineUtc}}",
+      "locations": [
+        "author-portal/Presentation.gs"
+      ]
+    },
+    "t0066": {
+      "template": "{{presentationDeadlineLabel}}",
+      "locations": [
+        "author-portal/Presentation.gs"
+      ]
+    },
+    "t0067": {
+      "template": "ACADIA {{year}} - Conference Presentations",
+      "locations": [
+        "author-portal/Presentation.gs"
+      ]
+    },
+    "t0068": {
+      "template": "ACADIA {{year}} - Presentation Administration",
+      "locations": [
+        "author-portal/Presentation.gs"
+      ]
+    },
+    "t0069": {
+      "template": "ACADIA {{year}} Template.pptx. Replace this ID to change the presentation template. Authors need download permission.",
+      "locations": [
+        "author-portal/Presentation.gs"
+      ]
+    },
+    "t0070": {
+      "template": "{{presentationDeadlineLabel}}. Late uploads remain accepted.",
+      "locations": [
+        "author-portal/Presentation.gs"
+      ]
+    },
+    "t0071": {
+      "template": " Please contact the ACADIA {{year}} Organizing Committee at {{contactEmail}} before requesting the letter.",
+      "locations": [
+        "author-portal/AcceptanceLetter.gs"
+      ]
+    },
+    "t0072": {
+      "template": "ACADIA{{year}}_Official_Acceptance_Letter_",
+      "locations": [
+        "author-portal/AcceptanceLetter.gs"
+      ]
+    },
+    "t0073": {
+      "template": "The PDF page count could not be verified. Please contact {{contactEmail}}.",
+      "locations": [
+        "author-portal/AcceptanceLetter.gs"
+      ]
+    },
+    "t0074": {
+      "template": "A complete one-page letter could not be generated. Please contact the ACADIA {{year}} Organizing Committee at {{contactEmail}}.",
+      "locations": [
+        "author-portal/AcceptanceLetter.gs"
+      ]
+    },
+    "t0075": {
+      "template": " ({{timezone}} time)",
+      "locations": [
+        "author-portal/PresentationCalendar.gs",
+        "presentation-reminders/Code.gs"
+      ]
+    },
+    "t0076": {
+      "template": "ACADIA {{year}} — ",
+      "locations": [
+        "author-portal/PresentationCalendar.gs",
+        "presentation-reminders/Code.gs"
+      ]
+    },
+    "t0077": {
+      "template": "Schedule pending — ACADIA {{year}} presentation ",
+      "locations": [
+        "author-portal/PresentationCalendar.gs"
+      ]
+    },
+    "t0078": {
+      "template": "Author-requested presentation invitations kept in sync with the ACADIA {{year}} conference schedule.",
+      "locations": [
+        "author-portal/PresentationCalendar.gs"
+      ]
+    },
+    "t0079": {
+      "template": "{{senderEmail}}",
+      "locations": [
+        "author-portal/PresentationCalendar.gs",
+        "presentation-reminders/Code.gs"
+      ]
+    },
+    "t0080": {
+      "template": "Run this setup as {{senderEmail}}.",
+      "locations": [
+        "author-portal/PresentationCalendar.gs"
+      ]
+    },
+    "t0081": {
+      "template": "PRES_{{hostInstitution}}_ENABLED",
+      "locations": [
+        "author-portal/PresentationCalendar.gs"
+      ]
+    },
+    "t0082": {
+      "template": "Session Start ({{city}})",
+      "locations": [
+        "author-portal/PresentationReminders.gs",
+        "presentation-reminders/Code.gs"
+      ]
+    },
+    "t0083": {
+      "template": "Invalid {{city}} session time",
+      "locations": [
+        "author-portal/PresentationReminders.gs",
+        "presentation-reminders/Code.gs"
+      ]
+    },
+    "t0084": {
+      "template": "Verify session assignment and {{timezone}} time",
+      "locations": [
+        "author-portal/PresentationReminders.gs",
+        "presentation-reminders/Code.gs"
+      ]
+    },
+    "t0085": {
+      "template": "Your ACADIA {{year}} session begins in approximately ",
+      "locations": [
+        "author-portal/PresentationReminders.gs",
+        "presentation-reminders/Code.gs"
+      ]
+    },
+    "t0086": {
+      "template": " ({{timezone}} time; starts ",
+      "locations": [
+        "author-portal/PresentationReminders.gs",
+        "presentation-reminders/Code.gs"
+      ]
+    },
+    "t0087": {
+      "template": "ACADIA {{year}} · {{theme}}",
+      "locations": [
+        "author-portal/PresentationReminders.gs",
+        "presentation-reminders/Code.gs"
+      ]
+    },
+    "t0088": {
+      "template": "ACADIA {{year}} Author Portal",
+      "locations": [
+        "author-portal/PresentationReminders.gs"
+      ]
+    },
+    "t0089": {
+      "template": "ACADIA {{year}} — Your session starts at ",
+      "locations": [
+        "author-portal/PresentationReminders.gs",
+        "presentation-reminders/Code.gs"
+      ]
+    },
+    "t0090": {
+      "template": "Reviewer_{{nextYear}}_Interest",
+      "locations": [
+        "recognition-portal/Code.gs"
+      ]
+    },
+    "t0091": {
+      "template": "ACADIA {{year}} Recognition Portal",
+      "locations": [
+        "recognition-portal/Code.gs",
+        "recognition-portal/Index.html"
+      ]
+    },
+    "t0092": {
+      "template": "{{registrationUrl}}",
+      "locations": [
+        "recognition-portal/Code.gs",
+        "recognition-portal/Index.html"
+      ]
+    },
+    "t0093": {
+      "template": "ACADIA{{year}}_Peer_Review_Certificate",
+      "locations": [
+        "recognition-portal/Code.gs"
+      ]
+    },
+    "t0094": {
+      "template": "ACADIA {{year}} Peer Reviewer Portal",
+      "locations": [
+        "recognition-portal/Code.gs"
+      ]
+    },
+    "t0095": {
+      "template": "Enter your full name to download a certificate recognizing your contribution before and during ACADIA {{year}}, with your name and affiliation.",
+      "locations": [
+        "recognition-portal/Code.gs"
+      ]
+    },
+    "t0096": {
+      "template": "Willing to Review ACADIA {{nextYear}}",
+      "locations": [
+        "recognition-portal/Code.gs"
+      ]
+    },
+    "t0097": {
+      "template": "ACADIA {{year}} · {{theme}} · ",
+      "locations": [
+        "recognition-portal/Index.html"
+      ]
+    },
+    "t0098": {
+      "template": "\" onerror=\"this.parentNode.innerHTML='<div class=&quot;banner-fallback&quot;><strong>ACADIA {{year}}<br>HUMANISM RECODED</strong></div>'\">",
+      "locations": [
+        "recognition-portal/Index.html"
+      ]
+    },
+    "t0099": {
+      "template": "ACADIA{{year}}_Peer_Review_Certificate.pdf",
+      "locations": [
+        "recognition-portal/Index.html"
+      ]
+    },
+    "t0100": {
+      "template": "Thank you for being part of ACADIA {{year}}.",
+      "locations": [
+        "recognition-portal/Index.html"
+      ]
+    },
+    "t0101": {
+      "template": "ACADIA {{year}} is made possible by the people who review submissions, lead workshops, chair sessions, share research, volunteer their time, and participate in the conference. This portal recognizes those contributions and provides access to official certificates issued by ACADIA.",
+      "locations": [
+        "recognition-portal/Index.html"
+      ]
+    },
+    "t0102": {
+      "template": "Select the role that reflects your contribution to ACADIA {{year}}. Sign in to the appropriate channel to download your certificate.",
+      "locations": [
+        "recognition-portal/Index.html"
+      ]
+    },
+    "t0103": {
+      "template": "Thank you for reviewing ACADIA {{year}}.",
+      "locations": [
+        "recognition-portal/Index.html"
+      ]
+    },
+    "t0104": {
+      "template": "{{theme}}",
+      "locations": [
+        "recognition-portal/Index.html",
+        "conference-program/Code.gs",
+        "conference-program/Index.html"
+      ]
+    },
+    "t0105": {
+      "template": "Join us in {{city}}.",
+      "locations": [
+        "recognition-portal/Index.html"
+      ]
+    },
+    "t0106": {
+      "template": "Your reviews made a direct contribution to ACADIA {{year}}.",
+      "locations": [
+        "recognition-portal/Index.html"
+      ]
+    },
+    "t0107": {
+      "template": "Your response is stored in the ACADIA {{year}} Reviewer Portal Master Sheet with your verified EasyChair name and email.",
+      "locations": [
+        "recognition-portal/Index.html"
+      ]
+    },
+    "t0108": {
+      "template": "Register for ACADIA {{year}} ↗",
+      "locations": [
+        "recognition-portal/Index.html"
+      ]
+    },
+    "t0109": {
+      "template": "We hope to welcome you in {{city}}.",
+      "locations": [
+        "recognition-portal/Index.html"
+      ]
+    },
+    "t0110": {
+      "template": "Workshops: {{workshopDates}}",
+      "locations": [
+        "recognition-portal/Index.html"
+      ]
+    },
+    "t0111": {
+      "template": "Conference: {{conferenceDates}}",
+      "locations": [
+        "recognition-portal/Index.html"
+      ]
+    },
+    "t0112": {
+      "template": "ACADIA {{year}} · {{theme}} · {{location}}",
+      "locations": [
+        "recognition-portal/Index.html"
+      ]
+    },
+    "t0113": {
+      "template": "ACADIA {{year}} Recognition Portal designed and developed by Teng Teng.",
+      "locations": [
+        "recognition-portal/Index.html"
+      ]
+    },
+    "t0114": {
+      "template": "Workshop records are temporarily unavailable. Please contact {{contactEmail}}.",
+      "locations": [
+        "recognition-portal/Workshop.gs",
+        "recognition-portal/Instructor.gs"
+      ]
+    },
+    "t0115": {
+      "template": "We could not match that name and email to an eligible workshop registration. Please use your attendee registration details, or contact {{contactEmail}}.",
+      "locations": [
+        "recognition-portal/Workshop.gs"
+      ]
+    },
+    "t0116": {
+      "template": "This workshop registration is unavailable for your account. Please contact {{contactEmail}}.",
+      "locations": [
+        "recognition-portal/Workshop.gs"
+      ]
+    },
+    "t0117": {
+      "template": "ACADIA{{year}}_Workshop_",
+      "locations": [
+        "recognition-portal/Workshop.gs"
+      ]
+    },
+    "t0118": {
+      "template": "Your curiosity, ideas, and participation helped shape the ACADIA {{year}} workshops. We are grateful for the time and creativity you shared with our community.",
+      "locations": [
+        "recognition-portal/WorkshopUI.html"
+      ]
+    },
+    "t0119": {
+      "template": "Thank you for participating in the ACADIA {{year}} workshops! We appreciate the ideas, curiosity, and creativity you brought to our community. Your certificate is ready to download.",
+      "locations": [
+        "recognition-portal/WorkshopUI.html"
+      ]
+    },
+    "t0120": {
+      "template": "We could not match that name to an available workshop instructor record. Please use your full name as listed by ACADIA, or contact {{contactEmail}}.",
+      "locations": [
+        "recognition-portal/Instructor.gs"
+      ]
+    },
+    "t0121": {
+      "template": "This name matches more than one instructor. Please contact {{contactEmail}} to confirm your record.",
+      "locations": [
+        "recognition-portal/Instructor.gs"
+      ]
+    },
+    "t0122": {
+      "template": "This workshop instruction record is unavailable for your session. Please contact {{contactEmail}}.",
+      "locations": [
+        "recognition-portal/Instructor.gs"
+      ]
+    },
+    "t0123": {
+      "template": "ACADIA{{year}}_Workshop_Instructor_",
+      "locations": [
+        "recognition-portal/Instructor.gs"
+      ]
+    },
+    "t0124": {
+      "template": "Your teaching, preparation, and generosity helped make the ACADIA {{year}} workshops possible. Thank you for guiding participants and sharing your knowledge with our community.",
+      "locations": [
+        "recognition-portal/InstructorUI.html"
+      ]
+    },
+    "t0125": {
+      "template": "Thank you for teaching at ACADIA {{year}}! We appreciate the expertise, time, and care you shared with our workshop participants. Your instruction certificate is ready to download.",
+      "locations": [
+        "recognition-portal/InstructorUI.html"
+      ]
+    },
+    "t0126": {
+      "template": "Presentation certificates are being prepared. Please contact {{contactEmail}}.",
+      "locations": [
+        "recognition-portal/Presenter.gs"
+      ]
+    },
+    "t0127": {
+      "template": "Required presentation records are unavailable. Please contact {{contactEmail}}.",
+      "locations": [
+        "recognition-portal/Presenter.gs"
+      ]
+    },
+    "t0128": {
+      "template": "The presentation record format has changed. Please contact {{contactEmail}}.",
+      "locations": [
+        "recognition-portal/Presenter.gs"
+      ]
+    },
+    "t0129": {
+      "template": "We could not match that name and email to an author record with an eligible presentation. Please use the details recorded in the ACADIA Author Hub, or contact {{contactEmail}}.",
+      "locations": [
+        "recognition-portal/Presenter.gs"
+      ]
+    },
+    "t0130": {
+      "template": "No eligible presentations are available for this track. Please contact {{contactEmail}}.",
+      "locations": [
+        "recognition-portal/Presenter.gs"
+      ]
+    },
+    "t0131": {
+      "template": " also exhibited at the ACADIA {{year}} exhibition throughout all three conference days.",
+      "locations": [
+        "recognition-portal/Presenter.gs"
+      ]
+    },
+    "t0132": {
+      "template": "ACADIA{{year}}_Presentation_",
+      "locations": [
+        "recognition-portal/Presenter.gs"
+      ]
+    },
+    "t0133": {
+      "template": " · ACADIA {{year}}: {{theme}}",
+      "locations": [
+        "recognition-portal/Presenter.gs",
+        "recognition-portal/SessionChair.gs"
+      ]
+    },
+    "t0134": {
+      "template": "Thank you for presenting at ACADIA {{year}}!",
+      "locations": [
+        "recognition-portal/PresenterUI.html"
+      ]
+    },
+    "t0135": {
+      "template": "Congratulations on your ACADIA {{year}} award!",
+      "locations": [
+        "recognition-portal/PresenterUI.html"
+      ]
+    },
+    "t0136": {
+      "template": "The ACADIA Board of Directors and the ACADIA {{year}} Organizing Team congratulate you and your collaborators. Thank you for sharing your work with our community. Your award certificate is ready to download.",
+      "locations": [
+        "recognition-portal/PresenterUI.html"
+      ]
+    },
+    "t0137": {
+      "template": "Your research, projects, field notes, and books helped shape ACADIA {{year}}: {{theme}}. Thank you for contributing your ideas to our community.",
+      "locations": [
+        "recognition-portal/PresenterUI.html"
+      ]
+    },
+    "t0138": {
+      "template": "Your ACADIA {{year}} awards",
+      "locations": [
+        "recognition-portal/PresenterUI.html"
+      ]
+    },
+    "t0139": {
+      "template": "Session chair certificates are being prepared. Please contact {{contactEmail}}.",
+      "locations": [
+        "recognition-portal/SessionChair.gs"
+      ]
+    },
+    "t0140": {
+      "template": "Session chair records are unavailable. Please contact {{contactEmail}}.",
+      "locations": [
+        "recognition-portal/SessionChair.gs"
+      ]
+    },
+    "t0141": {
+      "template": "The session chair record format has changed. Please contact {{contactEmail}}.",
+      "locations": [
+        "recognition-portal/SessionChair.gs"
+      ]
+    },
+    "t0142": {
+      "template": "A session track needs organizer review. Please contact {{contactEmail}}.",
+      "locations": [
+        "recognition-portal/SessionChair.gs"
+      ]
+    },
+    "t0143": {
+      "template": "A session date needs organizer review. Please contact {{contactEmail}}.",
+      "locations": [
+        "recognition-portal/SessionChair.gs"
+      ]
+    },
+    "t0144": {
+      "template": "A session time needs organizer review. Please contact {{contactEmail}}.",
+      "locations": [
+        "recognition-portal/SessionChair.gs"
+      ]
+    },
+    "t0145": {
+      "template": "A session time window needs organizer review. Please contact {{contactEmail}}.",
+      "locations": [
+        "recognition-portal/SessionChair.gs"
+      ]
+    },
+    "t0146": {
+      "template": "A session track conflicts with the presentation records. Please contact {{contactEmail}}.",
+      "locations": [
+        "recognition-portal/SessionChair.gs"
+      ]
+    },
+    "t0147": {
+      "template": "Conflicting chair assignments need organizer review. Please contact {{contactEmail}}.",
+      "locations": [
+        "recognition-portal/SessionChair.gs"
+      ]
+    },
+    "t0148": {
+      "template": "We could not match that name and email to a session chair record. Please use the details in the ACADIA Session Chair Coordination sheet, or contact {{contactEmail}}.",
+      "locations": [
+        "recognition-portal/SessionChair.gs"
+      ]
+    },
+    "t0149": {
+      "template": "Your chair assignment is no longer available. Please contact {{contactEmail}}.",
+      "locations": [
+        "recognition-portal/SessionChair.gs"
+      ]
+    },
+    "t0150": {
+      "template": "Eastern Time ({{city}}) · ",
+      "locations": [
+        "recognition-portal/SessionChair.gs"
+      ]
+    },
+    "t0151": {
+      "template": "ACADIA{{year}}_Session_Chair_",
+      "locations": [
+        "recognition-portal/SessionChair.gs"
+      ]
+    },
+    "t0152": {
+      "template": " · Eastern Time ({{city}})</p><p><strong>",
+      "locations": [
+        "recognition-portal/SessionChairUI.html"
+      ]
+    },
+    "t0153": {
+      "template": "Your time, preparation, and thoughtful moderation helped bring the ACADIA {{year}} community together.",
+      "locations": [
+        "recognition-portal/SessionChairUI.html"
+      ]
+    },
+    "t0154": {
+      "template": "Thank you for chairing ACADIA {{year}}!",
+      "locations": [
+        "recognition-portal/SessionChairUI.html"
+      ]
+    },
+    "t0155": {
+      "template": "Volunteer records are temporarily unavailable. Please contact {{contactEmail}}.",
+      "locations": [
+        "recognition-portal/Volunteer.gs"
+      ]
+    },
+    "t0156": {
+      "template": "A volunteer record needs review. Please contact {{contactEmail}}.",
+      "locations": [
+        "recognition-portal/Volunteer.gs"
+      ]
+    },
+    "t0157": {
+      "template": "We could not match that name to an available volunteer record. Please use your full name as listed by ACADIA, or contact {{contactEmail}}.",
+      "locations": [
+        "recognition-portal/Volunteer.gs"
+      ]
+    },
+    "t0158": {
+      "template": "This name matches more than one volunteer. Please contact {{contactEmail}} to confirm your record.",
+      "locations": [
+        "recognition-portal/Volunteer.gs"
+      ]
+    },
+    "t0159": {
+      "template": "This volunteer record is no longer available. Please contact {{contactEmail}}.",
+      "locations": [
+        "recognition-portal/Volunteer.gs"
+      ]
+    },
+    "t0160": {
+      "template": "ACADIA{{year}}_Volunteer_",
+      "locations": [
+        "recognition-portal/Volunteer.gs"
+      ]
+    },
+    "t0161": {
+      "template": "Your time, care, and dedication helped prepare and run ACADIA {{year}}, before and during the conference. The ACADIA Board of Directors and the organizing team are grateful for your contribution.",
+      "locations": [
+        "recognition-portal/VolunteerUI.html"
+      ]
+    },
+    "t0162": {
+      "template": "The ACADIA Board of Directors and the ACADIA {{year}} Organizing Team sincerely thank you for helping prepare and run the conference. Your time, care, and dedication made a difference. Your certificate is ready to download.",
+      "locations": [
+        "recognition-portal/VolunteerUI.html"
+      ]
+    },
+    "t0163": {
+      "template": "Award certificates are temporarily unavailable. Please contact {{contactEmail}}.",
+      "locations": [
+        "recognition-portal/Awards.gs"
+      ]
+    },
+    "t0164": {
+      "template": "An award record needs organizer review. Please contact {{contactEmail}}.",
+      "locations": [
+        "recognition-portal/Awards.gs"
+      ]
+    },
+    "t0165": {
+      "template": "Award certificates are temporarily unavailable. Your presentation certificates remain available. Please contact {{contactEmail}} for award assistance.",
+      "locations": [
+        "recognition-portal/Awards.gs"
+      ]
+    },
+    "t0166": {
+      "template": "This award is not available for your author record. Please contact {{contactEmail}}.",
+      "locations": [
+        "recognition-portal/Awards.gs"
+      ]
+    },
+    "t0167": {
+      "template": "ACADIA {{year}} · Conference Program",
+      "locations": [
+        "conference-program/Code.gs",
+        "conference-program/Index.html"
+      ]
+    },
+    "t0168": {
+      "template": "acadia{{year}}_humanismrecoded_brandguideline_page_01.jpg",
+      "locations": [
+        "conference-program/Code.gs"
+      ]
+    },
+    "t0169": {
+      "template": "acadia{{year}}_humanismrecoded_brandguideline_page_06.jpg",
+      "locations": [
+        "conference-program/Code.gs"
+      ]
+    },
+    "t0170": {
+      "template": "You are ACADIA Conference Guide for ACADIA {{year}}, {{theme}}, {{city}}. Your sole purpose is to answer ACADIA conference questions.",
+      "locations": [
+        "conference-program/Code.gs"
+      ]
+    },
+    "t0171": {
+      "template": "conferenceData.sessions is the authoritative current schedule and overrides dated website excerpts. {{city}}Now is the authoritative local clock; today/tomorrow/now mean {{timezone}}. Before/after conference dates, say so. Notes marked tentative or conflicting must remain qualified.",
+      "locations": [
+        "conference-program/Code.gs"
+      ]
+    },
+    "t0172": {
+      "template": "{{mainVenue}}",
+      "locations": [
+        "conference-program/Core.gs"
+      ]
+    },
+    "t0173": {
+      "template": "{{websiteOrigin}}",
+      "locations": [
+        "conference-program/Index.html"
+      ]
+    },
+    "t0174": {
+      "template": "acadia{{year}}.program.bot.conversation.v1",
+      "locations": [
+        "conference-program/Index.html"
+      ]
+    },
+    "t0175": {
+      "template": "Ask about ACADIA {{year}} submissions, sessions, people, venues, registration, workshops, and conference activities. Answers link to their sources.",
+      "locations": [
+        "conference-program/Index.html"
+      ]
+    },
+    "t0176": {
+      "template": "ACADIA conference questions only · Times in {{city}}",
+      "locations": [
+        "conference-program/Index.html"
+      ]
+    },
+    "t0177": {
+      "template": " {{timezone}} time",
+      "locations": [
+        "conference-program/Index.html"
+      ]
+    },
+    "t0178": {
+      "template": "{{conferenceStart}}",
+      "locations": [
+        "conference-program/Index.html"
+      ]
+    },
+    "t0179": {
+      "template": "{{websiteUrl}}",
+      "locations": [
+        "conference-program/Index.html"
+      ]
+    },
+    "t0180": {
+      "template": "Workshops · {{workshopDates}}",
+      "locations": [
+        "conference-program/Index.html"
+      ]
+    },
+    "t0181": {
+      "template": "Conference · {{conferenceDates}}",
+      "locations": [
+        "conference-program/Index.html"
+      ]
+    },
+    "t0182": {
+      "template": "All times in {{timezone}}",
+      "locations": [
+        "conference-program/Index.html"
+      ]
+    },
+    "t0183": {
+      "template": "ACADIA {{year}} reminders enabled as ",
+      "locations": [
+        "presentation-reminders/Code.gs"
+      ]
+    },
+    "t0184": {
+      "template": "Enabled: ACADIA {{year}} <",
+      "locations": [
+        "presentation-reminders/Code.gs"
+      ]
+    },
+    "t0185": {
+      "template": "https://docs.google.com/spreadsheets/d/{{scheduleId}}/edit",
+      "locations": [
+        "calendar-sync/Code.gs"
+      ]
+    },
+    "t0186": {
+      "template": "acadia{{year}}_source_key",
+      "locations": [
+        "calendar-sync/Code.gs"
+      ]
+    },
+    "t0187": {
+      "template": "Managed source: {{scheduleId}}",
+      "locations": [
+        "calendar-sync/Code.gs"
+      ]
+    },
+    "t0188": {
+      "template": "An unmarked ACADIA {{year}} calendar already exists. No duplicate was created.",
+      "locations": [
+        "calendar-sync/Code.gs"
+      ]
+    },
+    "t0189": {
+      "template": "ACADIA {{year}} — {{theme}}. Workshops {{workshopDates}}; conference {{conferenceDates}}. ",
+      "locations": [
+        "calendar-sync/Code.gs"
+      ]
+    },
+    "t0190": {
+      "template": "Times are {{timezone}} local time.",
+      "locations": [
+        "calendar-sync/Code.gs"
+      ]
+    },
+    "t0191": {
+      "template": "ACADIA {{year}} — {{theme}}. Workshops {{workshopDates}}; conference {{conferenceDates}}. Times are {{timezone}} local time.",
+      "locations": [
+        "calendar-sync/Code.gs"
+      ]
+    },
+    "t0192": {
+      "template": "Run setupACADIA{{year}} first.",
+      "locations": [
+        "calendar-sync/Code.gs"
+      ]
+    },
+    "t0193": {
+      "template": "\n\nTimes are {{timezone}} local time.",
+      "locations": [
+        "calendar-sync/Code.gs"
+      ]
+    },
+    "t0194": {
+      "template": ", {{mainVenue}}",
+      "locations": [
+        "calendar-sync/Code.gs"
+      ]
+    },
+    "t0195": {
+      "template": ", 21000 West 10 Mile Road, Southfield, MI 48075",
+      "locations": [
+        "calendar-sync/Code.gs"
+      ]
+    }
+  },
+  "resources": {
+    "scheduleId": {
+      "label": "Schedule Id",
+      "modules": [
+        "author-portal",
+        "conference-program",
+        "presentation-reminders",
+        "calendar-sync"
+      ]
+    },
+    "presentationId": {
+      "label": "Presentation Id",
+      "modules": [
+        "presentation-reminders"
+      ]
+    },
+    "authorMasterId": {
+      "label": "Author Master Id",
+      "modules": [
+        "conference-program",
+        "presentation-reminders"
+      ]
+    },
+    "recognitionId": {
+      "label": "Recognition Id",
+      "modules": [
+        "recognition-portal"
+      ]
+    },
+    "recognitionRootId": {
+      "label": "Recognition Root Id",
+      "modules": [
+        "recognition-portal"
+      ]
+    },
+    "easychairHtmlId": {
+      "label": "Easychair Html Id",
+      "modules": [
+        "recognition-portal"
+      ]
+    },
+    "certificateOutputId": {
+      "label": "Certificate Output Id",
+      "modules": [
+        "recognition-portal"
+      ]
+    },
+    "bannerId": {
+      "label": "Banner Id",
+      "modules": [
+        "author-portal",
+        "recognition-portal"
+      ]
+    },
+    "publicationPdfFolderId": {
+      "label": "Publication Pdf Folder Id",
+      "modules": [
+        "conference-program"
+      ]
+    },
+    "rootId": {
+      "label": "Root Id",
+      "modules": [
+        "author-portal"
+      ]
+    },
+    "submissionRootId": {
+      "label": "Submission Root Id",
+      "modules": [
+        "author-portal"
+      ]
+    },
+    "hostFolderId": {
+      "label": "Host Folder Id",
+      "modules": [
+        "author-portal"
+      ]
+    },
+    "projectsFolderId": {
+      "label": "Projects Folder Id",
+      "modules": [
+        "author-portal"
+      ]
+    },
+    "papersFolderId": {
+      "label": "Papers Folder Id",
+      "modules": [
+        "author-portal"
+      ]
+    },
+    "fieldNotesFolderId": {
+      "label": "Field Notes Folder Id",
+      "modules": [
+        "author-portal"
+      ]
+    },
+    "phdFolderId": {
+      "label": "Phd Folder Id",
+      "modules": [
+        "author-portal"
+      ]
+    },
+    "phdMonitorId": {
+      "label": "Phd Monitor Id",
+      "modules": [
+        "author-portal"
+      ]
+    },
+    "paperTemplateId": {
+      "label": "Paper Template Id",
+      "modules": [
+        "author-portal"
+      ]
+    },
+    "projectTemplateId": {
+      "label": "Project Template Id",
+      "modules": [
+        "author-portal"
+      ]
+    },
+    "posterTemplateId": {
+      "label": "Poster Template Id",
+      "modules": [
+        "author-portal"
+      ]
+    },
+    "posterInstructionsId": {
+      "label": "Poster Instructions Id",
+      "modules": [
+        "author-portal"
+      ]
+    },
+    "acceptedId": {
+      "label": "Accepted Id",
+      "modules": [
+        "author-portal"
+      ]
+    },
+    "bookTemplateId": {
+      "label": "Book Template Id",
+      "modules": [
+        "author-portal"
+      ]
+    },
+    "presentationTemplateId": {
+      "label": "Presentation Template Id",
+      "modules": [
+        "author-portal"
+      ]
+    },
+    "acceptanceTemplateId": {
+      "label": "Acceptance Template Id",
+      "modules": [
+        "author-portal"
+      ]
+    },
+    "presentationRootId": {
+      "label": "Presentation Root Id",
+      "modules": []
+    },
+    "chairCoordinationId": {
+      "label": "Chair Coordination Id",
+      "modules": []
+    },
+    "consentPdfId": {
+      "label": "Consent Pdf Id",
+      "modules": [
+        "author-portal"
+      ]
+    },
+    "reviewerTemplateId": {
+      "label": "Reviewer Template Id",
+      "modules": []
+    },
+    "workshopTemplateId": {
+      "label": "Workshop Template Id",
+      "modules": []
+    },
+    "instructorTemplateId": {
+      "label": "Instructor Template Id",
+      "modules": []
+    },
+    "presenterCertificateTemplateId": {
+      "label": "Presenter Certificate Template Id",
+      "modules": []
+    },
+    "chairTemplateId": {
+      "label": "Chair Template Id",
+      "modules": []
+    },
+    "volunteerTemplateId": {
+      "label": "Volunteer Template Id",
+      "modules": []
+    },
+    "awardTemplateId": {
+      "label": "Award Template Id",
+      "modules": []
+    },
+    "visaTemplateId": {
+      "label": "Visa Template Id",
+      "modules": [
+        "author-portal"
+      ]
+    },
+    "publicationInstructionsId": {
+      "label": "Publication instructions PDF",
+      "modules": [
+        "author-portal"
+      ]
+    }
+  },
+  "modules": [
+    "author-portal",
+    "recognition-portal",
+    "conference-program",
+    "presentation-reminders",
+    "calendar-sync"
+  ],
+  "sourceFileCount": 34,
+  "sourceManifest": [
+    {
+      "module": "author-portal",
+      "file": "AcceptanceLetter.gs",
+      "bytes": 10386,
+      "sha256": "d2217459a0b49a962739fb009845b8ebace9ea3fa0d1a14ef2c861b09f8f1cfc"
+    },
+    {
+      "module": "author-portal",
+      "file": "BookForum.gs",
+      "bytes": 11252,
+      "sha256": "044b517d3b58af71a0bd56b1f0ecd2ad6fe15d85f4f5d23e4262d91e0dfc830c"
+    },
+    {
+      "module": "author-portal",
+      "file": "ClientJS.html",
+      "bytes": 134818,
+      "sha256": "bb126334fac3019e4da61cca2bae3ff70edc474efac493f3bb91d4d03b0ed45f"
+    },
+    {
+      "module": "author-portal",
+      "file": "Code.gs",
+      "bytes": 259108,
+      "sha256": "40df55feb4ca0b2fa46695394ad5201ac676b04ea5079da1a0fd60fbcd7ea17d"
+    },
+    {
+      "module": "author-portal",
+      "file": "Index.html",
+      "bytes": 16927,
+      "sha256": "1131c639da6eef94aec8a3e49f3027b7221dbea05f76c60e631f8998a6d90366"
+    },
+    {
+      "module": "author-portal",
+      "file": "Presentation.gs",
+      "bytes": 33824,
+      "sha256": "666c0ae8bf7500756c0dc15516704108175582145c0ca161fc2a75f33024b708"
+    },
+    {
+      "module": "author-portal",
+      "file": "PresentationCalendar.gs",
+      "bytes": 18506,
+      "sha256": "0b0a5b20e8123b0b7720791f55dbb56b221f561d692aa30ceb399f05ffbccbd2"
+    },
+    {
+      "module": "author-portal",
+      "file": "PresentationData.gs",
+      "bytes": 66678,
+      "sha256": "d00ae02a5d82af5ce591791e00cd67db7c69400e844c42d73ec0e68355432457"
+    },
+    {
+      "module": "author-portal",
+      "file": "PresentationReminders.gs",
+      "bytes": 18831,
+      "sha256": "87b0cddc682c84649dd9eb6a8591696af19ddbedbc4d68b5dbf4eeea61e4800e"
+    },
+    {
+      "module": "author-portal",
+      "file": "PresentationSync.gs",
+      "bytes": 8331,
+      "sha256": "99135fc9e082b88bae6e215806c86f01be72eeca22e1272f48261ba45004780d"
+    },
+    {
+      "module": "author-portal",
+      "file": "Styles.html",
+      "bytes": 21189,
+      "sha256": "aab73d1f103d854365bf851d878be08e4d0e478dd04ab75758d142153f3e8349"
+    },
+    {
+      "module": "author-portal",
+      "file": "appsscript.json",
+      "bytes": 867,
+      "sha256": "0c7482c0f20ff961642211d6a8595fb1ef605fcbd76aa2c6526f11326166e04c"
+    },
+    {
+      "module": "calendar-sync",
+      "file": "Code.gs",
+      "bytes": 25631,
+      "sha256": "01ab373963ee6f97f35001bd4d42be2a68e79a4193e44c5aed617fb6558d5a74"
+    },
+    {
+      "module": "conference-program",
+      "file": "Code.gs",
+      "bytes": 86929,
+      "sha256": "82d762004612b4fad45acbac9f2b1be9e918a817f86005490805cc2fac6cca9e"
+    },
+    {
+      "module": "conference-program",
+      "file": "Core.gs",
+      "bytes": 11009,
+      "sha256": "368ed4cbe6a15776eee200fb5299d6422e51477dc35839e98d52341383316fd9"
+    },
+    {
+      "module": "conference-program",
+      "file": "ImageFallbacks.gs",
+      "bytes": 66716,
+      "sha256": "760cb4dffcb2c4fa0bf5bd9944c5bb7748b259bf50df8412b61756526d60cf7d"
+    },
+    {
+      "module": "conference-program",
+      "file": "Index.html",
+      "bytes": 699242,
+      "sha256": "3f6284c19339ad68f515fd81cf60d6ed3c1c0ad6bcdb26c266b124bfbafa13d6"
+    },
+    {
+      "module": "conference-program",
+      "file": "appsscript.json",
+      "bytes": 516,
+      "sha256": "f5e41d5e60ee395f194b931e0ee1560d3f74ddf2d71d7a26168b6f4894c72220"
+    },
+    {
+      "module": "presentation-reminders",
+      "file": "Code.gs",
+      "bytes": 30912,
+      "sha256": "5b3575380fca9ac22ea1f79b17c4dcded5154877ef53dfd1f972c8af8fe408cf"
+    },
+    {
+      "module": "presentation-reminders",
+      "file": "appsscript.json",
+      "bytes": 362,
+      "sha256": "b6f2640b7c5298914aa82485ca39fe8eb06f4303fb06f024b6d47ed610cf7e02"
+    },
+    {
+      "module": "recognition-portal",
+      "file": "Awards.gs",
+      "bytes": 7761,
+      "sha256": "f63066ca11de3d3b8055ad00395dedff9906c5842c5b99017af92907cfc17085"
+    },
+    {
+      "module": "recognition-portal",
+      "file": "Code.gs",
+      "bytes": 33570,
+      "sha256": "4d47d08dbc5c2b6c563ce16dd9959e23fd8497aba1e7519748f4a6ddbded7a50"
+    },
+    {
+      "module": "recognition-portal",
+      "file": "Index.html",
+      "bytes": 31437,
+      "sha256": "ae68fb6c80b70fd5918b12f7961c32cefe1c3e0aac8d3d8ac8881e49714b4dc4"
+    },
+    {
+      "module": "recognition-portal",
+      "file": "Instructor.gs",
+      "bytes": 9601,
+      "sha256": "eb62d2eaaab15adbccab83c2eb0bfd32d7d1f1ebf2ec00eeaab30fe9dbb6799b"
+    },
+    {
+      "module": "recognition-portal",
+      "file": "InstructorUI.html",
+      "bytes": 8199,
+      "sha256": "addb5e1175f710a7c4318982a540803c97aa50918214bc851dbcd645f6cb1911"
+    },
+    {
+      "module": "recognition-portal",
+      "file": "Presenter.gs",
+      "bytes": 21390,
+      "sha256": "b33b210a00c6273a07e0394cf20efdc0100afbe4a24c24c32490561e5f24d959"
+    },
+    {
+      "module": "recognition-portal",
+      "file": "PresenterUI.html",
+      "bytes": 11858,
+      "sha256": "f251356a607c8f9cb270a10eefd0cdbf139e811e0cc1867b380e169d44adce60"
+    },
+    {
+      "module": "recognition-portal",
+      "file": "SessionChair.gs",
+      "bytes": 13838,
+      "sha256": "f838799b9ab385e5a70e28e1e1e52f36483281b3e2392d3b51a7a47f45cd4062"
+    },
+    {
+      "module": "recognition-portal",
+      "file": "SessionChairUI.html",
+      "bytes": 8012,
+      "sha256": "fc76d24aa85409e8e8bfbc679b08783761df25ac2659e5555e668fc572b5723c"
+    },
+    {
+      "module": "recognition-portal",
+      "file": "Volunteer.gs",
+      "bytes": 8546,
+      "sha256": "b72f69995bf372c5ee02e38316cf6aedb637e91cccf74e09e2f8139827679877"
+    },
+    {
+      "module": "recognition-portal",
+      "file": "VolunteerUI.html",
+      "bytes": 7891,
+      "sha256": "25ca9a1289366c4596df1258164855dfb284dff5c814f0d1b05dc8ff48d7c34f"
+    },
+    {
+      "module": "recognition-portal",
+      "file": "Workshop.gs",
+      "bytes": 8812,
+      "sha256": "27afa878802752e0e59b0cb8a28faaab13fa1a912bbfa2c3ee7b6ed6a7066124"
+    },
+    {
+      "module": "recognition-portal",
+      "file": "WorkshopUI.html",
+      "bytes": 8429,
+      "sha256": "3de498c77fbff94066de9732d8be717a00ca0e648c54ed060296938a12018a4a"
+    },
+    {
+      "module": "recognition-portal",
+      "file": "appsscript.json",
+      "bytes": 377,
+      "sha256": "48a0cc1c85a5cae32cdb5fa048a4559fdb57e9b695353e2e64f7f5dce42b2b83"
+    }
+  ]
+}

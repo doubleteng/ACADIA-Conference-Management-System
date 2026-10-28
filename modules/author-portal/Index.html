@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <?!= include_('Styles'); ?>
+</head>
+
+<body>
+  <header id="siteBanner" class="site-banner">
+    <img
+      id="siteBannerImage"
+      class="site-banner-image hidden"
+      alt="%%ACADIA_HTML_t0027%%"
+    >
+
+    <div id="siteBannerFallback" class="banner-fallback">
+      <strong>%%ACADIA_HTML_t0028%%</strong>
+      <span>%%ACADIA_HTML_t0029%%</span>
+    </div>
+  </header>
+
+  <div id="deadlineBar" class="deadline-bar"></div>
+
+  <main class="shell">
+    <section id="loginView" class="home-grid">
+      <div class="card home-intro">
+        <div class="eyebrow">Accepted Author Portal</div>
+
+        <h1>Congratulations!</h1>
+
+        <p>
+          Your submission has been accepted by
+          <strong>%%ACADIA_HTML_t0030%%</strong>.
+        </p>
+
+        <p>
+          This acceptance will be finalized after we receive a
+          complete, properly formatted, camera-ready submission,
+          all required author materials, proof of conference
+          registration, and confirmation that the work will be
+          presented in person.
+        </p>
+
+        <p>Complete each requirement one item at a time.</p>
+
+        <div class="facts">
+          <div class="fact">
+            <small>Required tasks</small>
+            <strong id="loginRequiredTasks">
+              Tasks 1–6 + registration
+            </strong>
+          </div>
+
+          <div class="fact">
+            <small>Later</small>
+            <strong id="loginLaterStage">
+              Author proof review
+            </strong>
+          </div>
+
+          <div class="fact">
+            <small>Access</small>
+            <strong id="loginAccessMethod">
+              Paper ID + original title
+            </strong>
+          </div>
+        </div>
+      </div>
+
+      <aside class="card login-card">
+        <h2>Open your submission</h2>
+
+        <!-- BOOK FORUM ADDITION: login-type selector -->
+        <div class="field">
+          <label for="loginMode">Submission type</label>
+
+          <select id="loginMode">
+            <option value="standard">
+              Paper, Project, Field Note, or PhD Workshop
+            </option>
+
+            <option value="book_forum">
+              Book Forum
+            </option>
+          </select>
+        </div>
+
+        <!-- Existing standard login -->
+        <div id="standardLoginFields">
+          <p>
+            Enter the Paper ID and original title shown in the
+            acceptance email.
+          </p>
+
+          <div class="field">
+            <label for="loginPaperId">Paper ID</label>
+
+            <input
+              id="loginPaperId"
+              autocomplete="off"
+              placeholder="e.g., 319"
+            >
+          </div>
+
+          <div class="field">
+            <label for="loginTitle">
+              Original paper title
+            </label>
+
+            <input
+              id="loginTitle"
+              autocomplete="off"
+              placeholder="Enter the accepted submission title"
+            >
+          </div>
+        </div>
+
+        <!-- BOOK FORUM ADDITION: title-only login -->
+        <div id="bookForumLoginFields" class="hidden">
+          <p>
+            Enter the complete title of the accepted book. You do
+            not need a Paper ID. Capitalization, punctuation, and
+            spaces do not affect matching.
+          </p>
+
+          <div class="field">
+            <label for="loginBookTitle">
+              Complete book title
+            </label>
+
+            <input
+              id="loginBookTitle"
+              autocomplete="off"
+              placeholder="Enter the complete accepted book title"
+            >
+          </div>
+        </div>
+
+        <div class="button-row">
+          <button
+            id="loginButton"
+            class="btn btn-primary"
+            type="button"
+          >
+            Open portal
+          </button>
+
+          <button
+            id="demoButton"
+            class="btn btn-quiet hidden"
+            type="button"
+          >
+            Use demo
+          </button>
+        </div>
+
+        <div id="loginError" class="error-box"></div>
+      </aside>
+
+    </section>
+
+    <section id="portalView" class="hidden">
+      <div class="card portal-header">
+        <div>
+          <div id="portalEyebrow" class="eyebrow"></div>
+          <h2 id="portalTitle"></h2>
+          <div id="portalMeta" class="meta"></div>
+        </div>
+
+        <div
+          id="overallStatus"
+          class="status status-open"
+        ></div>
+      </div>
+
+      <div class="portal-grid">
+        <div>
+          <section class="card panel">
+            <div class="progress-line">
+              <div>
+                <span>Required tasks submitted</span>
+                <br>
+                <strong id="progressText">0 of 7</strong>
+              </div>
+
+              <span id="progressPercent">0%</span>
+            </div>
+
+            <div class="progress">
+              <div id="progressBar"></div>
+            </div>
+
+            <div id="todoSummary" class="todo"></div>
+
+            <div class="section-label">Required now</div>
+
+            <div
+              id="requiredTaskList"
+              class="task-list"
+            ></div>
+
+            <div
+              id="laterStageLabel"
+              class="section-label"
+            >
+              Later publication stage
+            </div>
+
+            <div
+              id="proofTaskList"
+              class="task-list"
+            ></div>
+
+            <div
+              id="presentationTemplateCard"
+              class="task-list hidden"
+            ></div>
+
+            <div id="acceptanceLetterCard" class="task-list hidden">
+              <div class="task-card">
+                <div class="task-number" aria-hidden="true">L</div>
+                <div>
+                  <h4>OFFICIAL ACCEPTANCE LETTER</h4>
+                  <p>Download an official letter listing your accepted submission, track, all authors, and their saved affiliations.</p>
+                </div>
+                <div class="task-actions">
+                  <span class="pill">Optional</span>
+                  <button id="acceptanceLetterOpenButton" class="btn btn-secondary btn-small" type="button">Open</button>
+                </div>
+              </div>
+            </div>
+
+            <div
+              id="registrationCoverageNote"
+              class="rule-note"
+            >
+              One registration may cover no more than one Full
+              Paper and one Project or Field Note presented by the
+              same author. A coauthor must register separately for
+              every additional accepted submission.
+            </div>
+          </section>
+        </div>
+
+        <aside>
+          <section class="card panel">
+            <h3>Submission overview</h3>
+
+            <p class="panel-intro">
+              Each draft, upload, replacement, submission, and
+              proof comment is recorded separately.
+            </p>
+
+            <div class="side-stats">
+              <div class="stat">
+                <small>Deadline</small>
+                <strong id="sideDeadline">August 3</strong>
+              </div>
+
+              <div class="stat">
+                <small>Submission</small>
+                <strong id="sidePaperId"></strong>
+              </div>
+            </div>
+
+            <div
+              class="button-row"
+              style="margin-top:14px"
+            >
+              <button
+                id="refreshButton"
+                class="btn btn-secondary"
+                type="button"
+              >
+                Refresh status
+              </button>
+
+              <button
+                id="logoutButton"
+                class="btn btn-quiet"
+                type="button"
+              >
+                Close portal
+              </button>
+            </div>
+          </section>
+
+          <section
+            class="card panel"
+            style="margin-top:20px"
+          >
+            <h3>Recent activity</h3>
+
+            <p class="panel-intro">
+              Most recent author and committee actions appear
+              first.
+            </p>
+
+            <div
+              id="activityList"
+              class="activity"
+            ></div>
+          </section>
+
+          <section
+            class="card panel"
+            style="margin-top:20px"
+          >
+            <h3>Questions</h3>
+
+            <p class="panel-intro">
+              Include the Paper ID in the subject line. Do not send
+              publication files by email.
+            </p>
+
+            <a
+              id="contactLink"
+              class="btn btn-secondary"
+              href="#"
+            >%%ACADIA_HTML_t0031%%</a>
+          </section>
+
+          <section
+            id="visaLetterCard"
+            class="card panel visa-letter-card hidden"
+            style="margin-top:20px"
+          >
+            <div class="eyebrow">
+              For international authors
+            </div>
+
+            <h3>Visa and Entry Invitation Letter</h3>
+
+            <p class="panel-intro">%%ACADIA_HTML_t0032%%</p>
+
+            <button
+              id="visaLetterOpenButton"
+              class="btn btn-primary"
+              type="button"
+            >
+              Request an invitation letter
+            </button>
+
+            <p class="visa-letter-disclaimer">
+              The letter confirms your accepted submission and
+              conference participation. It does not guarantee visa
+              issuance or admission to the United States.
+            </p>
+          </section>
+        </aside>
+      </div>
+    </section>
+
+    <section id="taskView" class="hidden">
+      <div class="task-layout">
+        <section class="card task-main">
+          <button
+            id="backButton"
+            class="btn btn-quiet back"
+            type="button"
+          >
+            ← Back to submission dashboard
+          </button>
+
+          <div class="task-title-row">
+            <div>
+              <div
+                id="taskEyebrow"
+                class="eyebrow"
+              ></div>
+
+              <h2 id="taskTitle"></h2>
+            </div>
+
+            <span
+              id="taskStatus"
+              class="pill pill-not"
+            ></span>
+          </div>
+
+          <p
+            id="taskSubtitle"
+            class="task-subtitle"
+          ></p>
+
+          <div id="taskContent"></div>
+        </section>
+
+        <aside class="card task-side">
+          <div class="actions-card">
+            <h3>Save this task</h3>
+
+            <p>
+              Save unfinished work at any time. Submit only when
+              this task is complete.
+            </p>
+
+            <div class="button-row">
+              <button
+                id="saveTaskButton"
+                class="btn btn-secondary"
+                type="button"
+              >
+                Save draft
+              </button>
+
+              <button
+                id="submitTaskButton"
+                class="btn btn-primary"
+                type="button"
+              >
+                Submit task
+              </button>
+            </div>
+
+            <div id="lastSave" class="last-save"></div>
+          </div>
+
+          <div
+            id="taskSideNote"
+            class="rule-note"
+          ></div>
+        </aside>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div>%%ACADIA_HTML_t0033%%</div>
+
+      <div id="footerChairs"></div>
+
+      <div
+        style="
+          width:80%;
+          text-align:center;
+          margin-top:10px;
+          opacity:.78;
+        "
+      >%%ACADIA_HTML_t0034%%</div>
+    </footer>
+  </main>
+
+  <div id="acceptanceLetterModal" class="visa-modal-overlay hidden" aria-hidden="true">
+    <section class="visa-modal-card" role="dialog" aria-modal="true" aria-labelledby="acceptanceLetterTitle" style="max-height:90vh;overflow-y:auto">
+      <div class="visa-modal-header">
+        <div><div class="eyebrow">Optional · Not required for completion</div><h2 id="acceptanceLetterTitle">OFFICIAL ACCEPTANCE LETTER</h2></div>
+        <button id="acceptanceLetterCloseButton" class="visa-modal-close" type="button" aria-label="Close acceptance letter">×</button>
+      </div>
+      <p>The letter includes every author in the saved publication order. Affiliations are taken from the author information already submitted to this portal.</p>
+      <div id="acceptanceLetterDetails" class="readonly-value" aria-live="polite"></div>
+      <p class="rule-note">%%ACADIA_HTML_t0035%%<a href="%%ACADIA_HTML_t0036%%">%%ACADIA_HTML_t0037%%</a> before downloading.</p>
+      <label style="display:flex;gap:10px;align-items:flex-start;margin:16px 0"><input id="acceptanceLetterConfirm" type="checkbox" style="width:auto;margin-top:3px" disabled><span>I confirm that the submission title and track, all authors, author order, and affiliations shown above are complete and correct.</span></label>
+      <div id="acceptanceLetterError" class="error-box" role="alert"></div>
+      <div id="acceptanceLetterNotice" class="notice-box" role="status"></div>
+      <div class="button-row visa-modal-actions">
+        <button id="acceptanceLetterCancelButton" class="btn btn-secondary" type="button">Close</button>
+        <button id="acceptanceLetterGenerateButton" class="btn btn-primary" type="button" disabled>Generate and download PDF</button>
+        <a id="acceptanceLetterDownloadLink" class="btn btn-secondary hidden" download>Download PDF</a>
+      </div>
+    </section>
+  </div>
+  <div
+    id="visaLetterModal"
+    class="visa-modal-overlay hidden"
+    aria-hidden="true"
+  >
+    <section
+      class="visa-modal-card"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="visaLetterModalTitle"
+    >
+      <div class="visa-modal-header">
+        <div>
+          <div class="eyebrow">
+            For international authors
+          </div>
+
+          <h2 id="visaLetterModalTitle">
+            Request an invitation letter
+          </h2>
+        </div>
+
+        <button
+          id="visaLetterCloseButton"
+          class="visa-modal-close"
+          type="button"
+          aria-label="Close invitation-letter form"
+        >
+          ×
+        </button>
+      </div>
+
+      <p>
+        Enter your full legal name exactly as it appears on your
+        passport. The accepted submission title will be added
+        automatically.
+      </p>
+
+      <div class="field">
+        <label for="visaLetterAuthorName">
+          Full legal name
+        </label>
+
+        <input
+          id="visaLetterAuthorName"
+          autocomplete="name"
+          placeholder="Enter the name exactly as shown on the passport"
+        >
+      </div>
+
+      <div class="field">
+        <label>Accepted submission title</label>
+
+        <div
+          id="visaLetterPaperTitle"
+          class="readonly-value"
+        ></div>
+      </div>
+
+      <div class="rule-note">
+        A private copy of the generated letter and an
+        administrative request record will be retained by ACADIA.
+        No passport number is requested or stored.
+      </div>
+
+      <div
+        id="visaLetterError"
+        class="error-box"
+      ></div>
+
+      <div
+        id="visaLetterNotice"
+        class="notice-box"
+      ></div>
+
+      <div class="button-row visa-modal-actions">
+        <button
+          id="visaLetterCancelButton"
+          class="btn btn-secondary"
+          type="button"
+        >
+          Cancel
+        </button>
+
+        <button
+          id="visaLetterGenerateButton"
+          class="btn btn-primary"
+          type="button"
+        >
+          Generate and download PDF
+        </button>
+      </div>
+    </section>
+  </div>
+
+  <div
+    id="transitionOverlay"
+    class="external-transition"
+  >
+    <div class="transition-card">
+      <div class="transition-mark">A</div>
+
+      <h2>Continuing to Indexing Metadata</h2>
+
+      <p>
+        Your Author Hub progress has been saved. Complete the
+        ACADIA indexing form, then use your browser’s Back button
+        to return and confirm completion.
+      </p>
+    </div>
+  </div>
+
+  <div id="loadingOverlay" class="loading">
+    <div class="spinner"></div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+    window.__ACADIA_BOOTSTRAP__ =
+      <?!= bootstrapJson ?>;
+  </script>
+
+  <?!= include_('ClientJS'); ?>
+</body>
+</html>
