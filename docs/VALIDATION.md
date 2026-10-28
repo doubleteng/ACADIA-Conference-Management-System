@@ -12,6 +12,8 @@ The offline interface has also been exercised through all six steps using local 
 
 ## Google-side acceptance
 
+On 2026-10-28, an isolated Apps Script rehearsal using a fictional 2099 edition completed template creation. Read-only Google Drive and Sheets readback verified seven native workbooks, all 52 tab names and header rows, and eight private native Google Docs templates. Google omits trailing empty cells in value responses; the intentionally blank final Conference header was compared as an empty value. No real participant data was used. This live rehearsal covered resource creation and schema compatibility; developer attribution is covered by the generated-output tests.
+
 A complete fresh-installation acceptance is still required. Local service doubles cannot prove actual Google authorization, service quotas, trigger timing, email delivery, certificate/PDF rendering, browser iframe behavior or publication permissions. Follow `ACCEPTANCE.md` and record live results in a private edition handoff record.
 
 Original conference projects remain outside this validation scope. Use separate test projects and synthetic data; do not run rehearsal actions against the original source resource IDs.
