@@ -63,9 +63,6 @@ npm run build
 
 No npm dependencies are needed. After source/schema/interface edits, rebuild `configure.html` and `sources.json`, run the tests, and commit those generated files together. The build synchronizes shared installation code into all five modules. CI checks tests and reproducible generated artifacts. Keep committee data in private Google files, and contribute reusable improvements through pull requests.
 
-## Developer attribution
-
-ACMS was developed by **Teng Teng**. Generated portals and website embeds display “Developed by Teng Teng”; reminders, calendar descriptions and the generated document templates carry the same credit. This attribution is built into the application source and is not an edition-setting field. See [ATTRIBUTION.md](ATTRIBUTION.md).
 
 ## License
 
