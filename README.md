@@ -1,4 +1,4 @@
-# Acadia Conference Management System (ACMS)
+# ACADIA Conference Management System (ACMS)
 
 **Original developer: [Teng Teng](https://github.com/doubleteng).**
 
