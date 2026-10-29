@@ -22,7 +22,7 @@ The Author Portal manages the post-acceptance submission workflow represented in
 
 ## Visual editing and publication
 
-The new **Visual Editor** gives committee members an English interface for clicking and editing selected page text, changing banners/colors, previewing desktop/mobile layouts, saving drafts, reviewing changes and publishing. It runs in a separate authenticated Apps Script project; the three public portals read only the published content. Publication history supports restoring an earlier version as a draft. Existing conference management workflows and fixed developer attribution remain in place.
+The new **Visual Editor** gives committee members an visual interface for clicking and editing selected page text, changing banners/colors, previewing desktop/mobile layouts, saving drafts, reviewing changes and publishing. It runs in a separate authenticated Apps Script project; the three public portals read only the published content. Publication history supports restoring an earlier version as a draft. Existing conference management workflows and fixed developer attribution remain in place.
 
 Try `editor-demo.html` from your downloaded repository. Its Save/Publish controls operate only in your browser and do not update a live site. For real publishing, follow [Visual Editor setup](docs/VISUAL-EDITOR.md). The initial release edits public entry-page content; schedules, email templates and authenticated author-task screens keep their existing management interfaces.
 
