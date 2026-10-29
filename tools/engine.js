@@ -32,11 +32,13 @@ function validate(input,modules=[]){
   'conference-program':['authorMasterId','scheduleId'],
   'recognition-portal':['recognitionId','certificateOutputId'],
   'presentation-reminders':['authorMasterId','presentationId','scheduleId'],
-  'calendar-sync':['scheduleId']
+  'calendar-sync':['scheduleId'],
+  'content-editor':['contentStoreId','contentFolderId']
  };
  for(const m of modules)for(const k of req[m]||[])if(!c.resources[k])errors.push(m+': missing '+k+' (create/import the template kit or enter its URL).');
  if(modules.includes('presentation-reminders')&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(c.senderEmail||''))errors.push('Reminders require the actual sending Google account email.');
  for(const [k,v] of Object.entries(c.resources))if(v&&!/^[A-Za-z0-9_-]{10,200}$/.test(v))errors.push(k+': enter a Google file/folder ID or URL.');
+ if(c.editorEmails!==undefined&&(!Array.isArray(c.editorEmails)||c.editorEmails.some(x=>typeof x!=='string'||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(x))))errors.push('Editor accounts must be valid email addresses.');
  if(!Array.isArray(c.presentationDays))errors.push('Presentation day rules must be an array.');
  else {const seen=new Set();for(const r of c.presentationDays){if(!r||!validDate(r.date)||Number(r.date.slice(0,4))!==c.year||seen.has(r.date))errors.push('Each presentation rule needs a unique real ISO date in this edition.');if(!r)continue;seen.add(r.date);if(r.deadlineUtc&&(!/Z$/.test(r.deadlineUtc)||!Number.isFinite(Date.parse(r.deadlineUtc))))errors.push('Invalid UTC presentation deadline for '+r.date);if(!Array.isArray(r.restrictions||[]))errors.push('Presentation restrictions must be a list.');}}
  for(const k of ['guideSources','excludedPaperIds','fullPaperFallbackIds','volunteerSlots','excludedImageNames','attendanceFaq'])if(!Array.isArray(c[k]))errors.push(k+' must be a list.');
@@ -63,7 +65,7 @@ function compileSource(source,input,catalog){
  return s;
 }
 function compile(sources,input,catalog,selected){
- const files={};for(const m of selected||Object.keys(sources))for(const [name,source]of Object.entries(sources[m]))files[m+'/'+name]=compileSource(source,input,catalog);
+ const files={};for(const m of selected||Object.keys(sources))for(const [name,source]of Object.entries(sources[m]))files[m+'/'+name]=name==='Previews.html'?safeJSON(Object.fromEntries(Object.entries(JSON.parse(source)).map(([page,html])=>[page,compileSource(html,input,catalog)]))):compileSource(source,input,catalog);
  return files;
 }
 function embed(input,key,title){

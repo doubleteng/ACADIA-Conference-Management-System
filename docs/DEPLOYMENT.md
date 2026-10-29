@@ -12,13 +12,13 @@ This package is a configurable copy of the five 2026 systems. Use **new Apps Scr
 6. Fill the organizer-input sheets using `templates/README.md`. Keep generated logs empty. Style the new certificate/letter templates without deleting their `{{PLACEHOLDERS}}`. The included document layouts are functional starting points, not approved conference stationery.
 7. Add edition-owned publication packages, consent PDF, presentation template, banner and other required assets in **Templates & data**. The toolkit contains application code and schemas; it does not include the 2026 papers, signatures, artwork or publication packages.
 
-## 2. Generate the five projects
+## 2. Generate the management projects and optional editor
 
 Complete **Presentation rules** and review **Advanced content**, including policies inherited from the original systems. Set the optional public conference-guide sources and model ID only if using the guide. API keys belong in the Program project's Script Properties, never in the configurator or GitHub.
 
 In **Export projects**, choose modules, validate, and download the deployment ZIP. Each module has a combined `Code.gs`, any required HTML files, and `appsscript.json`.
 
-For each module:
+For each management module (use the [Visual Editor guide](VISUAL-EDITOR.md) for `content-editor`):
 
 1. Create a new Apps Script project under the new committee's operating account.
 2. Replace the new project's sample `Code.gs` with the generated `Code.gs`.
@@ -72,7 +72,11 @@ The template kit creates the roster tabs, certificate logs, confirmation table a
 
 Run each module's `RUN_VERIFY_*` template check, test with fictional records, then set the relevant `*_ENABLED` values in Recognition Settings to TRUE. Deploy the Recognition web app and add its `/exec` URL to the website.
 
-## 8. Website and handoff
+## 8. Visual editing
+
+The template builder also creates a private content store and publication-history folder. Deploy `content-editor` as a separate web app executing as the signed-in user, and give only named committee members editing access. The public portals keep their original execution model. See [VISUAL-EDITOR.md](VISUAL-EDITOR.md) for initialization, authorization, content publication and recovery. Content edits do not modify conference workbooks or invoke mail/calendar operations.
+
+## 9. Website and handoff
 
 Use **Website integration → Generate embed snippets** and `docs/WEBSITE-INTEGRATION.md`. Keep all three public deployment URLs, operating accounts, template links, trigger owners and release version in a private committee handoff record. Use `docs/HANDOFF.md` for annual turnover.
 

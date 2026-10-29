@@ -29,6 +29,8 @@ The Program module includes an optional guide. Standard program embedding needs 
 
 ## Update without changing website links
 
+Once the Visual Editor and portal adapters are installed, committee members can save drafts and publish selected page text, banner images and colors through the editor. The website embed URLs stay the same. Reload a portal/iframe to load its published content. Keep the editor URL private and follow [VISUAL-EDITOR.md](VISUAL-EDITOR.md).
+
 For a code/configuration update, upload the regenerated files to **this edition's** projects and update the existing deployment to a new version through Deploy → Manage deployments. Retain the deployment ID to retain its `/exec` URL. If a new deployment is created, update both the website embeds and any cross-module links in the configurator.
 
 ## Website acceptance checks

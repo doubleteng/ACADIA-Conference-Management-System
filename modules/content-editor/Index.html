@@ -1,0 +1,141 @@
+<!doctype html><html lang="en"><head><base target="_top"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ACMS · Visual Editor</title>
+<style>
+:root{--ink:#20352f;--muted:#6d7873;--line:#d9dfda;--paper:#f4f5f0;--accent:#245647}*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:14px/1.5 system-ui,-apple-system,sans-serif}button,input,textarea,select{font:inherit}button{cursor:pointer;border:1px solid var(--line);border-radius:7px;background:white;color:var(--ink);padding:9px 14px}button:hover:not(:disabled){border-color:var(--accent)}button:disabled{opacity:.45;cursor:default}.primary{background:var(--accent);color:white;border-color:var(--accent)}button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid #c88c49;outline-offset:2px}header{display:flex;align-items:center;gap:24px;background:#fff;border-bottom:1px solid var(--line);padding:17px 24px}header h1{font-size:19px;margin:0;letter-spacing:-.5px}header small{display:block;font-size:11px;letter-spacing:1.6px;color:var(--muted)}.header-meta{flex:1;min-width:0}#identity{font-size:12px;color:var(--muted)}.actions{display:flex;gap:8px;flex-wrap:wrap}.workspace{display:grid;grid-template-columns:205px minmax(0,1fr) 300px;min-height:calc(100vh - 133px)}nav{padding:25px 15px;border-right:1px solid var(--line);background:#f9faf6}nav p,.label{font-size:11px;text-transform:uppercase;letter-spacing:1.2px;color:var(--muted);font-weight:650}nav button{display:block;text-align:left;width:100%;margin:7px 0;background:transparent;border-color:transparent}nav button[aria-current=page]{background:#e1ebe3;border-color:#ccdad0;color:#194331;font-weight:650}.history{margin-top:35px;padding-top:20px;border-top:1px solid var(--line)}select{width:100%;padding:8px;border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:6px}.canvas{padding:20px 24px;min-width:0}.canvas-toolbar{display:flex;gap:15px;align-items:center;justify-content:space-between;margin-bottom:14px}.segmented{display:flex;gap:3px}.segmented button{padding:6px 11px;font-size:12px}.segmented button[aria-pressed=true]{background:var(--ink);color:white}.canvas-title{font-size:16px;font-weight:650}#canvas-note{color:var(--muted);font-size:12px;margin:4px 0 14px}.stage{background:#e5e9e3;border:1px solid #cbd4cc;border-radius:10px;padding:16px;min-height:650px;overflow:auto}.frame-wrap{margin:auto;width:100%;max-width:1400px;transition:max-width .15s}iframe{display:block;background:white;border:0;border-radius:3px;width:100%;height:760px;box-shadow:0 8px 30px #20352f14}.frame-wrap.mobile{width:390px;max-width:390px}.inspector{padding:24px 20px;background:#fff;border-left:1px solid var(--line);max-height:calc(100vh - 80px);overflow:auto;position:sticky;top:0}.inspector h2{font-size:17px;margin:0 0 7px}.hint{color:var(--muted);font-size:12px}.field{margin:18px 0}.field label{display:block;font-size:12px;font-weight:650;margin-bottom:6px}.field textarea,.field input:not([type=color]){display:block;width:100%;padding:9px;border:1px solid #c7d1c9;border-radius:6px;background:#fff;color:var(--ink)}textarea{resize:vertical;min-height:82px}.field.selected{background:#f3f7ed;outline:7px solid #f3f7ed;border-radius:3px}.reset{font-size:11px;padding:3px 7px;margin-top:4px}.field small{display:block;margin-top:4px;color:var(--muted);font-size:11px}input[type=color]{width:64px;height:36px;border:1px solid var(--line);border-radius:5px;background:#fff}.badge{font-size:12px;background:#edf1e8;padding:4px 8px;border-radius:20px;display:inline-block}#notice{padding:10px 24px;background:#edf2e6;font-size:13px;border-bottom:1px solid var(--line)}#notice:empty{display:none}#notice.error{background:#fff0e9;color:#8b351a}footer{padding:12px 24px;border-top:1px solid var(--line);background:#fff;font-size:12px;color:var(--muted)}footer a{color:var(--accent)}dialog{width:min(780px,calc(100% - 32px));max-height:85vh;border:1px solid var(--line);border-radius:12px;padding:28px;color:var(--ink)}dialog::backdrop{background:#0c231e77}dialog h2{margin-top:0}#changes{max-height:45vh;overflow:auto;margin:20px 0}.change{border-top:1px solid var(--line);padding:12px 0}.change h3{font-size:13px;margin:0 0 7px}.change p{white-space:pre-wrap;overflow-wrap:anywhere;font-size:12px;padding:8px;margin:3px 0;background:#f4f5f0}.change .after{background:#e8f1e8}.loading-panel{padding:60px 24px;text-align:center;color:var(--muted)}[hidden]{display:none!important}@media(max-width:1050px){.workspace{grid-template-columns:170px minmax(0,1fr)}.inspector{grid-column:1/-1;max-height:none;position:static;border-top:1px solid var(--line)}#fields{display:grid;grid-template-columns:1fr 1fr;gap:0 25px}.canvas{padding:16px}}@media(max-width:650px){header{padding:15px;flex-wrap:wrap;gap:12px}.workspace{display:block}nav{border-bottom:1px solid var(--line);padding:12px}nav button{display:inline-block;width:auto}.history{margin-top:12px;padding-top:10px}.stage{padding:8px}#fields{display:block}.canvas-toolbar{align-items:flex-start;flex-wrap:wrap}.header-meta{min-width:150px}}
+</style></head><body>
+<header><div><small>ACMS</small><h1>Visual Editor</h1></div><div class="header-meta"><div id="identity">Loading your conference…</div><span id="draft-status" class="badge">Connecting</span></div><div class="actions"><button id="reload" disabled>Reload</button><button id="save" disabled>Save draft</button><button id="publish" class="primary" disabled>Review &amp; publish</button></div></header>
+<div id="notice" role="status" aria-live="polite"></div><div id="loading" class="loading-panel">Opening your private editing workspace…</div>
+<div id="workspace" class="workspace" hidden><nav aria-label="Pages"><p>Conference pages</p><div id="pages"></div><div class="history"><p>Publication history</p><select id="versions" aria-label="Published version"></select><button id="restore" disabled>Restore as draft</button><p class="hint">Restoring keeps the live page unchanged until you publish.</p></div></nav>
+<main class="canvas"><div class="canvas-toolbar"><span id="page-title" class="canvas-title"></span><div class="segmented" aria-label="Preview width"><button id="desktop" aria-pressed="true">Desktop</button><button id="mobile" aria-pressed="false">Mobile</button></div><div class="segmented" aria-label="Editing mode"><button id="edit-mode" aria-pressed="true">Edit</button><button id="preview-mode" aria-pressed="false">Preview</button></div></div><p id="canvas-note">Click outlined text to edit it. Sign-in, live records and uploads are disabled in this content preview.</p><div class="stage"><div id="frame-wrap" class="frame-wrap"><iframe id="preview" title="Conference page content preview" sandbox="allow-scripts" referrerpolicy="no-referrer"></iframe></div></div></main>
+<aside class="inspector" aria-label="Page content"><h2>Page content</h2><p class="hint">Changes stay in your draft until published. Display text does not change deadlines, eligibility or other management rules.</p><div id="fields"></div></aside></div>
+<footer>Acadia Conference Management System (ACMS) · Developed by <a href="https://github.com/doubleteng" target="_blank" rel="noopener noreferrer">Teng Teng</a> · <a href="https://github.com/doubleteng/acadia-conference-management-system" target="_blank" rel="noopener noreferrer">Source code</a></footer>
+<dialog id="review"><h2>Review your publication</h2><p>These changes will appear on the connected portals after visitors reload the page. This publishes all three pages together.</p><p class="hint">This does not send email, issue certificates, change schedules or update participant records.</p><div id="changes"></div><div class="actions"><button id="cancel-publish">Keep editing</button><button id="confirm-publish" class="primary">Publish now</button></div></dialog>
+<!-- ACMS_DEMO_DATA -->
+<script>
+'use strict';
+const $=id=>document.getElementById(id),clone=x=>JSON.parse(JSON.stringify(x));
+let boot=null,state=null,draft={},page='author-portal',dirty=false,busy=false,editMode=true,channel='',defaults={},selectedField='',ready=false;
+function notice(text,error=false){$('notice').textContent=text;$('notice').classList.toggle('error',error);}
+function setBusy(value){busy=value;updateButtons();}
+function updateButtons(){
+ const unpublished=state&&JSON.stringify(draft)!==JSON.stringify(state.published);
+ $('save').disabled=busy||!state||!dirty;$('publish').disabled=busy||!state||!unpublished||!ready;
+ $('reload').disabled=busy||!state;$('restore').disabled=busy||!state||!state.history.length;
+ $('confirm-publish').disabled=busy;
+ document.querySelectorAll('#pages button,#fields input,#fields textarea,#fields button').forEach(n=>n.disabled=busy);
+ $('preview').style.pointerEvents=busy?'none':'';
+ if(ready)sendFrame({type:'mode',editing:editMode&&!busy});
+ $('draft-status').textContent=busy?'Working…':dirty?'Unsaved changes':unpublished?'Draft saved · unpublished':'Published content';
+}
+function rpc(name,...args){
+ if(boot&&boot.demo)return demoCall(name,...args);
+ return new Promise((resolve,reject)=>google.script.run.withSuccessHandler(resolve).withFailureHandler(reject)[name](...args));
+}
+function demoState(){return {revision:0,draft:{},published:{},publishedVersion:'',publishedAt:'',history:[]};}
+function demoCall(name,revision,payload){
+ const key='acms-visual-editor-demo-v1';let stored;try{stored=JSON.parse(localStorage.getItem(key)||'null');}catch(_){}
+ const data=stored||{state:demoState(),snapshots:{}};
+ if(name==='getEditorBootstrap')return Promise.resolve({...window.ACMS_DEMO,state:data.state,demo:true});
+ if(revision!==data.state.revision)return Promise.reject(Error('Another demo tab changed this draft. Reload before continuing.'));
+ if(name==='saveEditorDraft')data.state.draft=clone(payload);
+ if(name==='publishEditorDraft'){
+  const version='demo-'+Date.now(),at=new Date().toISOString();data.state.published=clone(data.state.draft);data.state.publishedVersion=version;data.state.publishedAt=at;
+  data.state.history.unshift({version,at,by:'Demo editor'});data.snapshots[version]=clone(data.state.draft);
+ }
+ if(name==='restoreEditorVersion')data.state.draft=clone(data.snapshots[payload]);
+ data.state.revision++;try{localStorage.setItem(key,JSON.stringify(data));}catch(_){return Promise.reject(Error('Browser storage is unavailable. Enable local storage to save this demo.'));}
+ return Promise.resolve(data.state);
+}
+function acceptState(next){state=next;draft=clone(next.draft);dirty=false;renderHistory();updateButtons();}
+function renderHistory(){
+ $('versions').replaceChildren();if(!state.history.length){const o=document.createElement('option');o.textContent='No publications yet';$('versions').append(o);}
+ state.history.forEach(h=>{const o=document.createElement('option');o.value=h.version;o.textContent=new Date(h.at).toLocaleString()+' · '+h.by;$('versions').append(o);});
+}
+function frameRuntime(){
+ const config=window.ACMS_PREVIEW,originals={},defaultText={};let values=config.values,editing=true,last={};
+ const byKey=Object.fromEntries(config.schema.fields.map(f=>[f.key,f]));
+ config.schema.fields.forEach(f=>{const n=document.querySelector(f.selector);if(n){originals[f.key]=n.innerHTML;defaultText[f.key]=n.textContent.trim().replace(/\s+/g,' ');n.dataset.acmsEdit=f.key;}});
+ function send(type,extra){parent.postMessage(Object.assign({acmsEditor:true,type,channel:config.channel},extra||{}),'*');}
+ function apply(next){
+  for(const key of Object.keys(last)){if(!(key in next)&&byKey[key]){const n=document.querySelector(byKey[key].selector);if(n)n.innerHTML=originals[key];}}
+  if(!next.accentColor)document.documentElement.style.removeProperty('--accent');
+  if(!next.backgroundColor){document.documentElement.style.removeProperty('--bg');document.body.style.removeProperty('background-color');}
+  values=next;window.ACMSContent.apply(document,{schema:config.schema,values});last={...next};
+ }
+ function setMode(value){editing=value;document.body.classList.toggle('acms-editing',value);document.querySelectorAll('[data-acms-edit]').forEach(n=>{n.contentEditable=value?'plaintext-only':'false';});}
+ document.addEventListener('click',e=>{const n=e.target.closest('[data-acms-edit]');if(n&&editing){e.preventDefault();send('select',{key:n.dataset.acmsEdit});return;}if(e.target.closest('a,button,input,select,textarea'))e.preventDefault();},true);
+ document.addEventListener('submit',e=>e.preventDefault(),true);
+ document.addEventListener('input',e=>{const n=e.target.closest('[data-acms-edit]');if(!n||!editing)return;const key=n.dataset.acmsEdit;send('change',{key,value:n.textContent});last[key]=n.textContent;});
+ document.addEventListener('paste',e=>{if(e.target.closest('[data-acms-edit]')){e.preventDefault();const text=e.clipboardData.getData('text/plain');document.execCommand('insertText',false,text);}});
+ document.addEventListener('drop',e=>e.preventDefault());
+ window.addEventListener('message',e=>{const m=e.data;if(e.source!==parent||!m||m.channel!==config.channel)return;
+  if(m.type==='apply')apply(m.values);if(m.type==='mode')setMode(m.editing);
+  if(m.type==='focus'&&byKey[m.key]){const n=document.querySelector(byKey[m.key].selector);if(n){n.scrollIntoView({block:'center'});n.focus();}}
+ });
+ const placeholders={content:'Live schedule and submission records appear here. Manage them in your conference workbooks.',channelGrid:'Live certificate channels appear here. Availability is controlled by your recognition settings.'};
+ for(const [id,text]of Object.entries(placeholders)){const n=document.getElementById(id);if(n&&!n.textContent.trim()){n.textContent=text;n.style.cssText='padding:32px;border:1px dashed #bec9bd;color:#69736b;margin:16px 0;font:14px/1.6 system-ui,sans-serif';}}
+ document.querySelectorAll('input,select,textarea,button').forEach(n=>n.disabled=true);
+ const style=document.createElement('style');style.textContent='.acms-editing [data-acms-edit]{outline:1px dashed #6a8c6b;outline-offset:5px;cursor:text}.acms-editing [data-acms-edit]:focus{outline:2px solid #2a684c;background:#f2f7e6;color:#1d3329} [data-acms-edit]{white-space:pre-wrap}';document.head.append(style);
+ const accent=getComputedStyle(document.documentElement).getPropertyValue('--accent').trim();if(/^#[0-9a-f]{6}$/i.test(accent))defaultText.accentColor=accent;
+ const bg=getComputedStyle(document.body).backgroundColor.match(/\d+/g);if(bg&&bg.length>=3)defaultText.backgroundColor='#'+bg.slice(0,3).map(n=>Number(n).toString(16).padStart(2,'0')).join('');
+ apply(values);setMode(true);send('ready',{defaults:defaultText});
+}
+function sendFrame(message){$('preview').contentWindow.postMessage({...message,channel},'*');}
+function safeJSON(value){return JSON.stringify(value).replace(/</g,'\\u003c').replace(/>/g,'\\u003e').replace(/&/g,'\\u0026');}
+function loadFrame(){
+ ready=false;defaults={};channel=Array.from(crypto.getRandomValues(new Uint32Array(4))).join('-');
+ const data={schema:boot.schema[page],values:draft[page]||{},channel};
+ const code='<script>window.ACMS_PREVIEW='+safeJSON(data)+';<'+'/script>'+boot.renderer+'<script>('+frameRuntime.toString()+')();<'+'/script>';
+ $('preview').srcdoc=boot.previews[page].replace(/<\/body>/i,()=>code+'</body>');updateButtons();
+}
+function changeField(key,value){
+ draft[page]||={};draft[page][key]=value;dirty=true;updateButtons();sendFrame({type:'apply',values:draft[page]});
+}
+function fieldValue(key){return Object.prototype.hasOwnProperty.call(draft[page]||{},key)?draft[page][key]:(defaults[key]||'');}
+function renderFields(){
+ const parent=$('fields');parent.replaceChildren();
+ const fields=boot.schema[page].fields.concat([{key:'bannerUrl',label:'Banner image URL',type:'url',max:2000},{key:'bannerAlt',label:'Banner image description',type:'text',max:300},{key:'accentColor',label:'Accent color',type:'color'},{key:'backgroundColor',label:'Page background',type:'color'}]);
+ fields.forEach(f=>{
+  const box=document.createElement('div');box.className='field';box.dataset.field=f.key;
+  const label=document.createElement('label');label.htmlFor='edit-'+f.key;label.textContent=f.label;
+  const input=document.createElement(f.type?'input':'textarea');input.id=label.htmlFor;if(f.type)input.type=f.type;else input.rows=f.max>1000?4:2;if(f.max)input.maxLength=f.max;
+  input.value=fieldValue(f.key)||(f.type==='color'?'#245647':'');
+  input.oninput=()=>changeField(f.key,input.value);
+  const reset=document.createElement('button');reset.className='reset';reset.textContent='Use installed default';reset.onclick=()=>{if(draft[page])delete draft[page][f.key];dirty=true;input.value=fieldValue(f.key)||(f.type==='color'?'#245647':'');sendFrame({type:'apply',values:draft[page]||{}});updateButtons();};
+  box.append(label,input,reset);if(f.key==='bannerUrl'){const hint=document.createElement('small');hint.textContent='Use a public HTTPS image URL. Private Drive sharing links are not image URLs.';box.append(hint);}parent.append(box);
+ });
+}
+function choosePage(key){page=key;selectedField='';$('page-title').textContent=boot.schema[key].label;document.querySelectorAll('#pages button').forEach(b=>b.setAttribute('aria-current',b.dataset.page===key?'page':'false'));loadFrame();}
+function renderPages(){
+ $('pages').replaceChildren();Object.entries(boot.schema).forEach(([key,spec])=>{const b=document.createElement('button');b.textContent=spec.label;b.dataset.page=key;b.onclick=()=>choosePage(key);$('pages').append(b);});choosePage(page);
+}
+function validate(){
+ const errors=[];for(const [key,values]of Object.entries(draft)){
+  const s=boot.schema[key];s.fields.forEach(f=>{if((values[f.key]||'').length>f.max)errors.push(s.label+': '+f.label+' is too long.');});
+  if(values.bannerUrl&&!/^https:\/\/[a-z0-9.-]+(?::443)?(?:[/?#][^\s<>"'\\]*)?$/i.test(values.bannerUrl))errors.push(s.label+': use a public HTTPS image URL.');
+  if(values.bannerUrl&&!String(values.bannerAlt||'').trim())errors.push(s.label+': add a banner image description.');
+ }if(errors.length)throw Error(errors.join(' '));
+}
+async function save(){validate();setBusy(true);try{acceptState(await rpc('saveEditorDraft',state.revision,draft));notice(boot.demo?'Demo draft saved in this browser. No live portal changed.':'Draft saved. The live portals have not changed.');}finally{setBusy(false);}}
+function diff(){const rows=[];for(const [key,spec]of Object.entries(boot.schema)){const old=state.published[key]||{},next=draft[key]||{};for(const f of new Set([...Object.keys(old),...Object.keys(next)])){if(old[f]===next[f])continue;rows.push({page:spec.label,field:spec.fields.find(x=>x.key===f)?.label||({bannerUrl:'Banner image',bannerAlt:'Image description',accentColor:'Accent color',backgroundColor:'Page background'})[f],before:old[f]??'(Installed default)',after:next[f]??'(Installed default)'});}}return rows;}
+async function review(){validate();if(dirty)await save();const changes=diff();if(!changes.length){notice('There are no unpublished changes.');return;}$('changes').replaceChildren();changes.forEach(c=>{const box=document.createElement('div');box.className='change';const h=document.createElement('h3');h.textContent=c.page+' · '+c.field;const before=document.createElement('p');before.textContent='Before: '+c.before;const after=document.createElement('p');after.className='after';after.textContent='After: '+c.after;box.append(h,before,after);$('changes').append(box);});$('confirm-publish').textContent=boot.demo?'Publish demo':'Publish now';$('review').showModal();}
+async function publish(){setBusy(true);try{acceptState(await rpc('publishEditorDraft',state.revision));$('review').close();notice(boot.demo?'Demo published locally. No live conference website was changed.':'Published. Reload the connected portals to see this version.');}finally{setBusy(false);}}
+async function reload(){if(dirty&&!confirm('Discard your unsaved changes and reload the latest saved draft?'))return;setBusy(true);try{const next=await rpc('getEditorBootstrap');boot=next;acceptState(next.state);renderPages();notice(boot.demo?'Local demo — publishing only updates this browser.':'Latest draft loaded.');}finally{setBusy(false);}}
+function handle(fn){return async()=>{try{await fn();}catch(e){notice(e.message||String(e),true);}};}
+$('save').onclick=handle(save);$('publish').onclick=handle(review);$('confirm-publish').onclick=handle(publish);$('cancel-publish').onclick=()=>{if(!busy)$('review').close();};$('reload').onclick=handle(reload);
+$('review').addEventListener('cancel',e=>{if(busy)e.preventDefault();});
+$('restore').onclick=handle(async()=>{if(dirty&&!confirm('Replace your unsaved changes with this published version?'))return;setBusy(true);try{acceptState(await rpc('restoreEditorVersion',state.revision,$('versions').value));loadFrame();notice('Version restored as a draft. Review and publish when ready.');}finally{setBusy(false);}});
+for(const key of ['desktop','mobile'])$(key).onclick=()=>{$('frame-wrap').classList.toggle('mobile',key==='mobile');$('desktop').setAttribute('aria-pressed',key==='desktop');$('mobile').setAttribute('aria-pressed',key==='mobile');};
+for(const key of ['edit','preview'])$(key+'-mode').onclick=()=>{editMode=key==='edit';$('edit-mode').setAttribute('aria-pressed',editMode);$('preview-mode').setAttribute('aria-pressed',!editMode);sendFrame({type:'mode',editing:editMode});};
+window.addEventListener('beforeunload',e=>{if(dirty){e.preventDefault();e.returnValue='';}});
+window.addEventListener('message',e=>{
+ const m=e.data;if(e.source!==$('preview').contentWindow||!m||!m.acmsEditor||m.channel!==channel)return;
+ if(m.type==='ready'){defaults=m.defaults;ready=true;renderFields();sendFrame({type:'mode',editing:editMode});updateButtons();return;}
+ const field=boot.schema[page].fields.find(f=>f.key===m.key);if(!field)return;
+ if(m.type==='select'){selectedField=m.key;document.querySelectorAll('#fields .field').forEach(n=>n.classList.toggle('selected',n.dataset.field===m.key));$('edit-'+m.key).scrollIntoView({block:'nearest'});}
+ if(m.type==='change'&&!busy&&typeof m.value==='string'){
+  draft[page]||={};draft[page][m.key]=m.value;dirty=true;$('edit-'+m.key).value=m.value;updateButtons();
+  if(m.value.length>field.max)notice(field.label+' exceeds '+field.max+' characters. Shorten it before saving.',true);
+ }
+});
+(async()=>{try{if(window.ACMS_DEMO){boot=window.ACMS_DEMO;boot.demo=true;}boot=await rpc('getEditorBootstrap');acceptState(boot.state);$('identity').textContent='ACADIA '+boot.year+' · '+boot.actor+(boot.demo?' · LOCAL DEMO':'');$('loading').hidden=true;$('workspace').hidden=false;renderPages();notice(boot.demo?'Local demo — publish and restore work only in this browser. Connect the Apps Script editor to publish real pages.':'Click a page to edit its public-facing content.');}catch(e){$('loading').textContent='The editor could not connect.';notice(e.message||String(e),true);}})();
+</script></body></html>

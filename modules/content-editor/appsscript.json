@@ -1,0 +1,6 @@
+{
+  "timeZone": "__ACADIA_VALUE_timezone__",
+  "runtimeVersion": "V8",
+  "webapp": {"executeAs":"USER_ACCESSING","access":"ANYONE"},
+  "oauthScopes": ["https://www.googleapis.com/auth/drive","https://www.googleapis.com/auth/userinfo.email"]
+}

@@ -21,6 +21,13 @@ function createConferenceTemplates() {
   folder('recognitionRootId','Recognition',root);
   folder('certificateOutputId','Generated Certificates',root);
   const templateFolder=folder('templateFolderId','Document Templates',root);
+  const contentFolder=folder('contentFolderId','Website Content and Publication History',root);
+  const contentId=props.getProperty('KIT_contentStoreId');
+  if(contentId){resources.contentStoreId=contentId;}else{
+    const state={schema:1,year:Number(config.year),writerScriptId:'',revision:0,draft:{},published:{},history:[],publishedAt:'',publishedVersion:''};
+    const file=contentFolder.createFile('website-content.json',JSON.stringify(state),MimeType.PLAIN_TEXT);
+    resources.contentStoreId=file.getId();props.setProperty('KIT_contentStoreId',file.getId());
+  }
   const links=[];
   schemas.books.forEach(def=>{
     let id=props.getProperty('KIT_'+def.key),book;

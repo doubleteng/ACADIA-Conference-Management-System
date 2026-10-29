@@ -1238,9 +1238,21 @@
       ]
     },
     "t0195": {
-      "template": ", 21000 West 10 Mile Road, Southfield, MI 48075",
+      "template": "{{theme}}",
       "locations": [
-        "calendar-sync/Code.gs"
+        "recognition-portal/Index.html"
+      ]
+    },
+    "t0196": {
+      "template": "{{siteChairs}}",
+      "locations": [
+        "recognition-portal/Index.html"
+      ]
+    },
+    "t0197": {
+      "template": "{{technicalChairs}}",
+      "locations": [
+        "recognition-portal/Index.html"
       ]
     }
   },
@@ -1453,6 +1465,24 @@
       "modules": [
         "author-portal"
       ]
+    },
+    "contentStoreId": {
+      "label": "Website Content Store",
+      "modules": [
+        "content-editor",
+        "author-portal",
+        "conference-program",
+        "recognition-portal"
+      ]
+    },
+    "contentFolderId": {
+      "label": "Website Content History Folder",
+      "modules": [
+        "content-editor",
+        "author-portal",
+        "conference-program",
+        "recognition-portal"
+      ]
     }
   },
   "modules": [
@@ -1460,7 +1490,8 @@
     "recognition-portal",
     "conference-program",
     "presentation-reminders",
-    "calendar-sync"
+    "calendar-sync",
+    "content-editor"
   ],
   "sourceFileCount": 34,
   "sourceManifest": [

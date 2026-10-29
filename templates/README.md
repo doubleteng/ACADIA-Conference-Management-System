@@ -41,3 +41,7 @@ The builder creates eight editable Google Docs with the exact placeholders expec
 ## Template versioning
 
 Update a source reader and its schema together. Header order matters for positional readers, especially workshop/instructor/volunteer rosters and certificate logs. Keep populated production files out of Git. A future schema migration must explain how existing records are preserved.
+
+## Website content
+
+The template builder also creates a private **Website Content and Publication History** folder containing `website-content.json`. Its resource IDs are included in the generated configuration. Re-running the builder preserves this file and all saved drafts/publications. It does not add or rename spreadsheet tabs. Deploy the separate Visual Editor to edit this content; do not edit the JSON store manually.

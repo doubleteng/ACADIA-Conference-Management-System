@@ -28,7 +28,7 @@ function doGet(e) {
       '" data-guide-paper="' + safe(params.paper) + '" data-guide-channel="' + safe(params.channel) + '">';
     output = HtmlService.createHtmlOutput(output.getContent().replace('<body>', body));
   }
-  return output
+  return acmsDecorateOutput_(output, 'conference-program')
     .setTitle(botOnly ? 'ACADIA Bot' : "__ACADIA_TEXT_t0167__")
     .addMetaTag('viewport', 'width=device-width, initial-scale=1, viewport-fit=cover')
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);

@@ -3,6 +3,10 @@ function RUN_CHECK_INSTALLATION() {
   const active=Session.getActiveUser().getEmail(),effective=Session.getEffectiveUser().getEmail();
   if(!active||active!==effective)throw new Error('Run this check from the Apps Script editor as the project owner.');
   const edition=conferenceEdition_(),schemas=/*ACMS_SCHEMAS*/null;
+  if(typeof ACMS_EDITOR!=='undefined'){
+    try {const state=acmsReadContentStore_();DriveApp.getFolderById(edition.resources.contentFolderId);return {module:'content-editor',year:edition.year,ok:state.writerScriptId===ScriptApp.getScriptId(),revision:state.revision};}
+    catch(error){return {module:'content-editor',year:edition.year,ok:false,problem:'Check content file access, edition, and editor initialization.'};}
+  }
   const moduleName=typeof DEFAULTS!=='undefined'?'author-portal':typeof PROGRAM_CONFIG!=='undefined'?'conference-program':typeof REVIEWER_PORTAL!=='undefined'?'recognition-portal':typeof MAIL_SENDER_!=='undefined'?'presentation-reminders':'calendar-sync';
   const requirements={
     'author-portal':['authorMasterId','acceptedId','presentationId'],

@@ -11,7 +11,8 @@ test('template builder creates complete new resources and preserves edited recor
  for(const spec of schemas.books){const b=f.books.get(f.properties['KIT_'+spec.key]);assert.equal(b.timezone,defaults.timezone);for(const tab of spec.tabs){const s=b.getSheetByName(E.renderText(tab.name,E.normalize(defaults)));assert.deepEqual(Array.from(s.rows[0]),tab.headers.map(h=>E.renderText(h,E.normalize(defaults))));assert.equal(s.getLastRow(),1);}}
  for(const [key,spec] of Object.entries(schemas.certificates)){const d=f.docs.get(f.properties['KIT_'+key]);assert(d.saved);assert(d.paragraphs.some(p=>p.includes("Developed by Teng Teng")));for(const token of spec.tokens)assert(d.paragraphs.includes('{{'+token+'}}'));}
  const master=f.books.get(f.properties.KIT_authorMasterId),table=master.getSheetByName('Submissions');table.rows.push(['KEEP-1001','Organizer-edited title']);
- const priorIds=JSON.stringify(f.properties),priorCount=f.files.size;runBuilder(f);
+ const contentFile=f.files.get(f.properties.KIT_contentStoreId);contentFile.content=JSON.stringify({schema:1,year:2027,draft:{'author-portal':{heading:'Keep this draft'}}});
+ const priorContent=contentFile.content,priorIds=JSON.stringify(f.properties),priorCount=f.files.size;runBuilder(f);assert.equal(contentFile.content,priorContent);
  assert.equal(f.files.size,priorCount);assert.equal(JSON.stringify(f.properties),priorIds);assert.equal(table.rows[1][1],'Organizer-edited title');
  const config=JSON.parse(f.files.get(f.properties.KIT_CONFIG_FILE).content);assert.equal(config.resources.authorMasterId,master.id);assert.equal(config.resources.scheduleId,f.properties.KIT_scheduleId);
 });

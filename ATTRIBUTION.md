@@ -9,7 +9,7 @@ The standard ACMS distribution automatically includes developer credit in:
 
 - Author Portal, Conference Program and Recognition Portal page footers;
 - the optional Program guide, including its standalone view;
-- the offline configurator and generated website embed snippets;
+- the offline configurator, Visual Editor, local demo and generated website embed snippets;
 - plain-text and HTML presentation reminder messages;
 - managed calendar and event descriptions;
 - newly generated document templates.

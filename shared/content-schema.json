@@ -1,0 +1,28 @@
+{
+  "author-portal": {"label":"Author Portal","bannerTarget":"#siteBanner","fields":[
+    {"key":"eyebrow","label":"Portal label","selector":".home-intro > .eyebrow","max":120},
+    {"key":"heading","label":"Welcome heading","selector":".home-intro > h1","max":180},
+    {"key":"introduction","label":"Introduction","selector":".home-intro > p:nth-of-type(1)","max":1600},
+    {"key":"requirements","label":"Acceptance requirements","selector":".home-intro > p:nth-of-type(2)","max":3000},
+    {"key":"nextStep","label":"Next step","selector":".home-intro > p:nth-of-type(3)","max":800},
+    {"key":"signInHeading","label":"Sign-in heading","selector":".login-card > h2","max":120},
+    {"key":"signInHelp","label":"Sign-in instructions","selector":"#standardLoginFields > p","max":1200}
+  ]},
+  "conference-program": {"label":"Conference Program","bannerTarget":".masthead","bannerBefore":true,"fields":[
+    {"key":"brand","label":"Conference name","selector":".masthead > a","max":120},
+    {"key":"location","label":"Location label","selector":".masthead > span","max":160},
+    {"key":"eyebrow","label":"Page label","selector":".hero small","max":120},
+    {"key":"heading","label":"Program heading","selector":".hero h1","max":220},
+    {"key":"introduction","label":"Program introduction","selector":".hero-meta > p:nth-of-type(1)","max":2000},
+    {"key":"details","label":"Program details","selector":".hero-meta > p:nth-of-type(2)","max":1600}
+  ]},
+  "recognition-portal": {"label":"Recognition Portal","bannerTarget":"#banner","fields":[
+    {"key":"eyebrow","label":"Portal label","selector":".gratitude > .eyebrow","max":120},
+    {"key":"heading","label":"Welcome heading","selector":".gratitude > h1","max":220},
+    {"key":"introduction","label":"Welcome message","selector":".gratitude > p","max":3000},
+    {"key":"channelsHeading","label":"Certificate section heading","selector":"#channelHeading","max":140},
+    {"key":"channelsHelp","label":"Certificate section instructions","selector":".channel-section > .section-head > p","max":1600},
+    {"key":"siteChairs","label":"Site chairs","selector":"#acms-site-chairs","max":600},
+    {"key":"technicalChairs","label":"Technical chairs","selector":"#acms-technical-chairs","max":600}
+  ]}
+}

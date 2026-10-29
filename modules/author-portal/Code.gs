@@ -526,8 +526,8 @@ function driveDownloadUrl_(fileId) {
 
 function doGet() {
   const template = HtmlService.createTemplateFromFile('Index');
-  template.bootstrapJson = JSON.stringify(publicConfig_());
-  return template.evaluate()
+  template.bootstrapJson = acmsContentJSON_(publicConfig_());
+  return acmsDecorateOutput_(template.evaluate(), 'author-portal')
     .setTitle("__ACADIA_TEXT_t0001__")
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL)
     .addMetaTag('viewport', 'width=device-width, initial-scale=1');

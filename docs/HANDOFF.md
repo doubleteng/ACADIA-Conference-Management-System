@@ -26,3 +26,7 @@ Use this as a private handoff record. Do not commit completed account names, res
 6. Contribute reusable fixes to the toolkit with schema updates and tests. Keep annual participant data out of commits.
 
 An existing trigger belongs to its creator; copying source does not transfer authorization or ownership. Each edition must authorize and create its own triggers. Keep at least two people familiar with recovery and handoff, using institutional account policies rather than shared passwords in documents.
+
+## Visual editor handoff
+
+Record the private editor deployment URL, editor project owner, allowed committee Google accounts, content-store file, history folder, and latest published version. Transfer or grant appropriate Google Drive access before testing the next operator. Use a new content store for a different conference year. Preserve old snapshots; a page-content rollback does not revert conference workbooks or operational actions. See [VISUAL-EDITOR.md](VISUAL-EDITOR.md).

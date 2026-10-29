@@ -108,6 +108,9 @@
     "volunteerTemplateId": "",
     "awardTemplateId": "",
     "visaTemplateId": "",
-    "publicationInstructionsId": ""
-  }
+    "publicationInstructionsId": "",
+    "contentStoreId": "",
+    "contentFolderId": ""
+  },
+  "editorEmails": []
 }

@@ -1,5 +1,11 @@
 # ACMS validation record
 
+## Version 0.3.0
+
+The suite now contains 32 tests. The added tests cover editor authentication on every endpoint, draft/publication isolation, stale-revision rejection, single-editor binding, history restoration, validation of content and image URLs, public-output privacy, text-node rendering, preservation of portal controls and attribution, and failed-store-write behavior. DOM tests exercise inline editing, mobile preview, saving, reviewing, publishing, restoring and rejecting unrelated window messages. These tests use simulated Google services and jsdom; no production Google project or participant data is modified.
+
+The local demo uses browser storage and is explicitly labeled as a demo. The real publishing backend is implemented for Apps Script/Drive but has not yet passed a Google-hosted end-to-end editor deployment. Follow the Visual Editor acceptance checklist before committee use.
+
 ## Version 0.2.0
 
 The local suite contains 20 tests. It exercises generated server and client syntax; arbitrary-year date parsing; shared schedule parsing; schema compatibility; configuration escaping; archive creation; template creation and reruns; installation guards; recognition initialization; read-only installation diagnostics; reminder delivery state handling; and automatic developer attribution across generated editions.

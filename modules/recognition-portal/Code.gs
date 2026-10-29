@@ -49,8 +49,7 @@ const DEFAULT_SETTINGS = Object.freeze({
 });
 
 function doGet() {
-  return HtmlService.createTemplateFromFile('Index')
-    .evaluate()
+  return acmsDecorateOutput_(HtmlService.createTemplateFromFile('Index').evaluate(), 'recognition-portal')
     .setTitle("__ACADIA_TEXT_t0091__")
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL)
     .addMetaTag('viewport', 'width=device-width, initial-scale=1');

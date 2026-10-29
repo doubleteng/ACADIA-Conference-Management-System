@@ -10,6 +10,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+      - run: npm ci
       - run: npm run build
       - run: npm test
-      - run: git diff --exit-code -- configure.html sources.json modules
+      - run: git diff --exit-code -- configure.html editor-demo.html sources.json modules
